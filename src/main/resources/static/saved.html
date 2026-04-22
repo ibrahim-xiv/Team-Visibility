@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Visibility – Gespeicherte Inhalte</title>
+  <style>
+    :root {
+      --bg: #f6efe7;
+      --surface: #fffaf6;
+      --text: #3b342e;
+      --muted: #7a6f67;
+      --success: #bddcab;
+      --success-hover: #abd294;
+      --danger: #eeaaaa;
+      --danger-hover: #e49797;
+      --bookmark: #f1d35c;
+      --saved-active: #fff1b8;
+      --shadow: 0 14px 30px rgba(104, 88, 76, .10);
+      --radius-lg: 34px;
+      --radius-sm: 10px;
+      --border: rgba(59, 52, 46, .45)
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    html {
+      scroll-behavior: smooth
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      font-family: 'Nunito', sans-serif;
+      background: var(--bg);
+      color: var(--text)
+    }
+
+    button,
+    input,
+    select,
+    a {
+      font: inherit
+    }
+
+    a {
+      text-decoration: none;
+      color: var(--text)
+    }
+
+    .phone {
+      width: 100%;
+      max-width: 483px;
+      height: min(92vh, 920px);
+      background: var(--surface);
+      border: 2px solid rgba(59, 52, 46, .35);
+      border-radius: 34px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column
+    }
+
+    .header-wrap,
+    .bottom-nav {
+      position: sticky;
+      z-index: 30
+    }
+
+    .header-wrap {
+      top: 0;
+      background: var(--surface)
+    }
+
+    .header {
+      display: flex;
+      justify-content: center;
+      padding: 22px 20px 18px;
+      border-bottom: 2px solid rgba(59, 52, 46, .3);
+      background: rgba(255, 255, 255, .75);
+      backdrop-filter: blur(6px)
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 2rem;
+      font-weight: 800;
+      line-height: 1
+    }
+
+    .brand-icon,
+    .nav-btn {
+      display: grid;
+      place-items: center
+    }
+
+    .brand-icon {
+      width: 34px;
+      height: 34px
+    }
+
+    .toolbar-wrap {
+      padding: 14px 18px 12px;
+      border-bottom: 2px solid rgba(59, 52, 46, .16);
+      background: rgba(255, 255, 255, .82);
+      backdrop-filter: blur(6px)
+    }
+
+    .toolbar {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto auto;
+      gap: 10px
+    }
+
+    .search-input,
+    .toolbar select,
+    .event-card,
+    .icon-btn,
+    .map-cta,
+    .overlay-card,
+    .toast {
+      border: 2px solid var(--border);
+      background: #fff;
+      color: var(--text)
+    }
+
+    .search-input,
+    .toolbar select {
+      width: 100%;
+      min-height: 50px;
+      padding: 12px 14px;
+      outline: none
+    }
+
+    .toolbar select {
+      min-width: 92px;
+      border-radius: var(--radius-sm);
+      appearance: none;
+      padding-right: 34px;
+      background-image: linear-gradient(45deg, transparent 50%, var(--text) 50%), linear-gradient(135deg, var(--text) 50%, transparent 50%);
+      background-position: calc(100% - 18px) calc(50% - 3px), calc(100% - 12px) calc(50% - 3px);
+      background-size: 6px 6px;
+      background-repeat: no-repeat
+    }
+
+    .search-input:focus,
+    .toolbar select:focus,
+    .report-option:focus-within {
+      border-color: #5f87b3;
+      box-shadow: 0 0 0 4px rgba(143, 184, 232, .22)
+    }
+
+    .scroll-area {
+      flex: 1;
+      overflow-y: auto;
+      overscroll-behavior: contain
+    }
+
+    .content {
+      padding: 18px
+    }
+
+    .map-cta {
+      width: 100%;
+      min-height: 110px;
+      border-radius: var(--radius-sm);
+      background: var(--success);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 20px;
+      font-size: 1.16rem;
+      font-weight: 700;
+      margin-bottom: 18px
+    }
+
+    .map-cta:hover {
+      background: var(--success-hover)
+    }
+
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px
+    }
+
+    .section-head h2,
+    .event-title,
+    .overlay-card h2 {
+      margin: 0
+    }
+
+    .results-count {
+      color: var(--muted);
+      font-size: .92rem;
+      font-weight: 700;
+      white-space: nowrap
+    }
+
+    .event-list,
+    .report-list {
+      display: grid;
+      gap: 12px
+    }
+
+    .event-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 64px;
+      gap: 8px;
+      align-items: stretch
+    }
+
+    .event-card {
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      min-height: 118px;
+      display: block
+    }
+
+    .event-card:hover,
+    .icon-btn:hover,
+    .report-option:hover,
+    .overlay-close:hover {
+      background: #faf6f1
+    }
+
+    .event-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 8px;
+      padding: 4px 10px;
+      border: 2px solid rgba(59, 52, 46, .18);
+      border-radius: 999px;
+      background: #f8f3ee;
+      font-size: .9rem;
+      font-weight: 800
+    }
+
+    .event-title {
+      margin-bottom: 8px;
+      font-size: 1.28rem;
+      line-height: 1.15;
+      font-weight: 800
+    }
+
+    .event-meta,
+    .event-location {
+      margin: 0;
+      font-size: .98rem;
+      line-height: 1.35
+    }
+
+    .event-side {
+      display: grid;
+      gap: 8px
+    }
+
+    .icon-btn {
+      min-height: 55px;
+      border-radius: var(--radius-sm);
+      display: grid;
+      place-items: center;
+      cursor: pointer
+    }
+
+    .icon-btn svg,
+    .nav-btn svg {
+      width: 24px;
+      height: 24px
+    }
+
+    .save-btn {
+      background: var(--bookmark)
+    }
+
+    .report-btn,
+    .overlay-submit {
+      background: var(--danger)
+    }
+
+    .report-btn:hover,
+    .overlay-submit:hover {
+      background: var(--danger-hover)
+    }
+
+    .empty-state {
+      display: none;
+      border: 2px dashed rgba(59, 52, 46, .35);
+      border-radius: var(--radius-sm);
+      padding: 18px 14px;
+      text-align: center;
+      color: var(--muted);
+      background: rgba(255, 255, 255, .5)
+    }
+
+    .bottom-nav {
+      bottom: 0;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      padding: 14px 16px;
+      border-top: 2px solid rgba(59, 52, 46, .3);
+      background: rgba(255, 255, 255, .88);
+      backdrop-filter: blur(6px)
+    }
+
+    .nav-btn {
+      min-height: 54px;
+      border: 2px solid transparent;
+      border-radius: 14px;
+      background: transparent;
+      color: var(--text);
+      cursor: pointer
+    }
+
+    .nav-btn:hover {
+      background: rgba(255, 255, 255, .65)
+    }
+
+    .nav-btn.is-active {
+      border-color: var(--border);
+      background: #fff
+    }
+
+    .saved-btn.is-active {
+      border-color: #d7b93b;
+      background: var(--saved-active)
+    }
+
+    .nav-btn.is-primary {
+      border-color: var(--border);
+      background: #fff;
+      font-size: 1.7rem;
+      font-weight: 800
+    }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(59, 52, 46, .28);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 80
+    }
+
+    .overlay[hidden],
+    .toast[hidden] {
+      display: none
+    }
+
+    .overlay-card {
+      width: min(100%, 390px);
+      max-height: min(78vh, 700px);
+      overflow-y: auto;
+      background: #fffdf9;
+      border-radius: 18px;
+      box-shadow: 0 18px 40px rgba(59, 52, 46, .18);
+      padding: 18px
+    }
+
+    .overlay-card h2 {
+      margin-bottom: 8px;
+      font-size: 1.25rem
+    }
+
+    .overlay-card p {
+      margin: 0;
+      line-height: 1.45;
+      font-size: .96rem
+    }
+
+    .report-list {
+      margin-top: 14px
+    }
+
+    .report-option {
+      display: grid;
+      grid-template-columns: 18px 1fr;
+      gap: 10px;
+      align-items: start;
+      padding: 12px;
+      border: 2px solid rgba(59, 52, 46, .22);
+      border-radius: 12px;
+      background: #fff;
+      cursor: pointer
+    }
+
+    .report-option input {
+      margin-top: 4px;
+      accent-color: #8fb8e8
+    }
+
+    .report-option strong {
+      display: block;
+      margin-bottom: 2px;
+      font-size: .97rem
+    }
+
+    .report-option small {
+      display: block;
+      line-height: 1.3;
+      color: var(--muted);
+      font-size: .88rem
+    }
+
+    .report-option.is-selected {
+      border-color: #7aa9df;
+      background: rgba(143, 184, 232, .14)
+    }
+
+    .overlay-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 16px
+    }
+
+    .overlay-close,
+    .overlay-submit {
+      width: 100%;
+      min-height: 48px;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      font-weight: 800;
+      cursor: pointer
+    }
+
+    .overlay-close {
+      background: #fff
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 96px;
+      transform: translateX(-50%);
+      background: #fffdf9;
+      border-radius: 12px;
+      padding: 12px 16px;
+      box-shadow: 0 14px 30px rgba(59, 52, 46, .18);
+      z-index: 90;
+      font-weight: 700
+    }
+
+    @media (max-width:580px) {
+      body {
+        padding: 10px
+      }
+
+      .phone {
+        border-radius: 28px;
+        height: 100vh;
+        max-height: none
+      }
+
+      .header {
+        padding: 18px 16px 16px
+      }
+
+      .brand {
+        font-size: 1.7rem
+      }
+
+      .toolbar {
+        grid-template-columns: 1fr
+      }
+
+      .toolbar select {
+        min-width: 100%
+      }
+
+      .toolbar-wrap,
+      .content {
+        padding: 16px
+      }
+
+      .event-title {
+        font-size: 1.14rem
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="phone">
+    <div class="header-wrap" id="top">
+      <header class="header">
+        <div class="brand" aria-label="Visibility">
+          <span class="brand-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"
+              stroke-linejoin="round">
+              <path d="M2 12s3.8-6 10-6 10 6 10 6-3.8 6-10 6-10-6-10-6z"></path>
+              <circle cx="12" cy="12" r="3.2"></circle>
+            </svg>
+          </span>
+          <span>Visibility</span>
+        </div>
+      </header>
+
+      <div class="toolbar-wrap">
+        <div class="toolbar">
+          <input id="searchInput" class="search-input" type="text"
+            placeholder="Nach Titel, Ort oder Kategorie suchen..." aria-label="Gespeicherte Events suchen">
+          <select id="sortSelect" aria-label="Sortieren">
+            <option value="distance">Entfernung</option>
+            <option value="date">Datum</option>
+            <option value="title">Titel A–Z</option>
+          </select>
+          <select id="filterSelect" aria-label="Filtern">
+            <option value="all">Alle</option>
+            <option>Freizeit</option>
+            <option>Sport</option>
+            <option>Spieleabend</option>
+            <option>Kultur</option>
+            <option>Community</option>
+            <option>Anderes…</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="scroll-area" id="scrollArea">
+      <section class="content">
+        <a class="map-cta" href="/map.html" aria-label="Zur Kartenansicht">
+          <span>Zur Kartenansicht</span>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"
+            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 21s6-5.2 6-11a6 6 0 1 0-12 0c0 5.8 6 11 6 11z"></path>
+            <circle cx="12" cy="10" r="2.2"></circle>
+          </svg>
+        </a>
+
+        <div class="section-head">
+          <h2 id="sectionTitle">Gespeicherte Events:</h2>
+          <span class="results-count" id="resultsCount"></span>
+        </div>
+
+        <div class="event-list" id="eventList"></div>
+        <div class="empty-state" id="emptyState">Du hast aktuell keine gespeicherten Inhalte.</div>
+      </section>
+    </div>
+
+    <nav class="bottom-nav" aria-label="Hauptnavigation">
+      <a class="nav-btn" href="/home.html" aria-label="Home">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12 3l9 8h-3v9h-5v-6H11v6H6v-9H3l9-8z"></path>
+        </svg>
+      </a>
+      <a class="nav-btn" href="/chat.html" aria-label="Chat">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M4 5h16a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H9l-5 4v-4H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"></path>
+        </svg>
+      </a>
+      <a class="nav-btn is-primary" href="/meeting-form.html" aria-label="Treffen erstellen">+</a>
+      <a class="nav-btn saved-btn is-active" href="/saved.html" aria-label="Gespeicherte Inhalte">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"></path>
+        </svg>
+      </a>
+      <a class="nav-btn" href="/profile.html" aria-label="Profil">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-4.4 0-8 2.2-8 5v2h16v-2c0-2.8-3.6-5-8-5z"></path>
+        </svg>
+      </a>
+    </nav>
+  </main>
+
+  <div class="overlay" id="reportOverlay" hidden>
+    <div class="overlay-card" role="dialog" aria-modal="true" aria-labelledby="reportTitle">
+      <h2 id="reportTitle">Event melden</h2>
+      <p>Warum möchtest du dieses Event melden?</p>
+      <form id="reportForm">
+        <div class="report-list">
+          <label class="report-option">
+            <input type="radio" name="reportReason" value="Unangemessen" required>
+            <span><strong>Unangemessen</strong><small>Beleidigend, sexuell oder gewaltbezogen.</small></span>
+          </label>
+          <label class="report-option">
+            <input type="radio" name="reportReason" value="Fake-Event">
+            <span><strong>Fake-Event</strong><small>Wirkt erfunden oder irreführend.</small></span>
+          </label>
+          <label class="report-option">
+            <input type="radio" name="reportReason" value="Gefährlich">
+            <span><strong>Gefährlich</strong><small>Unsicher oder riskant.</small></span>
+          </label>
+          <label class="report-option">
+            <input type="radio" name="reportReason" value="Spam">
+            <span><strong>Spam</strong><small>Werbung oder mehrfach gepostet.</small></span>
+          </label>
+          <label class="report-option">
+            <input type="radio" name="reportReason" value="Falsche Infos">
+            <span><strong>Falsche Infos</strong><small>Ort, Zeit oder Kategorie stimmen nicht.</small></span>
+          </label>
+          <label class="report-option">
+            <input type="radio" name="reportReason" value="Rechtsverstoß">
+            <span><strong>Rechtsverstoß</strong><small>Möglicher Verstoß gegen Regeln oder Gesetze.</small></span>
+          </label>
+        </div>
+        <div class="overlay-actions">
+          <button class="overlay-close" type="button" id="closeReportOverlay">Abbrechen</button>
+          <button class="overlay-submit" type="submit">Meldung senden</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="toast" id="reportToast" hidden>Meldung wurde gesendet.</div>
+
+  <script>
+    const STORAGE_KEY = 'visibility-saved-events';
+
+    const defaultSavedEvents = [
+      { id: 'brettspielabend', title: 'Brettspielabend', category: 'Spieleabend', emoji: '🎲', location: 'Jugendherberge', distance: 1.2, date: '2026-04-18', dateText: 'Samstag 18.04.2026' },
+      { id: 'hundespaziergang', title: 'Hundespaziergang', category: 'Community', emoji: '👥', location: 'Nordseepassage', distance: 2.4, date: '2026-03-31', dateText: 'Dienstag 31.03.2026' },
+      { id: 'poker-abend', title: 'Poker Abend (18+)', category: 'Anderes…', emoji: '✨', location: 'Zuhause Grenzstr. X', distance: 0.1, date: '2026-04-18', dateText: 'Samstag 18.04.2026' },
+      { id: 'chillen-hbf', title: 'Chillen HBF', category: 'Freizeit', emoji: '🎉', location: 'Hauptbahnhof Wilhelmshaven', distance: 6.0, date: '2026-04-17', dateText: 'Freitag 17.04.2026' }
+    ];
+
+    function getSavedEvents() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultSavedEvents));
+        return [...defaultSavedEvents];
+      }
+      try {
+        return JSON.parse(raw) || [];
+      } catch {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultSavedEvents));
+        return [...defaultSavedEvents];
+      }
+    }
+
+    function setSavedEvents(list) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+    }
+
+    let savedEvents = getSavedEvents();
+
+    const $ = s => document.querySelector(s);
+    const $$ = s => [...document.querySelectorAll(s)];
+
+    const searchInput = $('#searchInput');
+    const sortSelect = $('#sortSelect');
+    const filterSelect = $('#filterSelect');
+    const eventList = $('#eventList');
+    const emptyState = $('#emptyState');
+    const resultsCount = $('#resultsCount');
+    const sectionTitle = $('#sectionTitle');
+    const reportOverlay = $('#reportOverlay');
+    const reportForm = $('#reportForm');
+    const reportToast = $('#reportToast');
+
+    let currentReportButton = null;
+    let toastTimer = null;
+
+    const distanceText = d => d < 1 ? `${Math.round(d * 1000)} m` : `${d.toFixed(1)} km`;
+
+    function showToast(text) {
+      reportToast.textContent = text;
+      reportToast.hidden = false;
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => reportToast.hidden = true, 2200);
+    }
+
+    function updateReportUI() {
+      $$('.report-option').forEach(option => {
+        option.classList.toggle('is-selected', option.querySelector('input').checked);
+      });
+    }
+
+    function render(list) {
+      eventList.innerHTML = list.map(e => `
+        <article class="event-row">
+          <a class="event-card" href="/event-details.html" aria-label="${e.title} öffnen">
+            <div class="event-badge"><span>${e.emoji}</span><span>${e.category}</span></div>
+            <h3 class="event-title">${e.title}</h3>
+            <p class="event-meta">${e.dateText}</p>
+            <p class="event-location">${e.location} – ${distanceText(e.distance)}</p>
+          </a>
+
+          <div class="event-side">
+            <button class="icon-btn save-btn" type="button" data-unsave="${e.id}" aria-label="Aus gespeicherten entfernen">
+              <svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"></path>
+              </svg>
+            </button>
+
+            <button class="icon-btn report-btn" type="button" data-report="${e.id}" aria-label="Event melden">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M5 21V4"></path>
+                <path d="M5 4h10l-1.5 3L17 10H5"></path>
+              </svg>
+            </button>
+          </div>
+        </article>
+      `).join('');
+
+      resultsCount.textContent = `${list.length} Treffer`;
+      emptyState.style.display = list.length ? 'none' : 'block';
+
+      $$('[data-unsave]').forEach(btn => {
+        btn.onclick = e => {
+          e.preventDefault();
+          const id = btn.dataset.unsave;
+          savedEvents = savedEvents.filter(event => event.id !== id);
+          setSavedEvents(savedEvents);
+          filterAndSort();
+        };
+      });
+
+      $$('[data-report]').forEach(btn => {
+        btn.onclick = e => {
+          e.preventDefault();
+          currentReportButton = btn;
+          reportForm.reset();
+          updateReportUI();
+          reportOverlay.hidden = false;
+        };
+      });
+    }
+
+    function filterAndSort() {
+      const q = searchInput.value.trim().toLowerCase();
+      const f = filterSelect.value;
+      const s = sortSelect.value;
+
+      let list = savedEvents.filter(e =>
+        (!q || [e.title, e.location, e.category].some(v => v.toLowerCase().includes(q))) &&
+        (f === 'all' || e.category === f)
+      );
+
+      list.sort((a, b) =>
+        s === 'title' ? a.title.localeCompare(b.title, 'de') :
+          s === 'date' ? a.date.localeCompare(b.date) :
+            a.distance - b.distance
+      );
+
+      sectionTitle.textContent =
+        s === 'date' ? 'Gespeicherte Events nach Datum:' :
+          s === 'title' ? 'Gespeicherte Events A–Z:' :
+            'Gespeicherte Events:';
+
+      render(list);
+    }
+
+    [searchInput, sortSelect, filterSelect].forEach(el =>
+      el.addEventListener(el === searchInput ? 'input' : 'change', filterAndSort)
+    );
+
+    reportForm.addEventListener('change', updateReportUI);
+
+    $('#closeReportOverlay').onclick = () => reportOverlay.hidden = true;
+
+    reportOverlay.onclick = e => {
+      if (e.target === reportOverlay) reportOverlay.hidden = true;
+    };
+
+    reportForm.onsubmit = e => {
+      e.preventDefault();
+      const selected = reportForm.querySelector('input[name="reportReason"]:checked');
+      if (!selected) return;
+
+      if (currentReportButton) {
+        currentReportButton.style.opacity = '.7';
+        currentReportButton.setAttribute('aria-label', 'Event gemeldet');
+      }
+
+      reportOverlay.hidden = true;
+      showToast(`Meldung gesendet: ${selected.value}`);
+    };
+
+    filterAndSort();
+  </script>
+</body>
+
+</html>

@@ -6,192 +6,393 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Treffen Erstellen</title>
   <style>
-
     /* 1. Design-Variablen: Definition von Farben, Abständen und Schatten für ein einheitliches Look & Feel */
     :root {
-      --bg: #f6efe7; --surface: #fffaf6; --text: #3b342e; --muted: #7a6f67;
-      --primary: #8fb8e8; --primary-hover: #7aa9df;
-      --success: #bddcab; --success-hover: #abd294;
-      --shadow: 0 14px 30px rgba(104,88,76,.10);
-      --radius-md: 14px; --radius-sm: 10px;
-      --border: rgba(59,52,46,.45); --error: #d95c5c; --error-bg: #fff1f1;
+      --bg: #f6efe7;
+      --surface: #fffaf6;
+      --text: #3b342e;
+      --muted: #7a6f67;
+      --primary: #8fb8e8;
+      --primary-hover: #7aa9df;
+      --success: #bddcab;
+      --success-hover: #abd294;
+      --shadow: 0 14px 30px rgba(104, 88, 76, .10);
+      --radius-md: 14px;
+      --radius-sm: 10px;
+      --border: rgba(59, 52, 46, .45);
+      --error: #d95c5c;
+      --error-bg: #fff1f1;
     }
 
-    *, button, input, textarea, select { box-sizing: border-box; font: inherit; }
+    *,
+    button,
+    input,
+    textarea,
+    select {
+      box-sizing: border-box;
+      font: inherit;
+    }
 
     /* 2. Basis-Layout: Zentrierung der App-Ansicht auf dem Bildschirm */
     body {
-      margin: 0; min-height: 100vh; display: flex; align-items: center;
-      justify-content: center; padding: 24px;
-      font-family: 'Nunito', sans-serif; background: var(--bg); color: var(--text);
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      font-family: 'Nunito', sans-serif;
+      background: var(--bg);
+      color: var(--text);
     }
 
     /* 3. Phone-Container: Simuliert das Gehäuse eines Smartphones */
     .phone {
-      width: 100%; max-width: 483px; background: var(--surface);
-      border: 2px solid rgba(59,52,46,.35); border-radius: 34px;
-      box-shadow: var(--shadow); overflow: hidden;
+      width: 100%;
+      max-width: 483px;
+      background: var(--surface);
+      border: 2px solid rgba(59, 52, 46, .35);
+      border-radius: 34px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
     }
 
     /* 4. Header-Bereich: Titel der Seite und Zurück-Button */
     .header {
-      display: flex; align-items: center; gap: 14px;
-      padding: 22px 20px 18px; border-bottom: 2px solid rgba(59,52,46,.3);
-      background: rgba(255,255,255,.35);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 22px 20px 18px;
+      border-bottom: 2px solid rgba(59, 52, 46, .3);
+      background: rgba(255, 255, 255, .35);
     }
 
     .back-btn {
-      width: 52px; height: 52px; border-radius: var(--radius-md);
-      border: 2px solid var(--border); background: #fff;
-      display: grid; place-items: center;
-      font-size: 24px; font-weight: 700; cursor: pointer;
+      width: 52px;
+      height: 52px;
+      min-width: 52px;
+      border-radius: var(--radius-md);
+      border: 2px solid var(--border);
+      background: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      color: var(--text);
+      flex-shrink: 0;
+      position: relative;
+      z-index: 5;
     }
 
-    h1 { margin: 0; font-size: 2rem; line-height: 1.1; }
+    h1 {
+      margin: 0;
+      font-size: 2rem;
+      line-height: 1.1;
+    }
 
-    .content { padding: 24px 18px 22px; }
+    .content {
+      padding: 24px 18px 22px;
+    }
 
     /* 5. Formular-Styling: Gestaltung der Eingabefelder und Labels */
-    form { display: grid; gap: 14px; }
-
-    label { display: block; font-size: 1rem; font-weight: 700; margin-bottom: 6px; }
-
-    .required-star { color: var(--error); margin-left: 2px; }
-
-    textarea, select, input[type="text"], input[type="date"], input[type="time"] {
-      width: 100%; border: 2px solid var(--border); background: #fff;
-      padding: 12px 14px; font-size: 1rem; color: var(--text);
-      outline: none; min-height: 58px; border-radius: 0;
+    form {
+      display: grid;
+      gap: 14px;
     }
 
-    input::placeholder, textarea::placeholder { color: var(--muted); }
+    label {
+      display: block;
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .required-star {
+      color: var(--error);
+      margin-left: 2px;
+    }
+
+    textarea,
+    select,
+    input[type="text"],
+    input[type="date"],
+    input[type="time"] {
+      width: 100%;
+      border: 2px solid var(--border);
+      background: #fff;
+      padding: 12px 14px;
+      font-size: 1rem;
+      color: var(--text);
+      outline: none;
+      min-height: 58px;
+      border-radius: 0;
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+      color: var(--muted);
+    }
 
     /* 6. Interaktive Elemente: Fokus-Effekte und Webkit-Kalender-Styling */
-    input:focus, textarea:focus, select:focus {
-      border-color: #5f87b3; box-shadow: 0 0 0 4px rgba(143,184,232,.22);
+    input:focus,
+    textarea:focus,
+    select:focus {
+      border-color: #5f87b3;
+      box-shadow: 0 0 0 4px rgba(143, 184, 232, .22);
     }
 
-    input[type="date"], input[type="time"] { accent-color: #8ba0b5; }
+    input[type="date"],
+    input[type="time"] {
+      accent-color: #8ba0b5;
+    }
 
     input[type="date"]::-webkit-calendar-picker-indicator,
     input[type="time"]::-webkit-calendar-picker-indicator {
-      opacity: 1; cursor: pointer; padding: 6px;
-      border-radius: 8px; background-color: rgba(157,170,181,0.35);
+      opacity: 1;
+      cursor: pointer;
+      padding: 6px;
+      border-radius: 8px;
+      background-color: rgba(157, 170, 181, 0.35);
     }
 
     input[type="date"]::-webkit-calendar-picker-indicator:hover,
     input[type="time"]::-webkit-calendar-picker-indicator:hover {
-      background-color: rgba(143,184,232,.55);
+      background-color: rgba(143, 184, 232, .55);
     }
 
     /* 7. Spezielle Felder: Checkbox-Karte und Info-Badge (Overlay-Trigger) */
     .split {
-      display: grid; grid-template-columns: minmax(120px,130px) 1fr;
-      gap: 14px; align-items: end; padding-bottom: 22px;
+      display: grid;
+      grid-template-columns: minmax(120px, 130px) 1fr;
+      gap: 14px;
+      align-items: end;
+      padding-bottom: 22px;
     }
 
-    .split .form-group { position: relative; }
+    .split .form-group {
+      position: relative;
+    }
 
-    .split .error-text { position: absolute; top: 100%; margin-top: 4px; }
+    .split .error-text {
+      position: absolute;
+      top: 100%;
+      margin-top: 4px;
+    }
 
-    textarea { min-height: 170px; resize: vertical; }
+    textarea {
+      min-height: 170px;
+      resize: vertical;
+    }
 
-    .select-wrap { position: relative; }
+    .select-wrap {
+      position: relative;
+    }
 
     .select-wrap::after {
-      content: '⌄'; position: absolute; right: 14px; top: 50%;
-      transform: translateY(-55%); font-size: 28px;
-      pointer-events: none; color: var(--text);
+      content: '⌄';
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-55%);
+      font-size: 28px;
+      pointer-events: none;
+      color: var(--text);
     }
 
-    select { appearance: none; padding-right: 48px; }
+    select {
+      appearance: none;
+      padding-right: 48px;
+    }
 
     /* 8. Validierung: Visuelles Feedback bei Fehlern */
     .checkbox-card {
-      display: flex; align-items: center; gap: 12px; padding: 14px 16px;
-      background: var(--success); border: 2px solid var(--border);
-      border-radius: var(--radius-sm); font-weight: 800; cursor: pointer; min-height: 54px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      background: var(--success);
+      border: 2px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-weight: 800;
+      cursor: pointer;
+      min-height: 54px;
     }
 
-    .checkbox-card span { flex: 1; padding-right: 8px; }
+    .checkbox-card span {
+      flex: 1;
+      padding-right: 8px;
+    }
 
-    .checkbox-card input { width: 18px; height: 18px; accent-color: #6e9e5b; margin: 0; flex-shrink: 0; }
+    .checkbox-card input {
+      width: 18px;
+      height: 18px;
+      accent-color: #6e9e5b;
+      margin: 0;
+      flex-shrink: 0;
+    }
 
-    .checkbox-card:hover { background: var(--success-hover); }
+    .checkbox-card:hover {
+      background: var(--success-hover);
+    }
 
     .info-badge {
-      width: 34px; height: 34px; border-radius: 999px; border: 2px solid var(--border);
-      display: inline-flex; align-items: center; justify-content: center;
-      background: rgba(255,255,255,.82); color: var(--text);
-      line-height: 1; flex-shrink: 0; margin-left: auto; cursor: pointer; z-index: 3;
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      border: 2px solid var(--border);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, .82);
+      color: var(--text);
+      line-height: 1;
+      flex-shrink: 0;
+      margin-left: auto;
+      cursor: pointer;
+      z-index: 3;
     }
 
-    .info-badge:hover, .info-badge:focus-visible { background: rgba(255,255,255,.98); outline: none; }
+    .info-badge:hover,
+    .info-badge:focus-visible {
+      background: rgba(255, 255, 255, .98);
+      outline: none;
+    }
 
-    .info-badge svg { width: 22px; height: 22px; }
+    .info-badge svg {
+      width: 22px;
+      height: 22px;
+    }
 
     .publish-btn {
-      width: 100%; margin-top: 2px; padding: 18px 16px;
-      border: 2px solid var(--border); border-radius: var(--radius-sm);
-      background: var(--primary); color: var(--text);
-      font-size: 1.45rem; font-weight: 800; cursor: pointer;
+      width: 100%;
+      margin-top: 2px;
+      padding: 18px 16px;
+      border: 2px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--primary);
+      color: var(--text);
+      font-size: 1.45rem;
+      font-weight: 800;
+      cursor: pointer;
     }
 
-    .publish-btn:hover { background: var(--primary-hover); }
+    .publish-btn:hover {
+      background: var(--primary-hover);
+    }
 
     /* 9. Modal/Overlay: Styling für das Informations-Fenster */
-    .is-invalid input, .is-invalid textarea, .is-invalid select {
-      border-color: var(--error) !important; background: var(--error-bg);
+    .is-invalid input,
+    .is-invalid textarea,
+    .is-invalid select {
+      border-color: var(--error) !important;
+      background: var(--error-bg);
     }
 
     /* 10. Checkbox: nur Rahmen rot, Hintergrund bleibt grün */
-    .is-invalid .checkbox-card { border-color: var(--error) !important; background: var(--success); }
+    .is-invalid .checkbox-card {
+      border-color: var(--error) !important;
+      background: var(--success);
+    }
 
-    .error-text { margin-top: 6px; color: var(--error); font-size: .9rem; font-weight: 700; display: none; }
+    .error-text {
+      margin-top: 6px;
+      color: var(--error);
+      font-size: .9rem;
+      font-weight: 700;
+      display: none;
+    }
 
-    .is-invalid .error-text { display: block; }
+    .is-invalid .error-text {
+      display: block;
+    }
 
     /* 11. Responsive Design: Anpassung für kleinere Bildschirme */
     .overlay {
-      position: fixed; inset: 0; background: rgba(59,52,46,.28);
-      display: flex; align-items: center; justify-content: center; padding: 20px; z-index: 50;
+      position: fixed;
+      inset: 0;
+      background: rgba(59, 52, 46, .28);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 50;
     }
 
-    .overlay[hidden] { display: none; }
+    .overlay[hidden] {
+      display: none;
+    }
 
     .overlay-card {
-      width: min(100%,360px); background: #fffdf9;
-      border: 2px solid var(--border); border-radius: 18px;
-      box-shadow: 0 18px 40px rgba(59,52,46,.18); padding: 18px;
+      width: min(100%, 360px);
+      background: #fffdf9;
+      border: 2px solid var(--border);
+      border-radius: 18px;
+      box-shadow: 0 18px 40px rgba(59, 52, 46, .18);
+      padding: 18px;
     }
 
-    .overlay-card h2 { margin: 0 0 8px; font-size: 1.25rem; line-height: 1.2; }
+    .overlay-card h2 {
+      margin: 0 0 8px;
+      font-size: 1.25rem;
+      line-height: 1.2;
+    }
 
-    .overlay-card p { margin: 0; color: var(--text); line-height: 1.5; font-size: .98rem; }
+    .overlay-card p {
+      margin: 0;
+      color: var(--text);
+      line-height: 1.5;
+      font-size: .98rem;
+    }
 
     .overlay-close {
-      margin-top: 14px; width: 100%; min-height: 48px; border-radius: 12px;
-      border: 2px solid var(--border); background: #fff; color: var(--text);
-      font-weight: 800; cursor: pointer;
+      margin-top: 14px;
+      width: 100%;
+      min-height: 48px;
+      border-radius: 12px;
+      border: 2px solid var(--border);
+      background: #fff;
+      color: var(--text);
+      font-weight: 800;
+      cursor: pointer;
     }
 
     /* 11. Responsive Design */
     @media (max-width: 580px) {
-      body { padding: 10px; }
-      .phone { border-radius: 28px; }
-      .header { padding: 18px 16px 16px; }
-      h1 { font-size: 1.7rem; }
-      .split { grid-template-columns: minmax(108px,118px) 1fr; gap: 12px; }
-      .publish-btn { font-size: 1.2rem; }
-    }
+      body {
+        padding: 10px;
+      }
 
+      .phone {
+        border-radius: 28px;
+      }
+
+      .header {
+        padding: 18px 16px 16px;
+      }
+
+      h1 {
+        font-size: 1.7rem;
+      }
+
+      .split {
+        grid-template-columns: minmax(108px, 118px) 1fr;
+        gap: 12px;
+      }
+
+      .publish-btn {
+        font-size: 1.2rem;
+      }
+    }
   </style>
 </head>
 
 <body>
   <main class="phone">
     <header class="header">
-      <button class="back-btn" type="button" aria-label="Zurück">&#8249;</button>
+      <a class="back-btn" href="/home.html" aria-label="Zurück">&#8249;</a>
       <h1>Treffen Erstellen</h1>
     </header>
     <section class="content">
@@ -245,10 +446,10 @@
           <label class="checkbox-card" for="kostenlos">
             <input id="kostenlos" name="kostenlos" type="checkbox" required>
             <span>Kostenlos &amp; nicht-kommerziell<span class="required-star">*</span></span>
-            <button class="info-badge" type="button" aria-haspopup="dialog"
-              aria-controls="infoOverlay" aria-label="Mehr Infos zu kostenlos und nicht-kommerziell">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <button class="info-badge" type="button" aria-haspopup="dialog" aria-controls="infoOverlay"
+              aria-label="Mehr Infos zu kostenlos und nicht-kommerziell">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round" aria-hidden="true">
                 <circle cx="12" cy="12" r="9" />
                 <line x1="12" y1="10" x2="12" y2="16" />
                 <circle cx="12" cy="7" r="1" />
@@ -311,4 +512,5 @@
     });
   </script>
 </body>
+
 </html>
