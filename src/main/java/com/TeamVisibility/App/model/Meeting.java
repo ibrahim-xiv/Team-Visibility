@@ -20,10 +20,12 @@ public class Meeting {
 
     private String title;
     private String description;
-    private Float lat;
-    private Float lng;
     private LocalDateTime date_time;
     private Boolean isNonProfit;
+
+    //lat und lng müssen in die einführung der Datenbank, vom Standort erfasst werden.
+    private Float lat;
+    private Float lng;
 
 
     // Leerer Konstruktor für Spring
