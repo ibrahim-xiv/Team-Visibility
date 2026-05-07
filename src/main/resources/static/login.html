@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Visibility – Login</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+  <main class="phone">
+
+    <!-- Header zeigt Visibility-Logo statt Seitentitel -->
+    <header class="header">
+      <div class="brand" aria-label="Visibility">
+        <span class="brand-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"
+            stroke-linejoin="round">
+            <path d="M2 12s3.8-6 10-6 10 6 10 6-3.8 6-10 6-10-6-10-6z"></path>
+            <circle cx="12" cy="12" r="3.2"></circle>
+          </svg>
+        </span>
+        <span>Visibility</span>
+      </div>
+    </header>
+
+    <!-- Scrollbarer Formular-Bereich -->
+    <section class="content form-content">
+
+      <!-- Seitentitel jetzt im Content -->
+      <h2 style="margin: 0 0 20px; font-size: 1.6rem; font-weight: 800; text-align: center;">Login</h2>
+      <form id="loginForm" class="register-form" novalidate>
+
+        <!-- E-Mail-Eingabe -->
+        <div class="form-group" data-field="email">
+          <label for="email">Email</label>
+          <input class="input" id="email" name="email" type="email" placeholder="name@email.de" required>
+          <div class="error-text">Bitte gib eine gültige Email ein.</div>
+        </div>
+
+        <!-- Passwort-Eingabe -->
+        <div class="form-group" data-field="password">
+          <label for="password">Passwort</label>
+          <input class="input" id="password" name="password" type="password" placeholder="******" required>
+          <div class="error-text">Bitte gib dein Passwort ein.</div>
+        </div>
+
+        <button class="submit-btn" type="submit" style="margin-top: 20px;">Anmelden</button>
+
+        <!-- Link zur Registrierung -->
+        <a class="login-link" href="/register.html" style="margin-top: 20px;">
+          Noch kein Konto? Registrieren >
+        </a>
+
+      </form>
+    </section>
+  </main>
+
+  <script>
+    // DOM-Referenzen
+    const form = document.getElementById('loginForm');
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+
+    // Zeigt oder versteckt den Fehler für ein einzelnes Feld
+    function setValid(fieldName, valid) {
+      document.querySelector(`[data-field="${fieldName}"]`)
+        .classList.toggle('is-invalid', !valid);
+    }
+
+    // Validiert beim Absenden und leitet bei Erfolg weiter
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+
+      const emailOk = emailInput.value.includes('@');
+      const passwordOk = passwordInput.value.length > 0;
+
+      setValid('email', emailOk);
+      setValid('password', passwordOk);
+
+      if (emailOk && passwordOk) {
+        // Zur Home-Seite weiterleiten (Login-Logik hier einfügen)
+        window.location.href = 'home.html';
+      }
+    });
+  </script>
+</body>
+
+</html>

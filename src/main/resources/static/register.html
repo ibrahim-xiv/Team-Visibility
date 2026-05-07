@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Visibility – Registrierung</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+  <main class="phone">
+
+    <!-- Header zeigt Visibility-Logo statt Seitentitel -->
+    <header class="header">
+      <div class="brand" aria-label="Visibility">
+        <span class="brand-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"
+            stroke-linejoin="round">
+            <path d="M2 12s3.8-6 10-6 10 6 10 6-3.8 6-10 6-10-6-10-6z"></path>
+            <circle cx="12" cy="12" r="3.2"></circle>
+          </svg>
+        </span>
+        <span>Visibility</span>
+      </div>
+    </header>
+
+    <!-- Scrollbarer Formular-Bereich -->
+    <section class="content form-content">
+
+      <!-- Seitentitel jetzt im Content -->
+      <h2 style="margin: 0 0 20px; font-size: 1.6rem; font-weight: 800; text-align: center;">Register</h2>
+      <form id="registerForm" class="register-form" novalidate>
+
+        <!-- Vorname -->
+        <div class="form-group" data-field="firstname">
+          <label for="firstname">Vorname</label>
+          <input class="input" id="firstname" name="firstname" type="text" placeholder="Max">
+          <div class="error-text">Bitte Vornamen eingeben.</div>
+        </div>
+
+        <!-- Nachname -->
+        <div class="form-group" data-field="lastname">
+          <label for="lastname">Nachname</label>
+          <input class="input" id="lastname" name="lastname" type="text" placeholder="Mustermann">
+          <div class="error-text">Bitte Nachnamen eingeben.</div>
+        </div>
+
+        <!-- E-Mail -->
+        <div class="form-group" data-field="email">
+          <label for="email">Email</label>
+          <input class="input" id="email" name="email" type="email" placeholder="name@email.de">
+          <div class="error-text">Bitte eine gültige Email eingeben.</div>
+        </div>
+
+        <!-- Passwort mit Hinweis zu den Anforderungen -->
+        <div class="form-group" data-field="password">
+          <label for="password">Passwort</label>
+          <input class="input" id="password" name="password" type="password" placeholder="******">
+          <div class="hint-text">Mindestens 1 Großbuchstabe und 1 Zahl.</div>
+          <div class="error-text">Passwort muss mindestens 1 Großbuchstaben und 1 Zahl enthalten.</div>
+        </div>
+
+        <!-- 5-stelliger Verifizierungscode: jede Ziffer ein eigenes Feld -->
+        <div class="form-group" data-field="code">
+          <label>Verifizierungs-Code (SMS/E-mail)</label>
+          <div class="code-wrap">
+            <div class="code-inputs">
+              <input class="code-input" type="text" maxlength="1" inputmode="numeric">
+              <input class="code-input" type="text" maxlength="1" inputmode="numeric">
+              <input class="code-input" type="text" maxlength="1" inputmode="numeric">
+              <input class="code-input" type="text" maxlength="1" inputmode="numeric">
+              <input class="code-input" type="text" maxlength="1" inputmode="numeric">
+            </div>
+          </div>
+
+          <!-- Code senden + Countdown bis erneutes Senden möglich ist -->
+          <div class="resend-row">
+            <button class="resend-btn" type="button" id="resendBtn">Code senden</button>
+            <div class="countdown-text" id="countdownText"></div>
+          </div>
+
+          <div class="error-text">Bitte vollständigen Verifizierungscode eingeben.</div>
+        </div>
+
+        <button class="submit-btn" type="submit">Registrieren</button>
+
+        <!-- Link zur Login-Seite -->
+        <a class="login-link" href="/login.html">Bereits registriert? Anmelden &gt;</a>
+
+      </form>
+    </section>
+  </main>
+
+  <script>
+    // DOM-Referenzen
+    const form = document.getElementById('registerForm');
+    const firstnameInput = document.getElementById('firstname');
+    const lastnameInput = document.getElementById('lastname');
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const codeInputs = [...document.querySelectorAll('.code-input')];
+    const resendBtn = document.getElementById('resendBtn');
+    const countdownText = document.getElementById('countdownText');
+
+    let countdown = 60;
+    let timer = null;
+    let codeWasSent = false;
+
+    // Merkt sich welche Felder der Nutzer bereits angefasst hat (für sanfte Validierung)
+    const touched = { firstname: false, lastname: false, email: false, password: false, code: false };
+
+    // Hilfsfunktionen: Fehler-Klassen setzen/entfernen
+    const getWrapper = name => document.querySelector(`[data-field="${name}"]`);
+    const setInvalid = (name, invalid) => getWrapper(name)?.classList.toggle('is-invalid', invalid);
+    const setTextError = (name, show) => getWrapper(name)?.classList.toggle('show-error-text', show);
+
+    // Gibt true zurück wenn der E-Mail-String ein valides Format hat
+    const isEmailValid = v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
+
+    // Gibt true zurück wenn das Passwort mind. 1 Großbuchstaben + 1 Zahl hat
+    const isPasswordValid = v => /[A-Z]/.test(v) && /[0-9]/.test(v);
+
+    // Einzelfeld-Validierungen: nur anzeigen wenn Feld bereits berührt wurde
+    function validateFirstname(show = false) {
+      const valid = firstnameInput.value.trim() !== '';
+      if (show && touched.firstname) setInvalid('firstname', !valid);
+      else if (valid) setInvalid('firstname', false);
+      return valid;
+    }
+
+    function validateLastname(show = false) {
+      const valid = lastnameInput.value.trim() !== '';
+      if (show && touched.lastname) setInvalid('lastname', !valid);
+      else if (valid) setInvalid('lastname', false);
+      return valid;
+    }
+
+    function validateEmail(show = false) {
+      const value = emailInput.value.trim();
+      if (!value) {
+        if (show && touched.email) setInvalid('email', true);
+        else setInvalid('email', false);
+        return false;
+      }
+      const valid = isEmailValid(value);
+      if (show && touched.email) setInvalid('email', !valid);
+      else if (valid) setInvalid('email', false);
+      return valid;
+    }
+
+    function validatePassword(show = false) {
+      const value = passwordInput.value;
+      if (!value) {
+        if (show && touched.password) setInvalid('password', true);
+        else setInvalid('password', false);
+        return false;
+      }
+      const valid = isPasswordValid(value);
+      if (show && touched.password) setInvalid('password', !valid);
+      else if (valid) setInvalid('password', false);
+      return valid;
+    }
+
+    // Code gilt als gültig wenn alle 5 Felder ausgefüllt sind
+    function validateCode(show = false) {
+      const complete = codeInputs.every(i => i.value.trim().length === 1);
+      setTextError('code', show && !complete);
+      return complete;
+    }
+
+    // Formatiert Sekunden als MM:SS für den Countdown
+    function formatTime(s) {
+      return `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
+    }
+
+    // Startet den 60-Sekunden-Countdown und sperrt den Senden-Button
+    function startCountdown() {
+      clearInterval(timer);
+      countdown = 60;
+      codeWasSent = true;
+      resendBtn.disabled = true;
+      resendBtn.textContent = 'Code erneut senden';
+      countdownText.classList.add('is-visible');
+      countdownText.textContent = `Erneut senden in ${formatTime(countdown)}`;
+
+      timer = setInterval(() => {
+        countdown--;
+        countdownText.textContent = `Erneut senden in ${formatTime(countdown)}`;
+        if (countdown <= 0) {
+          clearInterval(timer);
+          resendBtn.disabled = false;
+          countdownText.textContent = 'Du kannst jetzt einen neuen Code anfordern.';
+        }
+      }, 1000);
+    }
+
+    // Code senden / erneut senden
+    resendBtn.addEventListener('click', () => {
+      alert(codeWasSent
+        ? 'Neuer Verifizierungs-Code wurde erneut gesendet.'
+        : 'Verifizierungs-Code wurde gesendet.'
+      );
+      startCountdown();
+    });
+
+    // Echtzeit-Validierung: Fehler erscheinen sobald ein Feld berührt wurde
+    firstnameInput.addEventListener('input', () => { touched.firstname = true; validateFirstname(true); });
+    lastnameInput.addEventListener('input', () => { touched.lastname = true; validateLastname(true); });
+    passwordInput.addEventListener('input', () => { touched.password = true; validatePassword(true); });
+
+    // E-Mail: Fehler erst beim Verlassen des Feldes, danach live
+    emailInput.addEventListener('blur', () => { if (emailInput.value.trim()) { touched.email = true; validateEmail(true); } });
+    emailInput.addEventListener('input', () => { if (touched.email) validateEmail(true); });
+
+    // Code-Felder: Fokus springt automatisch zum nächsten / vorherigen Feld
+    codeInputs.forEach((input, index) => {
+      input.addEventListener('input', () => {
+        touched.code = true;
+        input.value = input.value.replace(/[^0-9a-zA-Z]/g, '').slice(0, 1);
+        validateCode(false);
+        if (input.value && index < codeInputs.length - 1) codeInputs[index + 1].focus();
+      });
+      input.addEventListener('keydown', e => {
+        if (e.key === 'Backspace' && !input.value && index > 0) codeInputs[index - 1].focus();
+      });
+    });
+
+    // Submit: alle Felder prüfen, Daten zusammenbauen und weiterleiten
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+
+      const isValid =
+        validateFirstname(true) &
+        validateLastname(true) &
+        validateEmail(true) &
+        validatePassword(true) &
+        validateCode(true);
+
+      if (!isValid) return;
+
+      // Registrierungsdaten (hier Backend-Call einfügen)
+      const payload = {
+        firstname: firstnameInput.value.trim(),
+        lastname: lastnameInput.value.trim(),
+        email: emailInput.value.trim(),
+        password: passwordInput.value,
+        verificationCode: codeInputs.map(i => i.value).join('')
+      };
+
+      console.log('Registrierungsdaten:', payload);
+      window.location.href = 'home.html';
+    });
+  </script>
+</body>
+
+</html>

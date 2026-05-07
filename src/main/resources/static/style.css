@@ -1,0 +1,1093 @@
+/* ── 1. Design-Variablen ─────────────────────────────────── */
+/* Zentrale Farbwerte und Größen – hier Änderungen vornehmen, wirkt überall */
+:root {
+  --bg: #f6efe7;
+  --surface: #fffaf6;
+  --text: #3b342e;
+  --muted: #7a6f67;
+  --hint: #6e645d;
+  --success: #bddcab;
+  --success-hover: #abd294;
+  --danger: #eeaaaa;
+  --danger-hover: #e49797;
+  --bookmark: #f1d35c;
+  --primary: #8fb8e8;
+  --primary-hover: #7aa9df;
+  --home-active: #dbe9ff;
+  --saved-active: #fff1b8;
+  --shadow: 0 14px 30px rgba(104, 88, 76, .10);
+  --radius-lg: 34px;
+  --radius-md: 14px;
+  --radius-sm: 10px;
+  --border: rgba(59, 52, 46, .45);
+  --error: #d95c5c;
+  --error-bg: #fff1f1;
+}
+
+
+/* ── 2. Reset & Basis ────────────────────────────────────── */
+/* Verhindert Browser-Standardabweichungen bei Box-Sizing und Schrift */
+*,
+button,
+input,
+textarea,
+select {
+  box-sizing: border-box;
+  font: inherit;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Zentriert den Phone-Container auf der Seite */
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  font-family: 'Nunito', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+a {
+  text-decoration: none;
+  color: var(--text);
+}
+
+
+/* ── 3. Phone-Container ──────────────────────────────────── */
+/* Simuliert ein Smartphone-Gehäuse mit fester Größe und flex-column-Layout */
+.phone {
+  width: 100%;
+  max-width: 430px;
+  height: 880px;
+  max-height: 90vh;
+  background: var(--surface);
+  border: 2px solid rgba(59, 52, 46, .35);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  margin: auto;
+}
+
+
+/* ── 4. Header ───────────────────────────────────────────── */
+/* Sticky-Verhalten: Header und Nav bleiben beim Scrollen sichtbar */
+.header-wrap,
+.bottom-nav {
+  position: sticky;
+  z-index: 30;
+  flex-shrink: 0;
+}
+
+.header-wrap {
+  top: 0;
+  background: var(--surface);
+}
+
+.header {
+  display: flex;
+  justify-content: center;
+  padding: 22px 20px 18px;
+  border-bottom: 2px solid rgba(59, 52, 46, .3);
+  background: rgba(255, 255, 255, .75);
+  backdrop-filter: blur(6px);
+}
+
+/* Variante mit Zurück-Button links (meeting-form.html) */
+.header.has-back {
+  justify-content: flex-start;
+  align-items: center;
+  gap: 14px;
+  background: rgba(255, 255, 255, .35);
+}
+
+/* Variante mit Icon-Button rechts (register.html) */
+.header.has-action {
+  display: grid;
+  grid-template-columns: 1fr 56px;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 18px 18px;
+  background: rgba(255, 255, 255, .45);
+  justify-content: unset;
+}
+
+/* padding-left gleicht den fehlenden Zurück-Button aus und hält h1 optisch zentriert */
+.header.has-action h1 {
+  margin: 0;
+  text-align: center;
+  padding-left: 56px;
+  font-size: 2rem;
+  line-height: 1.1;
+}
+
+
+/* ── 5. Brand / Logo ─────────────────────────────────────── */
+/* Logo-Zeile mit SVG-Icon und App-Name nebeneinander */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.brand-icon {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+}
+
+.brand svg {
+  width: 34px;
+  height: 34px;
+}
+
+h1 {
+  margin: 0;
+  font-size: 2rem;
+  line-height: 1.1;
+}
+
+
+/* ── 6. Toolbar ──────────────────────────────────────────── */
+/* Suchfeld + Dropdowns in einer Zeile; Suchfeld nimmt verfügbaren Platz ein */
+.toolbar-wrap {
+  padding: 14px 18px 12px;
+  border-bottom: 2px solid rgba(59, 52, 46, .16);
+  background: rgba(255, 255, 255, .82);
+  backdrop-filter: blur(6px);
+  flex-shrink: 0;
+}
+
+.toolbar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 10px;
+}
+
+/* Gemeinsamer Basis-Stil für interaktive Elemente in der Toolbar und Karten */
+.search-input,
+.toolbar select,
+.event-card,
+.icon-btn,
+.map-cta,
+.overlay-card,
+.toast {
+  border: 2px solid var(--border);
+  background: #fff;
+  color: var(--text);
+}
+
+.search-input,
+.toolbar select {
+  width: 100%;
+  min-height: 50px;
+  padding: 12px 14px;
+  outline: none;
+}
+
+/* Ersetzt den nativen Browser-Pfeil durch einen eigenen CSS-Pfeil */
+.toolbar select {
+  min-width: 92px;
+  border-radius: var(--radius-sm);
+  appearance: none;
+  padding-right: 34px;
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--text) 50%),
+    linear-gradient(135deg, var(--text) 50%, transparent 50%);
+  background-position:
+    calc(100% - 18px) calc(50% - 3px),
+    calc(100% - 12px) calc(50% - 3px);
+  background-size: 6px 6px;
+  background-repeat: no-repeat;
+}
+
+/* Fokus-Ring mit blauem Glow für Tastaturnavigation und Barrierefreiheit */
+.search-input:focus,
+.toolbar select:focus,
+.report-option:focus-within {
+  border-color: #5f87b3;
+  box-shadow: 0 0 0 4px rgba(143, 184, 232, .22);
+}
+
+
+/* ── 7. Scroll-Bereich & Content ─────────────────────────── */
+/* flex: 1 lässt scroll-area den gesamten verbleibenden Platz zwischen Header und Nav einnehmen */
+.scroll-area {
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+/* Scrollbar ausblenden (Webkit-Browser: Chrome, Safari) */
+.scroll-area::-webkit-scrollbar {
+  display: none;
+}
+
+.content {
+  padding: 18px;
+}
+
+/* Formular-Seiten ohne scroll-area: content selbst übernimmt das Scrollen */
+.content.form-content {
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding: 24px 18px 22px;
+}
+
+.content.form-content::-webkit-scrollbar {
+  display: none;
+}
+
+
+/* ── 8. Map-CTA ──────────────────────────────────────────── */
+/* Grüner Banner-Link zur Kartenansicht */
+.map-cta {
+  width: 100%;
+  min-height: 110px;
+  border-radius: var(--radius-sm);
+  background: var(--success);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 20px;
+  font-size: 1.16rem;
+  font-weight: 700;
+  margin-bottom: 18px;
+}
+
+.map-cta:hover {
+  background: var(--success-hover);
+}
+
+
+/* ── 9. Event-Liste ──────────────────────────────────────── */
+/* Abschnitts-Header mit Titel links und Trefferanzahl rechts */
+.section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.section-head h2,
+.event-title,
+.overlay-card h2 {
+  margin: 0;
+}
+
+.results-count {
+  color: var(--muted);
+  font-size: .92rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.event-list,
+.report-list {
+  display: grid;
+  gap: 12px;
+}
+
+/* Karte + Buttons nebeneinander: Karte nimmt freien Platz, Buttons-Spalte ist fix 64px */
+.event-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 64px;
+  gap: 8px;
+  align-items: stretch;
+}
+
+.event-card {
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  min-height: 118px;
+  display: block;
+}
+
+.event-card:hover,
+.icon-btn:hover,
+.report-option:hover,
+.overlay-close:hover {
+  background: #faf6f1;
+}
+
+/* Kategorie-Pill mit Emoji und Label */
+.event-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+  padding: 4px 10px;
+  border: 2px solid rgba(59, 52, 46, .18);
+  border-radius: 999px;
+  background: #f8f3ee;
+  font-size: .9rem;
+  font-weight: 800;
+}
+
+.event-title {
+  margin-bottom: 8px;
+  font-size: 1.28rem;
+  line-height: 1.15;
+  font-weight: 800;
+}
+
+.event-meta,
+.event-location {
+  margin: 0;
+  font-size: .98rem;
+  line-height: 1.35;
+}
+
+/* Speichern- und Melden-Button übereinander */
+.event-side {
+  display: grid;
+  gap: 8px;
+}
+
+
+/* ── 10. Icon-Buttons ────────────────────────────────────── */
+/* Quadratische Buttons mit zentriertem SVG-Icon */
+.icon-btn {
+  min-height: 55px;
+  border-radius: var(--radius-sm);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+/* Variante für den Header (feste Größe, etwas größeres Radius) */
+.icon-btn.is-header {
+  width: 56px;
+  height: 56px;
+  min-height: unset;
+  border-radius: var(--radius-md);
+  background: #fff;
+  border: 2px solid var(--border);
+  color: var(--text);
+}
+
+.icon-btn.is-header:hover {
+  background: #faf6f1;
+}
+
+.icon-btn.is-header svg {
+  width: 26px;
+  height: 26px;
+}
+
+.icon-btn svg,
+.nav-btn svg {
+  width: 24px;
+  height: 24px;
+}
+
+/* Gespeichert-Zustand: gelber Hintergrund */
+.save-btn.is-active,
+.save-btn.always-active {
+  background: var(--bookmark);
+}
+
+/* Melden-Button und Overlay-Submit teilen die rote Farbe */
+.report-btn,
+.overlay-submit {
+  background: var(--danger);
+}
+
+.report-btn:hover,
+.overlay-submit:hover {
+  background: var(--danger-hover);
+}
+
+
+/* ── 11. Back-Button ─────────────────────────────────────── */
+/* Großes Pfeil-Symbol als Link zurück zur vorherigen Seite */
+.back-btn {
+  width: 52px;
+  height: 52px;
+  min-width: 52px;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--border);
+  background: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  color: var(--text);
+  flex-shrink: 0;
+  position: relative;
+  z-index: 5;
+}
+
+
+/* ── 12. Empty State ─────────────────────────────────────── */
+/* Gestrichelter Hinweis-Block; wird per JS auf display:block gesetzt wenn die Liste leer ist */
+.empty-state {
+  display: none;
+  border: 2px dashed rgba(59, 52, 46, .35);
+  border-radius: var(--radius-sm);
+  padding: 18px 14px;
+  text-align: center;
+  color: var(--muted);
+  background: rgba(255, 255, 255, .5);
+}
+
+
+/* ── 13. Bottom Navigation ───────────────────────────────── */
+/* 5 gleichmäßig verteilte Nav-Buttons am unteren Rand */
+.bottom-nav {
+  bottom: 0;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+  padding: 14px 16px;
+  border-top: 2px solid rgba(59, 52, 46, .3);
+  background: rgba(255, 255, 255, .88);
+  backdrop-filter: blur(6px);
+}
+
+.nav-btn {
+  display: grid;
+  place-items: center;
+  min-height: 54px;
+  border: 2px solid transparent;
+  border-radius: 14px;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.nav-btn:hover {
+  background: rgba(255, 255, 255, .65);
+}
+
+/* Aktiver Zustand: weiße Karte mit Rand */
+.nav-btn.is-active {
+  border-color: var(--border);
+  background: #fff;
+}
+
+/* Plus-Button zum Erstellen eines Treffens */
+.nav-btn.is-primary {
+  border-color: var(--border);
+  background: #fff;
+  font-size: 1.7rem;
+  font-weight: 800;
+}
+
+/* Seitenspezifische aktive Farben für Home und Saved */
+.home-btn.is-active {
+  border-color: #9cb9ea;
+  background: var(--home-active);
+}
+
+.saved-btn.is-active {
+  border-color: #d7b93b;
+  background: var(--saved-active);
+}
+
+
+/* ── 14. Overlay ─────────────────────────────────────────── */
+/* Halbtransparenter Hintergrund über allem anderen (z-index: 80) */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(59, 52, 46, .28);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 80;
+}
+
+/* hidden-Attribut versteckt Overlay und Toast komplett */
+.overlay[hidden],
+.toast[hidden] {
+  display: none;
+}
+
+/* Weißes Modal-Fenster mit maximalem Scroll bei langen Inhalten */
+.overlay-card {
+  width: min(100%, 390px);
+  max-height: min(78vh, 700px);
+  overflow-y: auto;
+  background: #fffdf9;
+  border-radius: 18px;
+  box-shadow: 0 18px 40px rgba(59, 52, 46, .18);
+  padding: 18px;
+}
+
+/* Schmale Variante ohne Scroll (z.B. Info-Overlay) */
+.overlay-card.is-narrow {
+  width: min(100%, 360px);
+  max-height: unset;
+  overflow-y: unset;
+}
+
+.overlay-card h2 {
+  margin-bottom: 8px;
+  font-size: 1.25rem;
+  line-height: 1.2;
+}
+
+.overlay-card p {
+  margin: 0;
+  line-height: 1.45;
+  font-size: .96rem;
+  color: var(--text);
+}
+
+.overlay-close,
+.overlay-submit {
+  width: 100%;
+  min-height: 48px;
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.overlay-close {
+  background: #fff;
+}
+
+/* Einzelner Schließen-Button ohne Aktions-Grid (Info-Overlay) */
+.overlay-close.is-solo {
+  display: block;
+  margin-top: 14px;
+}
+
+/* Zwei Buttons nebeneinander: Abbrechen + Absenden */
+.overlay-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+
+/* ── 15. Report-Overlay ──────────────────────────────────── */
+/* Liste der Meldeoptionen als anklickbare Radio-Karten */
+.report-list {
+  display: grid;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+/* Radio-Button + Label-Text in zwei Spalten */
+.report-option {
+  display: grid;
+  grid-template-columns: 18px 1fr;
+  gap: 10px;
+  align-items: start;
+  padding: 12px;
+  border: 2px solid rgba(59, 52, 46, .22);
+  border-radius: 12px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.report-option input {
+  margin-top: 4px;
+  accent-color: #8fb8e8;
+}
+
+.report-option strong {
+  display: block;
+  margin-bottom: 2px;
+  font-size: .97rem;
+}
+
+.report-option small {
+  display: block;
+  line-height: 1.3;
+  color: var(--muted);
+  font-size: .88rem;
+}
+
+/* Hebt die gewählte Option blau hervor */
+.report-option.is-selected {
+  border-color: #7aa9df;
+  background: rgba(143, 184, 232, .14);
+}
+
+
+/* ── 16. Toast ───────────────────────────────────────────── */
+/* Kurze Bestätigungs-Nachricht, zentriert über der Bottom-Nav (z-index: 90) */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 96px;
+  transform: translateX(-50%);
+  background: #fffdf9;
+  border-radius: 12px;
+  padding: 12px 16px;
+  box-shadow: 0 14px 30px rgba(59, 52, 46, .18);
+  z-index: 90;
+  font-weight: 700;
+}
+
+
+/* ── 17. Formular ────────────────────────────────────────── */
+/* Alle Formular-Felder mit gleichmäßigem Abstand untereinander */
+form {
+  display: grid;
+  gap: 14px;
+}
+
+label {
+  display: block;
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+/* Rotes Sternchen für Pflichtfelder */
+.required-star {
+  color: var(--error);
+  margin-left: 2px;
+}
+
+/* Einheitlicher Stil für alle nativen Eingabe-Elemente */
+textarea,
+select,
+input[type="text"],
+input[type="date"],
+input[type="time"],
+input[type="email"],
+input[type="password"] {
+  width: 100%;
+  border: 2px solid var(--border);
+  background: #fff;
+  padding: 12px 14px;
+  font-size: 1rem;
+  color: var(--text);
+  outline: none;
+  min-height: 58px;
+  border-radius: 0;
+}
+
+/* Utility-Klasse .input als Alternative zu nativen Selektoren */
+.input {
+  width: 100%;
+  min-height: 56px;
+  padding: 12px 14px;
+  border: 2px solid var(--border);
+  border-radius: 0;
+  background: #fff;
+  color: var(--text);
+  outline: none;
+}
+
+/* Fokus-Ring für alle Eingabefelder */
+.input:focus,
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: #5f87b3;
+  box-shadow: 0 0 0 4px rgba(143, 184, 232, .22);
+}
+
+input::placeholder,
+textarea::placeholder,
+.input::placeholder {
+  color: var(--muted);
+}
+
+input[type="date"],
+input[type="time"] {
+  accent-color: #8ba0b5;
+}
+
+/* Kalender-/Uhr-Icon im Custom-Stil statt Browser-Standard */
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="time"]::-webkit-calendar-picker-indicator {
+  opacity: 1;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 8px;
+  background-color: rgba(157, 170, 181, 0.35);
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator:hover,
+input[type="time"]::-webkit-calendar-picker-indicator:hover {
+  background-color: rgba(143, 184, 232, .55);
+}
+
+textarea {
+  min-height: 170px;
+  resize: vertical;
+}
+
+/* Wrapper für Custom-Dropdown-Pfeil via ::after */
+.select-wrap {
+  position: relative;
+}
+
+.select-wrap::after {
+  content: '⌄';
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-55%);
+  font-size: 28px;
+  pointer-events: none;
+  color: var(--text);
+}
+
+.select-wrap select {
+  appearance: none;
+  padding-right: 48px;
+}
+
+/* Uhrzeit (schmaler) + Ort (breiter) nebeneinander */
+.split {
+  display: grid;
+  grid-template-columns: minmax(120px, 130px) 1fr;
+  gap: 14px;
+  align-items: end;
+  padding-bottom: 22px;
+}
+
+/* Fehlermeldungen im .split absolut positioniert, damit sie kein Layout verschieben */
+.split .form-group {
+  position: relative;
+}
+
+.split .error-text {
+  position: absolute;
+  top: 100%;
+  margin-top: 4px;
+}
+
+/* Grüne Checkbox-Karte für die Kostenlos-Bestätigung */
+.checkbox-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--success);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-weight: 800;
+  cursor: pointer;
+  min-height: 54px;
+}
+
+.checkbox-card span {
+  flex: 1;
+  padding-right: 8px;
+}
+
+.checkbox-card input {
+  width: 18px;
+  height: 18px;
+  accent-color: #6e9e5b;
+  margin: 0;
+  flex-shrink: 0;
+}
+
+.checkbox-card:hover {
+  background: var(--success-hover);
+}
+
+/* Runder Info-Button der das Erklärungsoverlay öffnet */
+.info-badge {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  border: 2px solid var(--border);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, .82);
+  color: var(--text);
+  line-height: 1;
+  flex-shrink: 0;
+  margin-left: auto;
+  cursor: pointer;
+  z-index: 3;
+}
+
+.info-badge:hover,
+.info-badge:focus-visible {
+  background: rgba(255, 255, 255, .98);
+  outline: none;
+}
+
+.info-badge svg {
+  width: 22px;
+  height: 22px;
+}
+
+/* Blauer Absende-Button für das Treffen-Formular */
+.publish-btn {
+  width: 100%;
+  margin-top: 2px;
+  padding: 18px 16px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--primary);
+  color: var(--text);
+  font-size: 1.45rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.publish-btn:hover {
+  background: var(--primary-hover);
+}
+
+
+/* ── 18. Validierung ─────────────────────────────────────── */
+/* Rote Umrandung + roter Hintergrund bei ungültigem Feld */
+.is-invalid input,
+.is-invalid textarea,
+.is-invalid select,
+.is-invalid .input {
+  border-color: var(--error) !important;
+  background: var(--error-bg);
+}
+
+/* Checkbox-Karte: nur Rand rot, Hintergrund bleibt grün */
+.is-invalid .checkbox-card {
+  border-color: var(--error) !important;
+  background: var(--success);
+}
+
+/* Fehlermeldungstext: standardmäßig versteckt, erscheint bei is-invalid oder show-error-text */
+.error-text {
+  margin-top: 6px;
+  color: var(--error);
+  font-size: .9rem;
+  font-weight: 700;
+  display: none;
+}
+
+.is-invalid .error-text,
+.show-error-text .error-text {
+  display: block;
+}
+
+
+/* ── 19. Register-spezifisch ─────────────────────────────── */
+/* Logo zentriert auf Login- und Registrierungs-Seiten */
+.brand.is-centered {
+  justify-content: center;
+  margin-bottom: 28px;
+  font-size: 2.2rem;
+}
+
+form.register-form {
+  gap: 16px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 7px;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+/* Grauer Hinweistext unter Eingabefeldern (z.B. Passwort-Anforderungen) */
+.hint-text {
+  margin-top: 6px;
+  color: var(--hint);
+  font-size: .9rem;
+  line-height: 1.35;
+}
+
+/* Rahmen-Box um die 5 Code-Eingabefelder */
+.code-wrap {
+  border: 2px solid var(--border);
+  background: #fff;
+  padding: 14px 16px;
+  min-height: 88px;
+  display: grid;
+  align-items: center;
+}
+
+/* 5 gleichmäßige Spalten für die Code-Ziffern */
+.code-inputs {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+}
+
+/* Einzelnes Code-Feld: nur Unterlinie statt vollem Rahmen */
+.code-input {
+  width: 100%;
+  min-height: 44px;
+  text-align: center;
+  font-size: 1.4rem;
+  font-weight: 800;
+  border: none;
+  border-bottom: 3px solid rgba(59, 52, 46, .5);
+  outline: none;
+  background: transparent;
+  color: var(--text);
+}
+
+.code-input:focus {
+  border-bottom-color: #5f87b3;
+}
+
+.resend-row {
+  display: grid;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+/* Grüner "Code senden"-Button; gesperrt während Countdown läuft */
+.resend-btn {
+  width: 100%;
+  min-height: 50px;
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  background: var(--success);
+  color: var(--text);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.resend-btn:hover:not(:disabled) {
+  background: var(--success-hover);
+}
+
+.resend-btn:disabled {
+  opacity: .78;
+  cursor: not-allowed;
+}
+
+/* Countdown-Text: standardmäßig versteckt, erscheint via .is-visible */
+.countdown-text {
+  display: none;
+  text-align: center;
+  color: var(--muted);
+  font-size: .95rem;
+  font-weight: 700;
+}
+
+.countdown-text.is-visible {
+  display: block;
+}
+
+/* Weißer Submit-Button für Login und Registrierung */
+.submit-btn {
+  margin-top: 4px;
+  width: 100%;
+  min-height: 58px;
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--text);
+  font-size: 1.2rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.submit-btn:hover {
+  background: #faf6f1;
+}
+
+/* Unterstrichener Link zur anderen Auth-Seite */
+.login-link {
+  text-align: center;
+  font-weight: 700;
+  text-decoration: underline;
+  color: #2c5f91;
+  display: block;
+}
+
+
+/* ── 20. Responsive ──────────────────────────────────────── */
+/* Auf kleinen Bildschirmen: Phone füllt den ganzen Viewport aus */
+@media (max-width: 580px) {
+  body {
+    padding: 10px;
+  }
+
+  .phone {
+    border-radius: 28px;
+    height: 100dvh;    /* dvh = dynamic viewport height, korrekt auf mobilen Browsern */
+    max-height: none;
+    max-width: 100%;
+  }
+
+  .header {
+    padding: 18px 16px 16px;
+  }
+
+  .header.has-action {
+    padding: 18px 14px 16px;
+  }
+
+  h1,
+  .header.has-action h1 {
+    font-size: 1.75rem;
+  }
+
+  .brand {
+    font-size: 1.7rem;
+  }
+
+  .brand.is-centered {
+    font-size: 1.9rem;
+  }
+
+  /* Toolbar-Elemente untereinander statt nebeneinander */
+  .toolbar {
+    grid-template-columns: 1fr;
+  }
+
+  .toolbar select {
+    min-width: 100%;
+  }
+
+  .toolbar-wrap,
+  .content {
+    padding: 16px;
+  }
+
+  .event-title {
+    font-size: 1.14rem;
+  }
+
+  .split {
+    grid-template-columns: minmax(108px, 118px) 1fr;
+    gap: 12px;
+  }
+
+  .publish-btn {
+    font-size: 1.2rem;
+  }
+
+  .content.form-content {
+    padding: 24px 16px 22px;
+  }
+
+  .code-inputs {
+    gap: 8px;
+  }
+}
