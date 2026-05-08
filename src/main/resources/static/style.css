@@ -1089,5 +1089,45 @@ form.register-form {
 
   .code-inputs {
     gap: 8px;
+  }/* --- DAS DASHBOARD DESIGN (ERZWUNGEN) --- */
+.dev-nav {
+  position: fixed !important;
+  left: 30px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  width: 200px !important;
+  background-color: #1a1a1a !important; /* Tiefschwarz */
+  padding: 20px !important;
+  border-radius: 20px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 12px !important;
+  box-shadow: 0 15px 50px rgba(0,0,0,0.8) !important;
+  z-index: 999999 !important; /* Höher geht es fast nicht */
+  border: 2px solid #00ff88 !important; /* Leuchtend grüner Rand */
+}
+
+.dev-nav-header {
+  color: #00ff88 !important;
+  font-size: 12px !important;
+  font-weight: 900 !important;
+  text-align: center !important;
+  border-bottom: 1px solid #333 !important;
+  padding-bottom: 10px !important;
+  margin-bottom: 5px !important;
+}
+
+/* Deaktivierte Buttons */
+.is-disabled {
+  opacity: 0.3 !important;
+  background-color: #111 !important;
+  border: 1px dashed #555 !important;
+  cursor: not-allowed !important;
+}
+
+/* Falls das Fenster zu schmal ist, ausblenden */
+@media (max-width: 1100px) {
+  .dev-nav {
+    display: none !important;
   }
 }
