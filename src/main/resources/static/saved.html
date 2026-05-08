@@ -10,7 +10,6 @@
 
 <body>
 
-  <!-- Handy-Rahmen -->
   <main class="phone is-feed">
 
     <!-- Sticky Header -->
@@ -72,7 +71,7 @@
         <div id="myEventsList" class="event-list"></div>
         
         <div id="myEventsEmpty" class="empty-state">
-          Du hast noch kein eigenes Treffen erstellt.
+          Du hast keine aktuellen Treffen erstellt.
         </div>
 
         <hr style="border: 0; border-top: 1px solid rgba(0,0,0,0.1); margin: 25px 0;">
@@ -109,43 +108,44 @@
 
   <script>
     const STORAGE_KEY = 'visibility-saved-events';
-    const MY_EVENTS_KEY = 'lastCreatedEventTitle';
+    const MY_EVENTS_KEY = 'visibility-my-events'; // NEUER SCHLÜSSEL FÜR DAS ARRAY
 
-    // Hilfsfunktionen
     const $ = s => document.querySelector(s);
     const $$ = s => [...document.querySelectorAll(s)];
 
-    // Daten laden
+    // Dummy Favoriten
     let savedEvents = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [
       { id: 'brettspiel', title: 'Brettspielabend', category: 'Spieleabend', emoji: '🎲', location: 'Jugendherberge', distance: 1.2, date: '2026-04-18', dateText: 'Samstag 18.04.' },
       { id: 'hunde', title: 'Hundespaziergang', category: 'Community', emoji: '👥', location: 'Nordsee', distance: 2.4, date: '2026-03-31', dateText: 'Dienstag 31.03.' }
     ];
 
-    // EIGENE EVENTS RENDERN
+    // NEU: EIGENE EVENTS RENDERN (ARRAY)
     function renderMyEvents() {
       const list = $('#myEventsList');
       const empty = $('#myEventsEmpty');
       const count = $('#myEventsCount');
-      const title = localStorage.getItem(MY_EVENTS_KEY);
+      
+      const myEvents = JSON.parse(localStorage.getItem(MY_EVENTS_KEY) || '[]');
 
-      if (title) {
+      if (myEvents.length > 0) {
         empty.style.display = 'none';
-        count.textContent = "1 Treffen";
-        list.innerHTML = `
+        count.textContent = myEvents.length === 1 ? "1 Treffen" : `${myEvents.length} Treffen`;
+        
+        list.innerHTML = myEvents.map(event => `
           <article class="event-row">
             <div class="event-card" style="border-left: 4px solid #3b342e;">
-              <div class="event-badge"><span>⭐</span><span>Eigenes Treffen</span></div>
-              <h3 class="event-title">${title}</h3>
-              <p class="event-meta">Gerade eben erstellt</p>
-              <p class="event-location">Wilhelmshaven (Dein Standort)</p>
+              <div class="event-badge"><span>⭐</span><span>Eigenes Treffen (${event.category})</span></div>
+              <h3 class="event-title">${event.title}</h3>
+              <p class="event-meta">${event.dateText} ${event.time ? 'um ' + event.time + ' Uhr' : ''}</p>
+              <p class="event-location">📍 ${event.location}</p>
             </div>
             <div class="event-side">
-               <button class="icon-btn" onclick="deleteMyEvent()" aria-label="Löschen">
+               <button class="icon-btn" onclick="deleteMyEvent('${event.id}')" aria-label="Löschen">
                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18m-2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
                </button>
             </div>
           </article>
-        `;
+        `).join('');
       } else {
         list.innerHTML = '';
         empty.style.display = 'block';
@@ -153,9 +153,12 @@
       }
     }
 
-    function deleteMyEvent() {
-      if(confirm("Eigenes Treffen löschen?")) {
-        localStorage.removeItem(MY_EVENTS_KEY);
+    // NEU: EVENT LÖSCHEN (NACH ID)
+    function deleteMyEvent(eventId) {
+      if(confirm("Eigenes Treffen wirklich löschen?")) {
+        let myEvents = JSON.parse(localStorage.getItem(MY_EVENTS_KEY) || '[]');
+        myEvents = myEvents.filter(ev => ev.id !== eventId);
+        localStorage.setItem(MY_EVENTS_KEY, JSON.stringify(myEvents));
         renderMyEvents();
       }
     }
@@ -208,18 +211,18 @@
     filterAndSort();
   </script>
 
-<!-- DEV-DASHBOARD GANZ UNTEN VOR DEM SCHLIEẞENDEN BODY -->
+  <!-- DEV-DASHBOARD GANZ UNTEN VOR DEM SCHLIEẞENDEN BODY -->
   <nav class="dev-nav">
     <div class="dev-nav-header">DEV-Navigation</div>
-    
     <div><a href="login.html" class="dev-btn">🔑 Login</a></div>
     <div><a href="register.html" class="dev-btn">📝 Registrieren</a></div>
     <div><a href="home.html" class="dev-btn">🏠 Home</a></div>
     <div><a href="meeting-form.html" class="dev-btn">➕ Erstellen</a></div>
     <div><a href="saved.html" class="dev-btn">💾 Gespeichert</a></div>
-    
-    <div class="dev-btn is-disabled">🚫👤 Profil</div>
-    <div class="dev-btn is-disabled">🚫🗺️ Karten ansicht</div>
+    <div><a href="profile.html" class="dev-btn">👤 Eigenes Profil</a></div>
+    <div><a href="profile-view.html" class="dev-btn">👁️ Fremdes Profil</a></div>
+    <div><a href="profile-edit.html" class="dev-btn">✏️ Profil bearbeiten</a></div>
+    <div class="dev-btn is-disabled">🚫🗺️ Kartenansicht</div>
     <div class="dev-btn is-disabled">🚫📝 Event Details</div>
     <div class="dev-btn is-disabled">🚫💬 Chat</div>
   </nav>

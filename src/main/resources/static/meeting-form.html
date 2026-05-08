@@ -47,7 +47,7 @@
           </div>
         </div>
 
-        <!-- Kategorie-Dropdown mit Custom-Pfeil -->
+        <!-- Kategorie-Dropdown -->
         <div class="form-group" data-field="kategorie">
           <label for="kategorie">Kategorie<span class="required-star">*</span></label>
           <div class="select-wrap">
@@ -64,7 +64,7 @@
           <div class="error-text">Bitte Kategorie auswählen.</div>
         </div>
 
-        <!-- Freitext-Beschreibung -->
+        <!-- Beschreibung -->
         <div class="form-group" data-field="beschreibung">
           <label for="beschreibung">Beschreibung</label>
           <textarea id="beschreibung" name="beschreibung"
@@ -72,14 +72,13 @@
           <div class="error-text">Bitte Beschreibung ausfüllen.</div>
         </div>
 
-        <!-- Pflicht-Checkbox mit Info-Badge der das Overlay öffnet -->
+        <!-- Checkbox -->
         <div class="form-group" data-field="kostenlos">
           <label class="checkbox-card" for="kostenlos">
             <input id="kostenlos" name="kostenlos" type="checkbox" required>
             <span>Kostenlos &amp; nicht-kommerziell<span class="required-star">*</span></span>
             <button class="info-badge" type="button" aria-haspopup="dialog"
-              aria-controls="infoOverlay"
-              aria-label="Mehr Infos zu kostenlos und nicht-kommerziell">
+              aria-controls="infoOverlay" aria-label="Mehr Infos">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <circle cx="12" cy="12" r="9" />
@@ -97,7 +96,7 @@
     </section>
   </main>
 
-  <!-- Info-Overlay: erklärt was "kostenlos & nicht-kommerziell" bedeutet -->
+  <!-- Info-Overlay -->
   <div class="overlay" id="infoOverlay" hidden>
     <div class="overlay-card is-narrow" role="dialog" aria-modal="true" aria-labelledby="infoTitle">
       <h2 id="infoTitle">Kostenlos &amp; nicht-kommerziell</h2>
@@ -113,10 +112,8 @@
     const closeOverlayBtn = document.querySelector('[data-close-overlay]');
     const form           = document.getElementById('eventForm');
 
-    // Pflichtfelder die beim Submit geprüft werden
     const requiredFields = ['titel', 'ort', 'kategorie', 'kostenlos'];
 
-    // Overlay öffnen / schließen (Badge, Button, Hintergrund-Klick)
     infoBadge.addEventListener('click', e => {
       e.preventDefault();
       e.stopPropagation();
@@ -127,7 +124,6 @@
       if (e.target === infoOverlay) infoOverlay.hidden = true;
     });
 
-    // Prüft ein einzelnes Feld und setzt/entfernt is-invalid
     function validateField(fieldName) {
       const field   = form.querySelector(`[name="${fieldName}"]`);
       const wrapper = form.querySelector(`[data-field="${fieldName}"]`);
@@ -137,7 +133,6 @@
       return valid;
     }
 
-    // Echtzeit-Validierung: jedes Feld prüft sich selbst bei Eingabe/Änderung
     requiredFields.forEach(name => {
       const field = form.querySelector(`[name="${name}"]`);
       if (!field) return;
@@ -145,32 +140,60 @@
       field.addEventListener(evt, () => validateField(name));
     });
 
-    // Submit: alle Felder prüfen, nur absenden wenn alles gültig
+    // NEU: ARRAY FÜR EVENTS
     form.addEventListener('submit', e => {
       e.preventDefault();
+      
       const isValid = requiredFields.map(validateField).every(Boolean);
-      if (isValid) form.submit();
-    });
-  </script>
-  <!-- ... restlicher Code (phone, etc.) ... -->
+      
+      if (isValid) {
+        // 1. Datenpaket schnüren
+        const neuesEvent = {
+          id: 'event_' + Date.now(),
+          title: document.getElementById('titel').value,
+          dateText: document.getElementById('datum').value || 'Bald',
+          time: document.getElementById('uhrzeit').value || '',
+          location: document.getElementById('ort').value,
+          category: document.getElementById('kategorie').value,
+          emoji: getEmojiForCategory(document.getElementById('kategorie').value)
+        };
 
-<!-- DEV-DASHBOARD GANZ UNTEN VOR DEM SCHLIEẞENDEN BODY -->
+        // 2. Bisherige Liste holen (oder neu erstellen)
+        let meineEvents = JSON.parse(localStorage.getItem('visibility-my-events') || '[]');
+        
+        // 3. Neues Event oben hinzufügen
+        meineEvents.unshift(neuesEvent);
+        
+        // 4. Liste speichern
+        localStorage.setItem('visibility-my-events', JSON.stringify(meineEvents));
+        
+        // 5. Popup Marker
+        localStorage.setItem('showSuccessPopup', 'true');
+        
+        window.location.href = 'home.html';
+      }
+    });
+
+    function getEmojiForCategory(cat) {
+      const emojis = { 'Spieleabend': '🎲', 'Sport': '🏃', 'Community': '👥', 'Kultur': '🎭', 'Freizeit': '🎉' };
+      return emojis[cat] || '✨';
+    }
+  </script>
+
+  <!-- DEV-DASHBOARD -->
   <nav class="dev-nav">
     <div class="dev-nav-header">DEV-Navigation</div>
-    
     <div><a href="login.html" class="dev-btn">🔑 Login</a></div>
     <div><a href="register.html" class="dev-btn">📝 Registrieren</a></div>
     <div><a href="home.html" class="dev-btn">🏠 Home</a></div>
     <div><a href="meeting-form.html" class="dev-btn">➕ Erstellen</a></div>
     <div><a href="saved.html" class="dev-btn">💾 Gespeichert</a></div>
-    
-    <div class="dev-btn is-disabled">🚫👤 Profil</div>
-    <div class="dev-btn is-disabled">🚫🗺️ Karten ansicht</div>
+    <div><a href="profile.html" class="dev-btn">👤 Eigenes Profil</a></div>
+    <div><a href="profile-view.html" class="dev-btn">👁️ Fremdes Profil</a></div>
+    <div><a href="profile-edit.html" class="dev-btn">✏️ Profil bearbeiten</a></div>
+    <div class="dev-btn is-disabled">🚫🗺️ Kartenansicht</div>
     <div class="dev-btn is-disabled">🚫📝 Event Details</div>
     <div class="dev-btn is-disabled">🚫💬 Chat</div>
   </nav>
 </body>
-</html>
-</body>
-
 </html>

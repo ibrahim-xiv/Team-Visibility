@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Visibility – Profil bearbeiten</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* ── Profil-Edit-spezifische Styles ── */
+    .avatar-edit-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      padding: 20px 0 24px;
+    }
+
+    .avatar-circle {
+      width: 90px;
+      height: 90px;
+      border-radius: 999px;
+      border: 2px solid var(--border);
+      background: #f0ebe5;
+      display: grid;
+      place-items: center;
+      position: relative;
+      cursor: pointer;
+      overflow: hidden;
+    }
+
+    .avatar-circle svg {
+      width: 48px;
+      height: 48px;
+      color: var(--muted);
+    }
+
+    .avatar-edit-badge {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      background: var(--primary);
+      border: 2px solid var(--surface);
+      display: grid;
+      place-items: center;
+    }
+
+    .avatar-edit-badge svg {
+      width: 14px;
+      height: 14px;
+      color: var(--text);
+    }
+
+    .avatar-hint {
+      font-size: .9rem;
+      color: var(--muted);
+      font-weight: 700;
+      margin: 0;
+    }
+
+    /* Interests/Tags */
+    .tags-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tag-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 13px;
+      border: 2px solid var(--border);
+      border-radius: 999px;
+      background: #fff;
+      font-size: .9rem;
+      font-weight: 800;
+      cursor: pointer;
+      user-select: none;
+      color: var(--text);
+    }
+
+    .tag-chip:hover {
+      background: #faf6f1;
+    }
+
+    .tag-chip.is-selected {
+      background: var(--primary);
+      border-color: #7aa9df;
+    }
+
+    .tag-chip.is-selected:hover {
+      background: var(--primary-hover);
+    }
+
+    /* Save button = publish-btn style */
+    .save-profile-btn {
+      width: 100%;
+      margin-top: 6px;
+      padding: 18px 16px;
+      border: 2px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--primary);
+      color: var(--text);
+      font-size: 1.3rem;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .save-profile-btn:hover {
+      background: var(--primary-hover);
+    }
+
+    /* Danger zone */
+    .danger-zone {
+      margin-top: 10px;
+      padding: 16px;
+      border: 2px solid rgba(217, 92, 92, .3);
+      border-radius: var(--radius-sm);
+      background: var(--error-bg);
+    }
+
+    .danger-zone-title {
+      font-size: .95rem;
+      font-weight: 800;
+      color: var(--error);
+      margin: 0 0 10px;
+    }
+
+    .danger-btn {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid rgba(217, 92, 92, .5);
+      border-radius: var(--radius-sm);
+      background: #fff;
+      color: var(--error);
+      font-weight: 800;
+      font-size: .97rem;
+      cursor: pointer;
+    }
+
+    .danger-btn:hover {
+      background: var(--danger);
+    }
+
+    .section-divider {
+      border: 0;
+      border-top: 2px solid rgba(59, 52, 46, .12);
+      margin: 8px 0 20px;
+    }
+  </style>
+</head>
+
+<body>
+  <main class="phone">
+
+    <!-- Header mit Zurück-Button -->
+    <header class="header has-back">
+      <a class="back-btn" href="profile.html" aria-label="Zurück">&#8249;</a>
+      <h1>Bearbeiten</h1>
+    </header>
+
+    <!-- Scrollbarer Formular-Bereich -->
+    <section class="content form-content">
+
+      <form id="editForm" novalidate>
+
+        <!-- Avatar bearbeiten -->
+        <div class="avatar-edit-wrap">
+          <div class="avatar-circle" role="button" tabindex="0" aria-label="Profilbild ändern">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-4.4 0-8 2.2-8 5v2h16v-2c0-2.8-3.6-5-8-5z"/>
+            </svg>
+            <div class="avatar-edit-badge" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                <path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+              </svg>
+            </div>
+          </div>
+          <p class="avatar-hint">Profilbild ändern</p>
+        </div>
+
+        <hr class="section-divider">
+
+        <!-- Vorname -->
+        <div class="form-group" data-field="firstname">
+          <label for="firstname">Vorname<span class="required-star">*</span></label>
+          <input id="firstname" name="firstname" type="text" placeholder="Max" value="Max">
+          <div class="error-text">Bitte Vornamen eingeben.</div>
+        </div>
+
+        <!-- Nachname -->
+        <div class="form-group" data-field="lastname">
+          <label for="lastname">Nachname<span class="required-star">*</span></label>
+          <input id="lastname" name="lastname" type="text" placeholder="Mustermann" value="Mustermann">
+          <div class="error-text">Bitte Nachnamen eingeben.</div>
+        </div>
+
+        <!-- Standort -->
+        <div class="form-group" data-field="location">
+          <label for="location">Standort</label>
+          <input id="location" name="location" type="text"
+            placeholder="z.B. 26388 Wilhelmshaven"
+            value="26388 Wilhelmshaven – Mitglied seit 04/2022">
+        </div>
+
+        <!-- Bio / Beschreibung -->
+        <div class="form-group" data-field="bio">
+          <label for="bio">Beschreibung</label>
+          <textarea id="bio" name="bio"
+            placeholder="Erzähl anderen etwas über dich..."
+            style="min-height: 120px;">Hi bin Max, suche neue Freunde da ich neu eingezogen bin</textarea>
+        </div>
+
+        <hr class="section-divider">
+
+        <!-- Interessen / Tags -->
+        <div class="form-group">
+          <label>Interessen</label>
+          <p class="hint-text" style="margin-bottom:12px;">Wähle was dir gefällt – wird auf deinem Profil angezeigt.</p>
+          <div class="tags-wrap" id="tagsWrap">
+            <button type="button" class="tag-chip is-selected" data-tag="Spieleabend">🎲 Spieleabend</button>
+            <button type="button" class="tag-chip" data-tag="Sport">🏃 Sport</button>
+            <button type="button" class="tag-chip is-selected" data-tag="Community">👥 Community</button>
+            <button type="button" class="tag-chip" data-tag="Kultur">🎭 Kultur</button>
+            <button type="button" class="tag-chip" data-tag="Freizeit">🎉 Freizeit</button>
+            <button type="button" class="tag-chip" data-tag="Natur">🌿 Natur</button>
+            <button type="button" class="tag-chip" data-tag="Musik">🎵 Musik</button>
+            <button type="button" class="tag-chip" data-tag="Kino">🎬 Kino</button>
+          </div>
+        </div>
+
+        <hr class="section-divider">
+
+        <!-- E-Mail (nur anzeigen, nicht änderbar ohne Extra-Flow) -->
+        <div class="form-group">
+          <label for="emailDisplay">E-Mail</label>
+          <input id="emailDisplay" type="email" value="max@mustermann.de" disabled
+            style="opacity:.6; cursor:not-allowed;">
+          <p class="hint-text">Kontaktiere den Support um deine E-Mail zu ändern.</p>
+        </div>
+
+        <!-- Speichern -->
+        <button class="save-profile-btn" type="submit">Änderungen speichern</button>
+
+        <hr class="section-divider" style="margin-top:20px;">
+
+        <!-- Gefahrenbereich -->
+        <div class="danger-zone">
+          <p class="danger-zone-title">⚠️ Gefahrenbereich</p>
+          <button class="danger-btn" type="button" id="deleteAccountBtn">Konto löschen</button>
+        </div>
+
+      </form>
+    </section>
+  </main>
+
+  <!-- Konto-Löschen-Overlay -->
+  <div class="overlay" id="deleteOverlay" hidden>
+    <div class="overlay-card is-narrow" role="dialog" aria-modal="true" aria-labelledby="deleteTitle">
+      <h2 id="deleteTitle">Konto wirklich löschen?</h2>
+      <p>Diese Aktion kann nicht rückgängig gemacht werden. Alle deine Daten, Treffen und Freundschaften werden permanent gelöscht.</p>
+      <div class="overlay-actions">
+        <button class="overlay-close" type="button" id="cancelDelete">Abbrechen</button>
+        <button class="overlay-submit" type="button" id="confirmDelete">Löschen</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const form            = document.getElementById('editForm');
+    const tagsWrap        = document.getElementById('tagsWrap');
+    const deleteAccountBtn = document.getElementById('deleteAccountBtn');
+    const deleteOverlay   = document.getElementById('deleteOverlay');
+    const cancelDelete    = document.getElementById('cancelDelete');
+    const confirmDelete   = document.getElementById('confirmDelete');
+
+    // Tag-Toggle
+    tagsWrap.addEventListener('click', e => {
+      const chip = e.target.closest('.tag-chip');
+      if (chip) chip.classList.toggle('is-selected');
+    });
+
+    // Formular-Validierung
+    function validate(fieldName, valid) {
+      document.querySelector(`[data-field="${fieldName}"]`)
+        ?.classList.toggle('is-invalid', !valid);
+      return valid;
+    }
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+
+      const fn = document.getElementById('firstname').value.trim();
+      const ln = document.getElementById('lastname').value.trim();
+
+      const ok = validate('firstname', fn !== '') & validate('lastname', ln !== '');
+      if (!ok) return;
+
+      const selectedTags = [...tagsWrap.querySelectorAll('.tag-chip.is-selected')]
+        .map(c => c.dataset.tag);
+
+      const profileData = {
+        name: `${fn} ${ln}`,
+        location: document.getElementById('location').value.trim(),
+        bio: document.getElementById('bio').value.trim(),
+        interests: selectedTags
+      };
+
+      localStorage.setItem('visibility-profile', JSON.stringify(profileData));
+      window.location.href = 'profile.html';
+    });
+
+    // Echtzeit-Validierung
+    document.getElementById('firstname').addEventListener('input', function() {
+      validate('firstname', this.value.trim() !== '');
+    });
+    document.getElementById('lastname').addEventListener('input', function() {
+      validate('lastname', this.value.trim() !== '');
+    });
+
+    // Konto löschen
+    deleteAccountBtn.addEventListener('click', () => deleteOverlay.hidden = false);
+    cancelDelete.addEventListener('click', () => deleteOverlay.hidden = true);
+    deleteOverlay.addEventListener('click', e => {
+      if (e.target === deleteOverlay) deleteOverlay.hidden = true;
+    });
+    confirmDelete.addEventListener('click', () => {
+      localStorage.clear();
+      window.location.href = 'login.html';
+    });
+
+    // Profil aus localStorage vorladen
+    const saved = JSON.parse(localStorage.getItem('visibility-profile') || 'null');
+    if (saved) {
+      if (saved.name) {
+        const parts = saved.name.split(' ');
+        document.getElementById('firstname').value = parts[0] || '';
+        document.getElementById('lastname').value = parts.slice(1).join(' ') || '';
+      }
+      if (saved.location) document.getElementById('location').value = saved.location;
+      if (saved.bio) document.getElementById('bio').value = saved.bio;
+      if (saved.interests) {
+        tagsWrap.querySelectorAll('.tag-chip').forEach(chip => {
+          chip.classList.toggle('is-selected', saved.interests.includes(chip.dataset.tag));
+        });
+      }
+    }
+  </script>
+
+  <!-- DEV-DASHBOARD -->
+  <nav class="dev-nav">
+    <div class="dev-nav-header">DEV-Navigation</div>
+    <div><a href="login.html" class="dev-btn">🔑 Login</a></div>
+    <div><a href="register.html" class="dev-btn">📝 Registrieren</a></div>
+    <div><a href="home.html" class="dev-btn">🏠 Home</a></div>
+    <div><a href="meeting-form.html" class="dev-btn">➕ Erstellen</a></div>
+    <div><a href="saved.html" class="dev-btn">💾 Gespeichert</a></div>
+    <div><a href="profile.html" class="dev-btn">👤 Eigenes Profil</a></div>
+    <div><a href="profile-view.html" class="dev-btn">👁️ Fremdes Profil</a></div>
+    <div><a href="profile-edit.html" class="dev-btn">✏️ Profil bearbeiten</a></div>
+    <div class="dev-btn is-disabled">🚫🗺️ Kartenansicht</div>
+    <div class="dev-btn is-disabled">🚫📝 Event Details</div>
+    <div class="dev-btn is-disabled">🚫💬 Chat</div>
+  </nav>
+</body>
+</html>

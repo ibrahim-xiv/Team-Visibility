@@ -50,7 +50,7 @@
       </div>
     </div>
 
-    <!-- Scrollbarer Hauptbereich zwischen Header und Nav -->
+    <!-- Scrollbarer Hauptbereich -->
     <div class="scroll-area" id="scrollArea">
       <section class="content">
 
@@ -64,16 +64,16 @@
           </svg>
         </a>
 
-        <!-- Überschrift + Trefferanzahl (wird per JS befüllt) -->
+        <!-- Überschrift + Trefferanzahl -->
         <div class="section-head">
           <h2 id="sectionTitle">Events nach Entfernung:</h2>
           <span class="results-count" id="resultsCount"></span>
         </div>
 
-        <!-- Event-Karten werden per JS gerendert -->
+        <!-- Event-Karten -->
         <div class="event-list" id="eventList"></div>
 
-        <!-- Wird eingeblendet wenn keine Events gefunden wurden -->
+        <!-- Leer-Status -->
         <div class="empty-state" id="emptyState">Keine passenden Events gefunden.</div>
 
       </section>
@@ -103,60 +103,26 @@
         </svg>
       </a>
     </nav>
-  </main>
 
-  <!-- Report-Overlay: erscheint wenn "Event melden" geklickt wird -->
+    <!-- WICHTIG: Toasts liegen jetzt innerhalb des <main> Tags -->
+    <div class="toast" id="reportToast" hidden></div>
+    <div id="creationToast" class="toast-simple" hidden>Treffen wurde erfolgreich erstellt!</div>
+
+  </main> <!-- HIER SCHLIESST DAS HANDY -->
+
+  <!-- Report-Overlay: kann draußen bleiben -->
   <div class="overlay" id="reportOverlay" hidden>
     <div class="overlay-card" role="dialog" aria-modal="true" aria-labelledby="reportTitle">
       <h2 id="reportTitle">Event melden</h2>
       <p>Warum möchtest du dieses Event melden?</p>
-
       <form id="reportForm">
         <div class="report-list">
-          <label class="report-option">
-            <input type="radio" name="reportReason" value="Unangemessen" required>
-            <span>
-              <strong>Unangemessen</strong>
-              <small>Beleidigend, sexuell oder gewaltbezogen.</small>
-            </span>
-          </label>
-          <label class="report-option">
-            <input type="radio" name="reportReason" value="Fake-Event">
-            <span>
-              <strong>Fake-Event</strong>
-              <small>Wirkt erfunden oder irreführend.</small>
-            </span>
-          </label>
-          <label class="report-option">
-            <input type="radio" name="reportReason" value="Gefährlich">
-            <span>
-              <strong>Gefährlich</strong>
-              <small>Unsicher oder ruft zu riskantem Verhalten auf.</small>
-            </span>
-          </label>
-          <label class="report-option">
-            <input type="radio" name="reportReason" value="Spam">
-            <span>
-              <strong>Spam</strong>
-              <small>Werbung oder mehrfach gepostet.</small>
-            </span>
-          </label>
-          <label class="report-option">
-            <input type="radio" name="reportReason" value="Falsche Infos">
-            <span>
-              <strong>Falsche Infos</strong>
-              <small>Kategorie, Ort oder Zeit stimmen nicht.</small>
-            </span>
-          </label>
-          <label class="report-option">
-            <input type="radio" name="reportReason" value="Rechtsverstoß">
-            <span>
-              <strong>Rechtsverstoß</strong>
-              <small>Möglicher Verstoß gegen Regeln oder Gesetze.</small>
-            </span>
-          </label>
+          <label class="report-option"><input type="radio" name="reportReason" value="Unangemessen" required><span><strong>Unangemessen</strong><small>Beleidigend, sexuell oder gewaltbezogen.</small></span></label>
+          <label class="report-option"><input type="radio" name="reportReason" value="Fake-Event"><span><strong>Fake-Event</strong><small>Wirkt erfunden oder irreführend.</small></span></label>
+          <label class="report-option"><input type="radio" name="reportReason" value="Gefährlich"><span><strong>Gefährlich</strong><small>Unsicher oder ruft zu riskantem Verhalten auf.</small></span></label>
+          <label class="report-option"><input type="radio" name="reportReason" value="Spam"><span><strong>Spam</strong><small>Werbung oder mehrfach gepostet.</small></span></label>
+          <label class="report-option"><input type="radio" name="reportReason" value="Falsche Infos"><span><strong>Falsche Infos</strong><small>Kategorie, Ort oder Zeit stimmen nicht.</small></span></label>
         </div>
-
         <div class="overlay-actions">
           <button class="overlay-close" type="button" id="closeReportOverlay">Abbrechen</button>
           <button class="overlay-submit" type="submit">Meldung senden</button>
@@ -165,27 +131,52 @@
     </div>
   </div>
 
-  <!-- Toast-Benachrichtigung nach erfolgreichem Melden -->
-  <div class="toast" id="reportToast" hidden>Meldung wurde gesendet.</div>
+  <!-- Styling, damit die Toasts im Handy bleiben -->
+  <style>
+    .toast-simple {
+      position: absolute; 
+      bottom: 100px; 
+      left: 50%; 
+      transform: translateX(-50%);
+      background: #3b342e; 
+      color: #fff; 
+      padding: 10px 20px; 
+      border-radius: 12px;
+      font-size: 0.9rem; 
+      font-weight: 600; 
+      z-index: 2000; 
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+    
+    .toast {
+      position: absolute !important;
+    }
+  </style>
 
   <script>
-    // Beispiel-Daten: später durch echte API-Daten ersetzen
+    const STORAGE_KEY = 'visibility-saved-events';
+
+    // Jedes Event hat eine eindeutige "id"
     const events = [
-      { title: "Brettspielabend", category: "Spieleabend", emoji: "🎲", location: "Jugendherberge", distance: 1.2, date: "2026-04-18", dateText: "Samstag 18.04.2026" },
-      { title: "Morgenjogger", category: "Sport", emoji: "🏃", location: "Stadtpark", distance: 0.5, date: "2026-03-20", dateText: "Montag 20.03.2026" },
-      { title: "Hundespaziergang", category: "Community", emoji: "👥", location: "Nordseepassage", distance: 2.4, date: "2026-03-31", dateText: "Dienstag 31.03.2026", saved: true },
-      { title: "Poker Abend", category: "Anderes…", emoji: "✨", location: "Grenzstraße", distance: 0.1, date: "2026-04-18", dateText: "Samstag 18.04.2026" },
-      { title: "Filmabend im Hof", category: "Freizeit", emoji: "🎉", location: "Innenhof", distance: 0.8, date: "2026-04-25", dateText: "Freitag 25.04.2026" },
-      { title: "Yoga im Park", category: "Sport", emoji: "🏃", location: "Rosengarten", distance: 1.8, date: "2026-04-27", dateText: "Sonntag 27.04.2026" },
-      { title: "Lesekreis", category: "Kultur", emoji: "🎭", location: "Bibliothek", distance: 1.0, date: "2026-05-05", dateText: "Dienstag 05.05.2026" },
-      { title: "Café-Stammtisch", category: "Community", emoji: "👥", location: "Altstadt-Café", distance: 0.9, date: "2026-05-14", dateText: "Donnerstag 14.05.2026" }
+      { id: "ev_1", title: "Brettspielabend", category: "Spieleabend", emoji: "🎲", location: "Jugendherberge", distance: 1.2, date: "2026-04-18", dateText: "Samstag 18.04.2026" },
+      { id: "ev_2", title: "Morgenjogger", category: "Sport", emoji: "🏃", location: "Stadtpark", distance: 0.5, date: "2026-03-20", dateText: "Montag 20.03.2026" },
+      { id: "ev_3", title: "Hundespaziergang", category: "Community", emoji: "👥", location: "Nordseepassage", distance: 2.4, date: "2026-03-31", dateText: "Dienstag 31.03.2026" },
+      { id: "ev_4", title: "Poker Abend", category: "Anderes…", emoji: "✨", location: "Grenzstraße", distance: 0.1, date: "2026-04-18", dateText: "Samstag 18.04.2026" },
+      { id: "ev_5", title: "Filmabend im Hof", category: "Freizeit", emoji: "🎉", location: "Innenhof", distance: 0.8, date: "2026-04-25", dateText: "Freitag 25.04.2026" },
+      { id: "ev_6", title: "Yoga im Park", category: "Sport", emoji: "🏃", location: "Rosengarten", distance: 1.8, date: "2026-04-27", dateText: "Sonntag 27.04.2026" },
+      { id: "ev_7", title: "Lesekreis", category: "Kultur", emoji: "🎭", location: "Bibliothek", distance: 1.0, date: "2026-05-05", dateText: "Dienstag 05.05.2026" },
+      { id: "ev_8", title: "Café-Stammtisch", category: "Community", emoji: "👥", location: "Altstadt-Café", distance: 0.9, date: "2026-05-14", dateText: "Donnerstag 14.05.2026" }
     ];
 
-    // Kurzschreibweise für querySelector / querySelectorAll
+    // Abgleich mit localStorage beim Laden
+    let savedList = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+    events.forEach(e => {
+      e.saved = savedList.some(savedEv => savedEv.id === e.id);
+    });
+
     const $ = s => document.querySelector(s);
     const $$ = s => [...document.querySelectorAll(s)];
 
-    // DOM-Referenzen
     const searchInput    = $('#searchInput');
     const sortSelect     = $('#sortSelect');
     const filterSelect   = $('#filterSelect');
@@ -198,13 +189,11 @@
     const reportToast    = $('#reportToast');
     const scrollArea     = $('#scrollArea');
 
-    let currentReportButton = null; // merkt sich welcher Melden-Button gedrückt wurde
-    let toastTimer = null;          // verhindert doppelte Timeouts beim Toast
+    let currentReportButton = null;
+    let toastTimer = null;
 
-    // Wandelt numerische Distanz in lesbaren String um (m / km)
     const distanceText = d => d < 1 ? `${Math.round(d * 1000)} m` : `${d.toFixed(1)} km`;
 
-    // Rendert die Event-Liste als HTML und hängt Event-Listener an die Buttons
     function render(list = events) {
       eventList.innerHTML = list.map(e => `
         <article class="event-row">
@@ -215,7 +204,7 @@
             <p class="event-location">${e.location} – ${distanceText(e.distance)}</p>
           </a>
           <div class="event-side">
-            <button class="icon-btn save-btn ${e.saved ? 'is-active' : ''}" type="button"
+            <button class="icon-btn save-btn ${e.saved ? 'is-active' : ''}" type="button" data-id="${e.id}"
               aria-label="${e.saved ? 'Event gespeichert' : 'Event speichern'}">
               <svg viewBox="0 0 24 24" fill="${e.saved ? 'currentColor' : 'none'}"
                 stroke="currentColor" stroke-width="2.1" stroke-linecap="round"
@@ -237,18 +226,39 @@
       resultsCount.textContent = `${list.length} Treffer`;
       emptyState.style.display = list.length ? 'none' : 'block';
 
-      // Speichern-Button: toggled is-active + SVG-Fill
+      // Die Speicher-Logik
       $$('.save-btn').forEach(btn => {
         btn.onclick = e => {
           e.preventDefault();
+          
+          const eventId = btn.getAttribute('data-id');
+          const targetEvent = events.find(ev => ev.id === eventId);
+          let currentSavedList = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+          
           btn.classList.toggle('is-active');
           const active = btn.classList.contains('is-active');
           btn.setAttribute('aria-label', active ? 'Event gespeichert' : 'Event speichern');
           btn.querySelector('svg').setAttribute('fill', active ? 'currentColor' : 'none');
+
+          if (active) {
+            // Speichern: Füge es der Liste hinzu
+            if (!currentSavedList.some(ev => ev.id === eventId)) {
+              currentSavedList.push(targetEvent);
+            }
+            targetEvent.saved = true;
+            showToast('In Favoriten gespeichert');
+          } else {
+            // Entfernen: Werfe es aus der Liste
+            currentSavedList = currentSavedList.filter(ev => ev.id !== eventId);
+            targetEvent.saved = false;
+            showToast('Aus Favoriten entfernt');
+          }
+          
+          // Neue Liste zurück in den Speicher schreiben
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(currentSavedList));
         };
       });
 
-      // Melden-Button: öffnet Overlay und merkt sich den auslösenden Button
       $$('.report-btn').forEach(btn => {
         btn.onclick = e => {
           e.preventDefault();
@@ -260,14 +270,12 @@
       });
     }
 
-    // Hebt die ausgewählte Report-Option visuell hervor
     function updateReportUI() {
       $$('.report-option').forEach(option => {
         option.classList.toggle('is-selected', option.querySelector('input').checked);
       });
     }
 
-    // Filtert + sortiert die Event-Liste und rendert das Ergebnis
     function filterAndSort() {
       const q = searchInput.value.trim().toLowerCase();
       const f = filterSelect.value;
@@ -284,15 +292,10 @@
                         a.distance - b.distance
       );
 
-      sectionTitle.textContent =
-        s === 'date'  ? 'Events nach Datum:'    :
-        s === 'title' ? 'Events nach Titel A–Z:' :
-                        'Events nach Entfernung:';
-
+      sectionTitle.textContent = s === 'date' ? 'Events nach Datum:' : s === 'title' ? 'Events nach Titel A–Z:' : 'Events nach Entfernung:';
       render(list);
     }
 
-    // Zeigt den Toast kurz an und versteckt ihn automatisch nach 2,2 Sekunden
     function showToast(text) {
       reportToast.textContent = text;
       reportToast.hidden = false;
@@ -300,63 +303,55 @@
       toastTimer = setTimeout(() => reportToast.hidden = true, 2200);
     }
 
-    // Suche + Dropdowns lösen filterAndSort aus
     [searchInput, sortSelect, filterSelect].forEach(el =>
       el.addEventListener(el === searchInput ? 'input' : 'change', filterAndSort)
     );
 
-    // Home-Button scrollt sanft nach oben statt hart zu springen
     $('#homeBtn').onclick = e => {
       e.preventDefault();
       scrollArea.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
-    // Radio-Änderung im Report-Formular aktualisiert die Hervorhebung
     reportForm.addEventListener('change', updateReportUI);
-
-    // Overlay schließen: per Button oder Klick auf den Hintergrund
     $('#closeReportOverlay').onclick = () => reportOverlay.hidden = true;
-    reportOverlay.onclick = e => {
-      if (e.target === reportOverlay) reportOverlay.hidden = true;
-    };
+    reportOverlay.onclick = e => { if (e.target === reportOverlay) reportOverlay.hidden = true; };
 
-    // Formular absenden: blendet Overlay aus, markiert den Button und zeigt Toast
     reportForm.onsubmit = e => {
       e.preventDefault();
       const selected = reportForm.querySelector('input[name="reportReason"]:checked');
       if (!selected) return;
-
-      if (currentReportButton) {
-        currentReportButton.style.opacity = '.3';
-        currentReportButton.setAttribute('aria-label', 'Event gemeldet');
-      }
-
+      if (currentReportButton) currentReportButton.style.opacity = '.3';
       reportOverlay.hidden = true;
       showToast(`Meldung gesendet: ${selected.value}`);
     };
 
-    // Initialer Render beim Laden der Seite
+    // Erfolgs-Toast vom "Erstellen" prüfen
+    window.addEventListener('DOMContentLoaded', () => {
+      if (localStorage.getItem('showSuccessPopup') === 'true') {
+        const toast = document.getElementById('creationToast');
+        toast.hidden = false;
+        localStorage.removeItem('showSuccessPopup');
+        setTimeout(() => toast.hidden = true, 3000);
+      }
+    });
+
     filterAndSort();
   </script>
-  <!-- ... restlicher Code (phone, etc.) ... -->
 
-<!-- DEV-DASHBOARD GANZ UNTEN VOR DEM SCHLIEẞENDEN BODY -->
+  <!-- DEV-DASHBOARD -->
   <nav class="dev-nav">
     <div class="dev-nav-header">DEV-Navigation</div>
-    
     <div><a href="login.html" class="dev-btn">🔑 Login</a></div>
     <div><a href="register.html" class="dev-btn">📝 Registrieren</a></div>
     <div><a href="home.html" class="dev-btn">🏠 Home</a></div>
     <div><a href="meeting-form.html" class="dev-btn">➕ Erstellen</a></div>
     <div><a href="saved.html" class="dev-btn">💾 Gespeichert</a></div>
-    
-    <div class="dev-btn is-disabled">🚫👤 Profil</div>
-    <div class="dev-btn is-disabled">🚫🗺️ Karten ansicht</div>
+    <div><a href="profile.html" class="dev-btn">👤 Eigenes Profil</a></div>
+    <div><a href="profile-view.html" class="dev-btn">👁️ Fremdes Profil</a></div>
+    <div><a href="profile-edit.html" class="dev-btn">✏️ Profil bearbeiten</a></div>
+    <div class="dev-btn is-disabled">🚫🗺️ Kartenansicht</div>
     <div class="dev-btn is-disabled">🚫📝 Event Details</div>
     <div class="dev-btn is-disabled">🚫💬 Chat</div>
   </nav>
 </body>
-</html>
-</body>
-
 </html>

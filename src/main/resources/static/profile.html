@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Visibility – Mein Profil</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* ── Profil-spezifische Styles ── */
+    .avatar-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      padding: 24px 0 20px;
+    }
+
+    .avatar-circle {
+      width: 96px;
+      height: 96px;
+      border-radius: 999px;
+      border: 2px solid var(--border);
+      background: #f0ebe5;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .avatar-circle svg {
+      width: 52px;
+      height: 52px;
+      color: var(--muted);
+    }
+
+    .edit-profile-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 22px;
+      border: 2px solid var(--border);
+      border-radius: 999px;
+      background: var(--primary);
+      color: var(--text);
+      font-weight: 800;
+      font-size: .97rem;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .edit-profile-btn:hover {
+      background: var(--primary-hover);
+    }
+
+    .profile-name {
+      margin: 0 0 6px;
+      font-size: 1.9rem;
+      font-weight: 900;
+      line-height: 1.1;
+    }
+
+    .profile-meta {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      color: var(--muted);
+      font-size: .95rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    .profile-meta svg {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+    }
+
+    .profile-section {
+      margin-bottom: 22px;
+    }
+
+    .profile-section-title {
+      font-size: 1rem;
+      font-weight: 800;
+      margin: 0 0 10px;
+      color: var(--text);
+    }
+
+    .profile-bio {
+      margin: 0;
+      font-size: .97rem;
+      line-height: 1.5;
+      color: var(--text);
+      padding: 14px;
+      border: 2px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: #fff;
+    }
+
+    .fav-event-card {
+      border: 2px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      background: #fff;
+      display: block;
+      text-decoration: none;
+      color: var(--text);
+    }
+
+    .fav-event-card:hover {
+      background: #faf6f1;
+    }
+
+    .fav-event-title {
+      font-size: 1.05rem;
+      font-weight: 800;
+      margin: 0 0 4px;
+    }
+
+    .fav-event-meta {
+      margin: 0;
+      font-size: .92rem;
+      color: var(--muted);
+    }
+
+    .friends-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .friend-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 14px;
+      border: 2px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: #fff;
+    }
+
+    .friend-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .friend-avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      border: 2px solid var(--border);
+      background: #f0ebe5;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+    }
+
+    .friend-avatar svg {
+      width: 18px;
+      height: 18px;
+      color: var(--muted);
+    }
+
+    .friend-name {
+      font-weight: 800;
+      font-size: .97rem;
+    }
+
+    .friend-privacy {
+      color: var(--muted);
+      font-size: .88rem;
+    }
+
+    .chat-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border: 2px solid var(--border);
+      border-radius: 999px;
+      background: #fff;
+      color: var(--text);
+      font-weight: 800;
+      font-size: .88rem;
+      cursor: pointer;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .chat-btn:hover {
+      background: #faf6f1;
+    }
+
+    .chat-btn svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .tags-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tag-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 13px;
+      border: 2px solid var(--border);
+      border-radius: 999px;
+      background: var(--primary);
+      border-color: #7aa9df;
+      font-size: .9rem;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .tags-empty {
+      color: var(--muted);
+      font-size: .93rem;
+      font-style: italic;
+    }
+
+    .friends-section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .friends-count-badge {
+      font-size: .88rem;
+      font-weight: 800;
+      color: var(--muted);
+    }
+  </style>
+</head>
+
+<body>
+  <main class="phone is-feed">
+
+    <!-- Sticky Header mit Settings-Button -->
+    <div class="header-wrap">
+      <header class="header has-action">
+        <h1>Profil</h1>
+        <a class="icon-btn is-header" href="settings.html" aria-label="Einstellungen">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"
+            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+        </a>
+      </header>
+    </div>
+
+    <!-- Scrollbarer Bereich -->
+    <div class="scroll-area">
+      <section class="content">
+
+        <!-- Avatar + Bearbeiten-Button -->
+        <div class="avatar-wrap">
+          <div class="avatar-circle">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-4.4 0-8 2.2-8 5v2h16v-2c0-2.8-3.6-5-8-5z"/>
+            </svg>
+          </div>
+          <a class="edit-profile-btn" href="profile-edit.html">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+              <path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+            </svg>
+            Profil bearbeiten
+          </a>
+        </div>
+
+        <!-- Name -->
+        <h2 class="profile-name" id="profileName">Max Mustermann</h2>
+
+        <!-- Ort + Mitglied seit -->
+        <div class="profile-meta">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"
+            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 21s6-5.2 6-11a6 6 0 1 0-12 0c0 5.8 6 11 6 11z"/>
+            <circle cx="12" cy="10" r="2.2"/>
+          </svg>
+          <span id="profileLocation">26388 Wilhelmshaven – Mitglied seit 04/2022</span>
+        </div>
+
+        <!-- Beschreibung -->
+        <div class="profile-section">
+          <p class="profile-section-title">Beschreibung:</p>
+          <p class="profile-bio" id="profileBio">Hi bin Max, suche neue Freunde da ich neu eingezogen bin</p>
+        </div>
+
+        <!-- Interessen -->
+        <div class="profile-section">
+          <p class="profile-section-title">Interessen:</p>
+          <div class="tags-wrap" id="interestTags"></div>
+        </div>
+
+        <!-- Freunde -->
+        <div class="profile-section">
+          <div class="friends-section-head">
+            <p class="profile-section-title" style="margin:0">Freunde (8)</p>
+          </div>
+          <div class="friends-list" id="friendsList"></div>
+        </div>
+
+      </section>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav" aria-label="Hauptnavigation">
+      <a class="nav-btn" href="home.html" aria-label="Home">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3l9 8h-3v9h-5v-6H11v6H6v-9H3l9-8z"/></svg>
+      </a>
+      <a class="nav-btn" href="chat.html" aria-label="Chat">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 5h16a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H9l-5 4v-4H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"/></svg>
+      </a>
+      <a class="nav-btn is-primary" href="meeting-form.html" aria-label="Treffen erstellen">+</a>
+      <a class="nav-btn" href="saved.html" aria-label="Gespeicherte Inhalte">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg>
+      </a>
+      <a class="nav-btn is-active" href="profile.html" aria-label="Profil">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-4.4 0-8 2.2-8 5v2h16v-2c0-2.8-3.6-5-8-5z"/></svg>
+      </a>
+    </nav>
+  </main>
+
+  <script>
+    const friends = [
+      { name: 'Anna K.',   href: 'profile-view.html' },
+      { name: 'Tim Gioh',  href: 'profile-view.html' },
+      { name: 'Leon N.',   href: 'profile-view.html' },
+      { name: 'Maxi N.',   href: 'profile-view.html' },
+      { name: 'Georg G.',  href: 'profile-view.html' },
+      { name: 'Privat',    href: '#', private: true },
+      { name: 'Jan Klein', href: 'profile-view.html' },
+      { name: 'Privat',    href: '#', private: true },
+    ];
+
+    const list = document.getElementById('friendsList');
+    list.innerHTML = friends.map(f => `
+      <div class="friend-row">
+        <div class="friend-info">
+          <div class="friend-avatar">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-4.4 0-8 2.2-8 5v2h16v-2c0-2.8-3.6-5-8-5z"/>
+            </svg>
+          </div>
+          <span class="${f.private ? 'friend-privacy' : 'friend-name'}">${f.name}</span>
+        </div>
+        <a class="chat-btn" href="chat.html" aria-label="${f.name} anschreiben">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M4 5h16a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H9l-5 4v-4H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"/>
+          </svg>
+          Chat
+        </a>
+      </div>
+    `).join('');
+
+    // Profil-Daten aus localStorage laden (von profile-edit.html)
+    const saved = JSON.parse(localStorage.getItem('visibility-profile') || 'null');
+    if (saved) {
+      if (saved.name) document.getElementById('profileName').textContent = saved.name;
+      if (saved.location) document.getElementById('profileLocation').textContent = saved.location;
+      if (saved.bio) document.getElementById('profileBio').textContent = saved.bio;
+    }
+
+    // Interessen rendern
+    const allTags = {
+      'Spieleabend': '🎲', 'Sport': '🏃', 'Community': '👥',
+      'Kultur': '🎭', 'Freizeit': '🎉', 'Natur': '🌿',
+      'Musik': '🎵', 'Kino': '🎬'
+    };
+    const interests = saved?.interests ?? ['Spieleabend', 'Community'];
+    const tagsWrap = document.getElementById('interestTags');
+    if (interests.length) {
+      tagsWrap.innerHTML = interests.map(tag =>
+        `<span class="tag-chip">${allTags[tag] ?? ''} ${tag}</span>`
+      ).join('');
+    } else {
+      tagsWrap.innerHTML = '<span class="tags-empty">Noch keine Interessen gewählt.</span>';
+    }
+  </script>
+
+  <!-- DEV-DASHBOARD -->
+  <nav class="dev-nav">
+    <div class="dev-nav-header">DEV-Navigation</div>
+    <div><a href="login.html" class="dev-btn">🔑 Login</a></div>
+    <div><a href="register.html" class="dev-btn">📝 Registrieren</a></div>
+    <div><a href="home.html" class="dev-btn">🏠 Home</a></div>
+    <div><a href="meeting-form.html" class="dev-btn">➕ Erstellen</a></div>
+    <div><a href="saved.html" class="dev-btn">💾 Gespeichert</a></div>
+    <div><a href="profile.html" class="dev-btn">👤 Eigenes Profil</a></div>
+    <div><a href="profile-view.html" class="dev-btn">👁️ Fremdes Profil</a></div>
+    <div><a href="profile-edit.html" class="dev-btn">✏️ Profil bearbeiten</a></div>
+    <div class="dev-btn is-disabled">🚫🗺️ Kartenansicht</div>
+    <div class="dev-btn is-disabled">🚫📝 Event Details</div>
+    <div class="dev-btn is-disabled">🚫💬 Chat</div>
+  </nav>
+</body>
+</html>
