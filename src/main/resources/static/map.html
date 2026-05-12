@@ -10,7 +10,6 @@
   <link rel="stylesheet" href="style.css" />
   
   <style>
-    /* Spezifisches Styling für die Karte und die Pins */
     .map-content {
       position: relative;
       flex: 1; 
@@ -23,59 +22,104 @@
       width: 100%; 
       flex: 1; 
       z-index: 1; 
-      background: var(--bg); /* Verhindert weißes Aufblitzen */
+      background: var(--bg); 
     }
 
-    /* Overlay Steuerung (Dropdown auf der Karte) */
+    /* ── Der geniale Trick für lebendige Darkmode-Karten ── */
+    body.dark-mode .leaflet-tile-pane {
+      /* Invertiert Farben, dreht den Farbkreis zurück (damit Wasser blau bleibt) und dimmt es ab */
+      filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(85%);
+    }
+
+    /* Overlay Steuerung (Filter Chips statt Dropdown) */
     .map-overlay {
       position: absolute;
       top: 15px;
-      left: 15px;
-      right: 15px;
+      left: 0;
+      right: 0;
       z-index: 1000;
+      pointer-events: none; /* Lässt Klicks durch, wo keine Buttons sind */
     }
 
-    .filter-bar {
-      width: 100%;
+    .filter-scroll {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 4px 15px 15px 15px;
       pointer-events: auto;
+      /* Scrollbar verstecken */
+      scrollbar-width: none; 
+      -ms-overflow-style: none; 
+    }
+    .filter-scroll::-webkit-scrollbar { display: none; }
+
+    /* Anpassung der Chips für die Karte (Schatten) */
+    .filter-scroll .tag-chip {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      border-color: transparent;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+    body.dark-mode .filter-scroll .tag-chip {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
     }
 
-    /* REPARIERTES DROPDOWN */
-    .filter-select {
-      width: 100%;
-      padding: 14px 16px;
+    /* Floating Controls unten (Zentrieren & Radius) */
+    .map-controls-bottom {
+      position: absolute;
+      bottom: 20px;
+      right: 15px;
+      left: 15px;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 12px;
+      pointer-events: none; 
+    }
+
+    .center-btn {
+      pointer-events: auto;
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+      transition: background 0.2s;
+    }
+    body.dark-mode .center-btn { box-shadow: 0 6px 16px rgba(0,0,0,0.4); }
+
+    .center-btn:hover { background: var(--hover-bg); }
+
+    .radius-card {
+      pointer-events: auto;
+      background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius-sm);
-      background-color: var(--surface);
-      color: var(--text);
-      font-size: 1rem;
+      padding: 12px 16px;
+      width: 100%;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    }
+    body.dark-mode .radius-card { box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
+
+    .radius-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: .95rem;
       font-weight: 800;
-      cursor: pointer;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-      
-      /* Standard-Browser-Pfeil verstecken */
-      appearance: none; 
-      -webkit-appearance: none;
-      
-      /* Eigener, schicker Pfeil (Lightmode: Dunkelgrau) */
-      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23262626' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-      background-repeat: no-repeat;
-      background-position: right 16px center;
-      background-size: 16px;
-      outline: none;
+      color: var(--text);
+      margin-bottom: 10px;
     }
 
-    /* Darkmode Pfeil (Weiß) & Farben für Dropdown */
-    body.dark-mode .filter-select {
-      background-color: #1d1c1c;
-      border-color: #363434;
-      color: #f5f5f5;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23f5f5f5' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-    }
-
-    .filter-select:focus {
-      border-color: var(--primary);
+    .radius-slider {
+      width: 100%;
+      accent-color: var(--primary);
     }
 
     /* Marker Icons */
@@ -85,142 +129,289 @@
       border: 2px solid white;
       border-radius: 50% 50% 50% 0;
       transform: rotate(-45deg);
-      width: 32px;
-      height: 32px;
+      width: 34px;
+      height: 34px;
       display: flex;
       align-items: center;
       justify-content: center;
       box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      transition: opacity 0.3s ease; /* Weicher Übergang beim Radius-Filtern */
     }
-    
-    .pin-text { 
-      transform: rotate(45deg); 
-      font-weight: 800; 
-      font-size: 13px; 
-    }
+    .pin-text { transform: rotate(45deg); font-weight: 800; font-size: 14px; }
 
     .home-pin {
       background: var(--text);
       border: 2px solid var(--surface);
       border-radius: 50%;
-      width: 36px;
-      height: 36px;
+      width: 38px;
+      height: 38px;
       display: flex;
       align-items: center;
       justify-content: center;
       box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-      font-size: 16px;
+      font-size: 18px;
     }
+
+    /* Leaflet Popup Styling */
+    .leaflet-popup-content-wrapper {
+      background: var(--surface);
+      color: var(--text);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    }
+    .leaflet-popup-tip {
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .popup-custom { font-family: 'Nunito', sans-serif; }
+    .popup-custom strong { display: block; font-size: 1.05rem; margin-bottom: 2px; }
+    .popup-custom small { color: var(--hint); font-weight: 700; }
   </style>
 </head>
 
 <body>
   <script>
-    if (localStorage.getItem('theme') === 'dark') {
-      document.body.classList.add('dark-mode');
-    }
+    if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');
   </script>
 
   <main class="phone">
     
     <header class="header has-back">
       <a class="back-btn" href="home.html" aria-label="Zurück">&#8249;</a>
-      <h1>Karte</h1>
+      <h1>Entdecken</h1>
     </header>
 
     <section class="map-content">
       
       <div class="map-overlay">
-        <div class="filter-bar">
-          <select class="filter-select">
-            <option value="eventkategorie">Event Kategorie wählen...</option>
-            <option value="freizeit">Freizeit</option>
-            <option value="sport">Sport</option>
-            <option value="spieleabend">Spieleabend</option>
-            <option value="kultur">Kultur</option>
-            <option value="community">Community</option>
-            <option value="anderes">Anderes...</option>
-          </select>
+        <div class="filter-scroll" id="filterContainer">
+          <div class="tag-chip is-selected" data-category="all">Alle Events</div>
+          <div class="tag-chip" data-category="freizeit">🍹 Freizeit</div>
+          <div class="tag-chip" data-category="sport">🏃 Sport</div>
+          <div class="tag-chip" data-category="spieleabend">🎲 Spieleabend</div>
+          <div class="tag-chip" data-category="kultur">🎭 Kultur</div>
+          <div class="tag-chip" data-category="community">👥 Community</div>
+        </div>
+      </div>
+
+      <div class="map-controls-bottom">
+        <button id="centerMapBtn" class="center-btn" aria-label="Zentrieren">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+        </button>
+
+        <div class="radius-card">
+          <div class="radius-header">
+            <span>📍 Such-Radius</span>
+            <span id="radiusLabel">450 m</span>
+          </div>
+          <input type="range" id="radiusSlider" class="radius-slider" min="100" max="5000" step="50" value="450">
         </div>
       </div>
 
       <div id="map"></div>
-      
     </section>
 
     <nav class="bottom-nav" aria-label="Hauptnavigation">
-      <a class="nav-btn" href="home.html" aria-label="Home">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3l9 8h-3v9h-5v-6H11v6H6v-9H3l9-8z"></path></svg>
-      </a>
-      <a class="nav-btn" href="chat.html" aria-label="Chat">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 5h16a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H9l-5 4v-4H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"></path></svg>
-      </a>
-      <a class="nav-btn is-primary" href="meeting-form.html" aria-label="Treffen erstellen">+</a>
-      <a class="nav-btn" href="saved.html" aria-label="Gespeicherte Inhalte">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"></path></svg>
-      </a>
-      <a class="nav-btn" href="profile.html" aria-label="Profil">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-4.4 0-8 2.2-8 5v2h16v-2c0-2.8-3.6-5-8-5z"></path></svg>
-      </a>
+      <a class="nav-btn" href="home.html"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3l9 8h-3v9h-5v-6H11v6H6v-9H3l9-8z"></path></svg></a>
+      <a class="nav-btn" href="chat.html"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 5h16a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H9l-5 4v-4H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"></path></svg></a>
+      <a class="nav-btn is-primary" href="meeting-form.html">+</a>
+      <a class="nav-btn" href="saved.html"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"></path></svg></a>
+      <a class="nav-btn" href="profile.html"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-4.4 0-8 2.2-8 5v2h16v-2c0-2.8-3.6-5-8-5z"></path></svg></a>
     </nav>
   </main> 
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
-    // 1. Darkmode Variable auslesen
-    const isDark = document.body.classList.contains('dark-mode');
+    const userLoc = [53.521, 8.118]; // Basis-Standort
+    const eventMarkers = []; // Speichert alle Events
+    const activeCategories = new Set(); // Speichert aktive Filter
 
-    // 2. Karte initialisieren
-    const map = L.map('map', { zoomControl: false }).setView([53.522, 8.115], 14);
-
-    // 3. Karten-Stil dynamisch laden (Hell vs. Dunkel)
-    const lightTiles = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
-    const darkTiles = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
-
-    L.tileLayer(isDark ? darkTiles : lightTiles, {
-      attribution: isDark ? '&copy; CartoDB' : '&copy; OpenStreetMap'
+    // 1. Karte initialisieren (Immer helle Karte laden, CSS macht den Rest!)
+    const map = L.map('map', { zoomControl: false }).setView(userLoc, 14);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap'
     }).addTo(map);
 
-    // 4. Marker-Funktion
-    function addMarker(lat, lng, label) {
+    // 2. Marker Funktion (jetzt mit Kategorie!)
+    function addEvent(lat, lng, label, title, time, category) {
       const icon = L.divIcon({
         className: 'custom-icon',
         html: `<div class="event-pin"><span class="pin-text">${label}</span></div>`,
-        iconSize: [32, 32],
-        iconAnchor: [16, 32]
+        iconSize: [34, 34],
+        iconAnchor: [17, 34],
+        popupAnchor: [0, -34] 
       });
-      L.marker([lat, lng], { icon: icon }).addTo(map);
+      
+      const marker = L.marker([lat, lng], { icon: icon });
+      marker.bindPopup(`<div class="popup-custom"><strong>${title}</strong><small>${time}</small></div>`);
+
+      // Im Array speichern
+      eventMarkers.push({
+        leafletObj: marker,
+        latlng: L.latLng(lat, lng),
+        category: category
+      });
     }
 
-    // Beispiel-Marker
-    addMarker(53.528, 8.108, 'C');
-    addMarker(53.526, 8.125, 'D');
-    addMarker(53.522, 8.108, 'E');
-    addMarker(53.518, 8.135, 'F');
-    addMarker(53.517, 8.128, 'G');
-    addMarker(53.513, 8.105, 'A');
+    // 3. Ganz viele Events in und um Wilhelmshaven
+    addEvent(53.528, 8.108, '🎲', 'Spieleabend: Catan', 'Heute, 19:00', 'spieleabend');
+    addEvent(53.526, 8.125, '🏃', 'Morgenjogger', 'Morgen, 07:00', 'sport');
+    addEvent(53.522, 8.108, '✨', 'Poker Abend', 'Samstag, 18.04.2026', 'freizeit');
+    addEvent(53.518, 8.135, '🎭', 'Kultur Treff', 'Freitag, 20:00', 'kultur');
+    addEvent(53.517, 8.128, '👥', 'Community Brunch', 'Sonntag, 10:00', 'community');
+    addEvent(53.513, 8.105, '🍹', 'Filmabend im Hof', 'Montag, 20:30', 'freizeit');
+    addEvent(53.535, 8.112, '⚽', 'Fussball im Park', 'Heute, 16:00', 'sport');
+    addEvent(53.525, 8.140, '🎸', 'Jam Session am See', 'Samstag, 15:00', 'kultur');
+    addEvent(53.530, 8.120, '🧩', 'Puzzle Contest', 'Morgen, 14:00', 'spieleabend');
+    addEvent(53.510, 8.115, '🧹', 'Park Cleanup', 'Sonntag, 09:00', 'community');
+    addEvent(53.520, 8.100, '🛹', 'Skate Treff', 'Heute, 18:00', 'sport');
+    addEvent(53.515, 8.122, '🍷', 'Wein & Lesen', 'Freitag, 21:00', 'freizeit');
 
     // Haus-Marker (Standort)
-    const userLoc = [53.521, 8.118];
     const homeIcon = L.divIcon({
       className: 'home-icon',
       html: `<div class="home-pin">🏠</div>`,
-      iconSize: [36, 36],
-      iconAnchor: [18, 18]
+      iconSize: [38, 38],
+      iconAnchor: [19, 19]
     });
     L.marker(userLoc, { icon: homeIcon }).addTo(map);
 
-    // Sichtbarkeitskreis (Farbe passt sich an Darkmode an)
-    L.circle(userLoc, {
-      color: isDark ? '#0095f6' : '#3b82f6', // Dein Primary Blau
-      weight: 2,
+    // Sichtbarkeitskreis
+    const isDark = document.body.classList.contains('dark-mode');
+    const radiusCircle = L.circle(userLoc, {
+      stroke: false,
+      color: isDark ? '#0095f6' : '#3b82f6',
+      weight: 0,
       fillColor: isDark ? '#0095f6' : '#3b82f6',
-      fillOpacity: 0.12,
+      fillOpacity: 0.15,
       radius: 450
     }).addTo(map);
+
+
+    // ── 4. DIE LOGIK FÜR FILTER & RADIUS ──
+    const radiusSlider = document.getElementById('radiusSlider');
+    const radiusLabel = document.getElementById('radiusLabel');
+
+    // Diese Funktion berechnet, was sichtbar sein darf
+    function updateMapDisplay() {
+      const radiusMeters = parseInt(radiusSlider.value);
+
+      eventMarkers.forEach(event => {
+        // A) Passt die Kategorie? (Wenn activeCategories leer ist, zeige alle)
+        const matchesCategory = activeCategories.size === 0 || activeCategories.has(event.category);
+        
+        if (!matchesCategory) {
+          // Komplett von der Karte löschen (Filter angewendet)
+          if (map.hasLayer(event.leafletObj)) {
+            map.removeLayer(event.leafletObj);
+          }
+        } else {
+          // Marker auf die Karte setzen (falls nicht da)
+          if (!map.hasLayer(event.leafletObj)) {
+            event.leafletObj.addTo(map);
+          }
+
+          // B) Passt der Radius? (Wenn ja: Opacity 1.0, wenn nein: Opacity 0.3)
+          const distance = map.distance(userLoc, event.latlng);
+          if (distance > radiusMeters) {
+            event.leafletObj.setOpacity(0.25); // Ausgegraut
+          } else {
+            event.leafletObj.setOpacity(1.0);  // Sichtbar
+          }
+        }
+      });
+    }
+
+    // Filter Chips Klick-Events
+    document.querySelectorAll('.filter-scroll .tag-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        const cat = chip.dataset.category;
+
+        if (cat === 'all') {
+          // "Alle" gedrückt: Alles andere abwählen
+          document.querySelectorAll('.filter-scroll .tag-chip').forEach(c => c.classList.remove('is-selected'));
+          chip.classList.add('is-selected');
+          activeCategories.clear();
+        } else {
+          // Bestimmte Kategorie gedrückt: "Alle" abwählen
+          document.querySelector('[data-category="all"]').classList.remove('is-selected');
+          
+          chip.classList.toggle('is-selected'); // Ein/Ausschalten
+
+          if (chip.classList.contains('is-selected')) {
+            activeCategories.add(cat);
+          } else {
+            activeCategories.delete(cat);
+          }
+
+          // Wenn nichts mehr ausgewählt ist, schalte "Alle" wieder ein
+          if (activeCategories.size === 0) {
+            document.querySelector('[data-category="all"]').classList.add('is-selected');
+          }
+        }
+        
+        // Karte sofort updaten!
+        updateMapDisplay();
+      });
+    });
+
+    // Slider bewegen
+    radiusSlider.addEventListener('input', (e) => {
+      const radiusMeters = parseInt(e.target.value);
+      if(radiusMeters >= 1000) {
+        radiusLabel.textContent = (radiusMeters / 1000).toFixed(1) + ' km';
+      } else {
+        radiusLabel.textContent = radiusMeters + ' m';
+      }
+      radiusCircle.setRadius(radiusMeters);
+      updateMapDisplay();
+    });
+
+    // Button: Karte zentrieren
+    document.getElementById('centerMapBtn').addEventListener('click', () => {
+      map.setView(userLoc, 14, { animate: true });
+    });
+
+    // Beim Laden 1x auslösen
+    radiusSlider.dispatchEvent(new Event('input'));
+    // ── 5. DRAG-TO-SCROLL (Für den PC) ──
+    const filterContainer = document.getElementById('filterContainer');
+    let isDown = false;
+    let startX;
+    let scrollLeft;
+
+    filterContainer.addEventListener('mousedown', (e) => {
+      isDown = true;
+      filterContainer.style.cursor = 'grabbing'; // Mauszeiger wird zur greifenden Hand
+      startX = e.pageX - filterContainer.offsetLeft;
+      scrollLeft = filterContainer.scrollLeft;
+    });
+
+    filterContainer.addEventListener('mouseleave', () => {
+      isDown = false;
+      filterContainer.style.cursor = 'default';
+    });
+
+    filterContainer.addEventListener('mouseup', () => {
+      isDown = false;
+      filterContainer.style.cursor = 'default';
+    });
+
+    filterContainer.addEventListener('mousemove', (e) => {
+      if (!isDown) return; // Stoppt die Funktion, wenn die Maus nicht gedrückt ist
+      e.preventDefault();
+      const x = e.pageX - filterContainer.offsetLeft;
+      const walk = (x - startX) * 1.5; // Die 1.5 bestimmt, wie schnell gescrollt wird
+      filterContainer.scrollLeft = scrollLeft - walk;
+    });
   </script>
 
-<nav class="dev-nav">
+  <nav class="dev-nav">
     <div class="dev-nav-header">DEV-Navigation</div>
     <div><a href="login.html" class="dev-btn">🔑 Login</a></div>
     <div><a href="register.html" class="dev-btn">📝 Registrieren</a></div>
@@ -232,11 +423,9 @@
     <div><a href="profile-edit.html" class="dev-btn">✏️ Profil bearbeiten</a></div>
     <div><a href="settings.html" class="dev-btn">⚙️ Einstellungen</a></div>
     <div><a href="map.html" class="dev-btn">🗺️ Kartenansicht</a></div>
-    
     <div><a href="event-details.html" class="dev-btn">🚫 📝 Event Details</a></div>
     <div><a href="chat.html" class="dev-btn">🚫 💬 Chat</a></div>
-
-    <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #363434;">
+    <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border);">
       <button id="devThemeToggle" class="dev-btn" style="background: none; border: none; cursor: pointer; width: 100%; text-align: left; padding: 4px 0;">
         🌗 Modus wechseln
       </button>
@@ -244,25 +433,13 @@
   </nav>
 
   <script>
-    // Logik für den Dev-Darkmode-Schalter
     const devThemeBtn = document.getElementById('devThemeToggle');
     if (devThemeBtn) {
       devThemeBtn.addEventListener('click', () => {
-        // Body-Klasse umschalten
         const isDark = document.body.classList.toggle('dark-mode');
-        
-        // In den Speicher schreiben, damit es auf der nächsten Seite bleibt
         localStorage.setItem('theme', isDark ? 'dark' : 'light');
-        
-        // Sync mit dem Schalter auf der settings.html (falls man dort ist)
-        const settingsToggle = document.getElementById('darkModeToggle');
-        if(settingsToggle) settingsToggle.checked = isDark;
-
-        // Spezial-Fix: Wenn man auf der Karte ist, kurz neu laden, 
-        // damit die echten schwarzen Karten-Bilder (Tiles) von CartoDB geladen werden
-        if(window.location.pathname.includes('map.html')) {
-            window.location.reload();
-        }
+        // Im neuen System brauchen wir keinen Reload mehr, 
+        // weil CSS das Invertieren live und ohne Ruckeln übernimmt!
       });
     }
   </script>
