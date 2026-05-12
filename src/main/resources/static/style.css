@@ -937,19 +937,26 @@ form.register-form {
   display: block;
 }
 
-/* ── 20. Responsive ──────────────────────────────────────── */
+/* ── 20. Responsive (Echtes Handy) ───────────────────────── */
 @media (max-width: 580px) {
-  body {
-    padding: 10px;
+  /* 1. Den Abstand (Padding) vom Body komplett entfernen */
+  body { 
+    padding: 0; 
+    background: var(--surface); /* Body-Hintergrund an die App anpassen */
   }
 
-  .phone {
-    border-radius: 28px;
-    height: 100dvh;
-    max-height: none;
-    max-width: 100%;
+  /* 2. Den Fake-Handyrahmen auflösen, damit es Fullscreen wird */
+  .phone { 
+    border-radius: 0; 
+    height: 100dvh; 
+    max-height: none; 
+    max-width: 100%; 
+    border: none;       /* Rahmen weg! */
+    box-shadow: none;   /* Schatten weg! */
+    margin: 0;
   }
 
+  /* --- Ab hier deine normalen Anpassungen für kleine Screens --- */
   .header {
     padding: 18px 16px 16px;
   }
@@ -1005,7 +1012,6 @@ form.register-form {
     gap: 8px;
   }
 }
-
 /* ── 21. Profil ──────────────────────────────────────────── */
 
 /* Avatar – gemeinsam auf allen Profilseiten */
