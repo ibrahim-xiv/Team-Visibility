@@ -1544,3 +1544,67 @@ document.querySelectorAll('.nav-btn').forEach(link => {
     link.classList.remove('is-active');
   }
 });
+
+/* Modal Hintergrund */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: none; /* Standardmäßig versteckt */
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+}
+
+/* Modal Box */
+.modal-content {
+  background: var(--surface);
+  padding: 24px;
+  border-radius: var(--radius-md);
+  width: 85%;
+  max-width: 320px;
+  text-align: center;
+  box-shadow: var(--shadow);
+}
+
+.verify-input {
+  width: 100%;
+  text-align: center;
+  font-size: 24px;
+  letter-spacing: 4px;
+  margin: 15px 0;
+  padding: 10px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+
+/* Der gewünschte grüne Button */
+.btn-send-code {
+  background-color: #22c55e; /* Erfolg-Grün */
+  color: white;
+  border: none;
+  padding: 12px;
+  width: 100%;
+  border-radius: var(--radius-sm);
+  font-weight: bold;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+
+.btn-send-code:hover {
+  background-color: #16a34a;
+}
+
+.btn-confirm {
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  padding: 12px;
+  width: 100%;
+  border-radius: var(--radius-sm);
+  font-weight: bold;
+  cursor: pointer;
+}
