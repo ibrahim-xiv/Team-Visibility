@@ -1037,38 +1037,48 @@ form.register-form {
 }
 
 
-/* ── 20. Responsive (Echtes Handy) ───────────────────────── */
-@media (max-width: 580px) {
+/* ── 20. Responsive Fix (iPhone 16 Pro Max & Co.) ───────────────── */
+@media (max-width: 600px) {
   body { 
-    padding: 0; 
-    background: var(--bg); 
+    padding: 0 !important; 
+    margin: 0 !important;
+    display: block !important;
+    background: var(--bg) !important; 
   }
 
   .phone { 
-    border-radius: 0; 
-    height: 100dvh; 
-    max-height: none; 
-    max-width: 100%; 
-    border: none;       
-    box-shadow: none;   
-    margin: 0;
+    width: 100vw !important;
+    max-width: 100% !important; 
+    height: 100dvh !important; /* Dynamische Höhe für Safari */
+    max-height: none !important;
+    border-radius: 0 !important; 
+    border: none !important;       
+    box-shadow: none !important;   
+    margin: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
   }
 
+  /* Deine spezifischen UI-Anpassungen für Mobile */
   .header { padding: 18px 16px 16px; }
   .header.has-action { padding: 18px 14px 16px; }
   h1, .header.has-action h1 { font-size: 1.5rem; }
   .brand { font-size: 1.5rem; }
   .brand.is-centered { font-size: 1.8rem; }
+  
   .toolbar { grid-template-columns: 1fr; }
   .toolbar select { min-width: 100%; }
   .toolbar-wrap, .content { padding: 16px; }
+  
   .event-title { font-size: 1.1rem; }
   .split { grid-template-columns: minmax(108px, 118px) 1fr; gap: 12px; }
   .publish-btn { font-size: 1.15rem; }
   .content.form-content { padding: 24px 16px 22px; }
   .code-inputs { gap: 8px; }
-}
 
+  /* Dev-Nav auf dem Handy immer verstecken */
+  .dev-nav { display: none !important; }
+}
 
 /* ── 21. Profil ──────────────────────────────────────────── */
 
@@ -1893,4 +1903,53 @@ form {
 /* Optional: Ein leichter Hover-Effekt für den aktiven Senden-Button */
 .btn-send-code:not(:disabled):hover {
   filter: brightness(1.1);
+}
+/* ── COLLAPSIBLE DEV-NAV ── */
+
+/* Die Navigation wird schmaler, wenn sie eingeklappt ist */
+.dev-nav.collapsed {
+  width: 180px !important; /* Etwas kompakter */
+  gap: 0 !important;
+}
+
+/* Versteckt alle Inhalte außer dem Header, wenn .collapsed aktiv ist */
+.dev-nav.collapsed > *:not(.dev-nav-header) {
+  display: none !important;
+}
+
+/* Zeiger-Feedback für den Header */
+.dev-nav-header {
+  cursor: pointer;
+  user-select: none;
+  transition: opacity 0.2s;
+}
+
+.dev-nav-header:hover {
+  opacity: 0.7;
+}
+
+/* Ein kleines Icon-Indikator (Optional) */
+.dev-nav-header::after {
+  content: ' ▾';
+  font-size: 10px;
+}
+
+.dev-nav.collapsed .dev-nav-header::after {
+  content: ' ▴';
+}
+/* ── DEV-NAV NACH OBEN LINKS VERSCHIEBEN ── */
+.dev-nav {
+  top: 20px !important;        /* Abstand von oben */
+  left: 20px !important;       /* Abstand von links */
+  transform: none !important;  /* Entfernt die mittige Zentrierung */
+  position: fixed !important;
+}
+
+/* Falls du den Hamburger-Modus für Mobile nutzt und er AUCH oben links sein soll: */
+@media (max-width: 600px) {
+  .dev-nav {
+    top: 15px !important;
+    left: 15px !important;
+    bottom: auto !important;   /* Deaktiviert die Positionierung unten */
+  }
 }

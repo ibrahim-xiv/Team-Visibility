@@ -184,6 +184,7 @@
       const emojis = { 'Spieleabend': '🎲', 'Sport': '🏃', 'Community': '👥', 'Kultur': '🎭', 'Freizeit': '🎉' };
       return emojis[cat] || '✨';
     }
+
   </script>
 
 <!-- DEV Navigation - Nur für Entwickler sichtbar, um schnell zwischen Seiten zu wechseln -->
@@ -231,6 +232,25 @@
         }
       });
     }
+    // ── DEV-NAV COLLAPSE LOGIK (Zusammenfalten) ──
+const devNav = document.querySelector('.dev-nav');
+const devHeader = document.querySelector('.dev-nav-header');
+
+if (devNav && devHeader) {
+    // 1. Prüfen, ob die Nav beim Laden schon eingeklappt sein soll (aus dem Speicher)
+    if (localStorage.getItem('devNavCollapsed') === 'true') {
+        devNav.classList.add('collapsed');
+    }
+
+    // 2. Klick-Event: Wenn man auf "DEV-Navigation" drückt
+    devHeader.addEventListener('click', () => {
+        // Umschalten der CSS-Klasse .collapsed
+        const isNowCollapsed = devNav.classList.toggle('collapsed');
+        
+        // Zustand im Browser speichern, damit er beim Seitenwechsel bleibt
+        localStorage.setItem('devNavCollapsed', isNowCollapsed);
+    });
+}
   </script>
 </body>
 </html>
