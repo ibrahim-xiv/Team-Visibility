@@ -1,4 +1,4 @@
-package com.TeamVisibility.App.model; // Passe den Package-Namen an dein Projekt an
+package com.TeamVisibility.App.model;
 
 import java.time.LocalDateTime;
 
@@ -22,9 +22,12 @@ public class Meeting {
     private String description;
     private Float lat;
     private Float lng;
+    
+    // Steve: NEU - Für Ortsname vom Front-End (z.B. "Jugendherberge")
+    private String locationName;
+    
     private LocalDateTime date_time;
     private Boolean isNonProfit;
-
 
     // Leerer Konstruktor für Spring
     public Meeting() {}
@@ -40,6 +43,11 @@ public class Meeting {
     public void setTitle(String title) { this.title = title; }
     public String getDescription() {return description;}
     public void setDescription(String description) {this.description = description;}
+    
+    // Steve: NEU - Getter/Setter für locationName
+    public String getLocationName() { return locationName; }
+    public void setLocationName(String locationName) { this.locationName = locationName; }
+    
     public LocalDateTime getDate_time() { return date_time; }
     public void setDate_time(LocalDateTime date_time) { this.date_time = date_time; }
     public Float getLat() { return lat; }
