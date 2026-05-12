@@ -5,75 +5,27 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Visibility – Kartenansicht</title>
+  
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="style.css" />
+  
   <style>
-    :root {
-      --border-color: #ccc;
-      --bg-light: #f9f9f9;
-      --text-main: #333;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    
-    body { 
-      font-family: 'Nunito', sans-serif; 
-      background-color: #f4f4f4; 
-      display: flex; 
-      justify-content: center; 
-      height: 100vh;
-    }
-
-    /* Hauptcontainer ohne den dicken schwarzen Rahmen */
-    .app-container {
-      width: 375px;
-      height: 100%;
-      background: white;
+    /* Nur das spezifische Styling für die Karte und die Pins */
+    .map-content {
+      position: relative;
+      flex: 1; /* Füllt den gesamten Platz zwischen Header und Nav */
       display: flex;
       flex-direction: column;
-      position: relative;
-      box-shadow: 0 0 20px rgba(0,0,0,0.1);
-    }
-
-    /* Dünnerer Header */
-    .header {
-      padding: 10px 15px; /* Reduziertes Padding für dünneren Look */
-      background: white;
-      display: flex;
-      align-items: center;
-      border-bottom: 1px solid #eee;
-      height: 60px;
+      height: 100%;
     }
     
-    .back-btn-box {
-      width: 40px;
-      height: 40px;
-      border: 1px solid var(--border-color);
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-decoration: none;
-      color: var(--text-main);
-      font-size: 1.5rem;
-      font-weight: bold;
+    #map { 
+      width: 100%; 
+      flex: 1; 
+      z-index: 1; 
     }
 
-    .header h1 { 
-      flex: 1;
-      font-size: 1.1rem; 
-      color: var(--text-main); 
-      text-align: center;
-      margin-right: 40px; /* Ausgleich für den Button links */
-    }
-
-    /* Karten-Bereich */
-    .map-content {
-      flex: 1;
-      position: relative;
-    }
-    #map { width: 100%; height: 100%; z-index: 1; }
-
-    /* Overlay Steuerung */
+    /* Overlay Steuerung (Dropdown auf der Karte) */
     .map-overlay {
       position: absolute;
       top: 15px;
@@ -90,19 +42,16 @@
     .filter-select {
       width: 100%;
       padding: 12px;
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
+      border: 2px solid var(--border-color, #ccc);
+      border-radius: 12px;
       background: white;
       font-size: 14px;
+      font-weight: bold;
       cursor: pointer;
-      appearance: none;
-      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-      background-repeat: no-repeat;
-      background-position: right 10px center;
-      background-size: 15px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
 
-    /* Marker Icons */
+    /* Marker Icons vom Kollegen */
     .event-pin {
       background: #28a745;
       color: white;
@@ -114,8 +63,14 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
     }
-    .pin-text { transform: rotate(45deg); font-weight: bold; font-size: 12px; }
+    
+    .pin-text { 
+      transform: rotate(45deg); 
+      font-weight: bold; 
+      font-size: 12px; 
+    }
 
     .home-pin {
       background: #3b82f6;
@@ -126,43 +81,25 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-    }
-
-    /* Bottom Nav */
-    .bottom-nav {
-      height: 70px;
-      background: white;
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      border-top: 1px solid #eee;
-      padding-bottom: 5px;
-    }
-    .nav-btn { color: var(--text-main); text-decoration: none; display: flex; align-items: center; }
-    .nav-btn svg { width: 24px; height: 24px; }
-    
-    .nav-btn.is-primary {
-      border: 1px solid var(--border-color);
-      padding: 5px 20px;
-      border-radius: 8px;
-      font-size: 1.4rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.4);
     }
   </style>
 </head>
 
 <body>
-  <div class="app-container">
-    <header class="header">
-      <a href="home.html" class="back-btn-box">&#8249;</a>
+  <main class="phone" style="display: flex; flex-direction: column;">
+    
+    <header class="header has-back">
+      <a class="back-btn" href="home.html" aria-label="Zurück">&#8249;</a>
       <h1>Karte</h1>
     </header>
 
     <section class="map-content">
+      
       <div class="map-overlay">
         <div class="filter-bar">
           <select class="filter-select">
-            <option value="eventkategorie">Event Kategorie</option>
+            <option value="eventkategorie">Event Kategorie wählen...</option>
             <option value="freizeit">Freizeit</option>
             <option value="sport">Sport</option>
             <option value="spieleabend">Spieleabend</option>
@@ -174,19 +111,27 @@
       </div>
 
       <div id="map"></div>
+      
     </section>
 
-    <nav class="bottom-nav">
-      <a class="nav-btn" href="home.html"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></a>
-      <a class="nav-btn" href="chat.html"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg></a>
-      <a class="nav-btn is-primary" href="meeting-form.html">+</a>
-      <a class="nav-btn" href="saved.html"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg></a>
-      <a class="nav-btn" href="profile.html"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></a>
+    <nav class="bottom-nav" aria-label="Hauptnavigation">
+      <a class="nav-btn" href="home.html" aria-label="Home">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3l9 8h-3v9h-5v-6H11v6H6v-9H3l9-8z"></path></svg>
+      </a>
+      <a class="nav-btn" href="chat.html" aria-label="Chat">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 5h16a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H9l-5 4v-4H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"></path></svg>
+      </a>
+      <a class="nav-btn is-primary" href="meeting-form.html" aria-label="Treffen erstellen">+</a>
+      <a class="nav-btn" href="saved.html" aria-label="Gespeicherte Inhalte">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"></path></svg>
+      </a>
+      <a class="nav-btn" href="profile.html" aria-label="Profil">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-4.4 0-8 2.2-8 5v2h16v-2c0-2.8-3.6-5-8-5z"></path></svg>
+      </a>
     </nav>
-  </div>
-
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  </main> <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
+    // Karte initialisieren
     const map = L.map('map', { zoomControl: false }).setView([53.522, 8.115], 14);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -230,5 +175,21 @@
       radius: 450
     }).addTo(map);
   </script>
+
+  <nav class="dev-nav">
+    <div class="dev-nav-header">DEV-Navigation</div>
+    <div><a href="login.html" class="dev-btn">🔑 Login</a></div>
+    <div><a href="register.html" class="dev-btn">📝 Registrieren</a></div>
+    <div><a href="home.html" class="dev-btn">🏠 Home</a></div>
+    <div><a href="meeting-form.html" class="dev-btn">➕ Erstellen</a></div>
+    <div><a href="saved.html" class="dev-btn">💾 Gespeichert</a></div>
+    <div><a href="profile.html" class="dev-btn">👤 Eigenes Profil</a></div>
+    <div><a href="profile-view.html" class="dev-btn">👁️ Fremdes Profil</a></div>
+    <div><a href="profile-edit.html" class="dev-btn">✏️ Profil bearbeiten</a></div>
+    <div><a href="map.html" class="dev-btn">🗺️ Kartenansicht</a></div>
+    <div class="dev-btn is-disabled">🚫📝 Event Details</div>
+    <div class="dev-btn is-disabled">🚫💬 Chat</div>
+  </nav>
+
 </body>
 </html>

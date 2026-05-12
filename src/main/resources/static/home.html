@@ -9,10 +9,8 @@
 </head>
 
 <body>
-  <!-- Handy-Rahmen; is-feed = feste Höhe + flex-column für sticky Header/Nav -->
   <main class="phone is-feed">
 
-    <!-- Sticky Header: bleibt oben beim Scrollen -->
     <div class="header-wrap" id="top">
       <header class="header">
         <div class="brand" aria-label="Visibility">
@@ -27,7 +25,6 @@
         </div>
       </header>
 
-      <!-- Suchfeld + Sortierung + Filterung -->
       <div class="toolbar-wrap">
         <div class="toolbar">
           <input id="searchInput" class="search-input" type="text"
@@ -50,11 +47,9 @@
       </div>
     </div>
 
-    <!-- Scrollbarer Hauptbereich -->
     <div class="scroll-area" id="scrollArea">
       <section class="content">
 
-        <!-- Link zur Kartenansicht -->
         <a class="map-cta" href="/map.html" aria-label="Zur Kartenansicht">
           <span>Zur Kartenansicht</span>
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -64,22 +59,18 @@
           </svg>
         </a>
 
-        <!-- Überschrift + Trefferanzahl -->
         <div class="section-head">
           <h2 id="sectionTitle">Events nach Entfernung:</h2>
           <span class="results-count" id="resultsCount"></span>
         </div>
 
-        <!-- Event-Karten -->
         <div class="event-list" id="eventList"></div>
 
-        <!-- Leer-Status -->
         <div class="empty-state" id="emptyState">Keine passenden Events gefunden.</div>
 
       </section>
     </div>
 
-    <!-- Sticky Bottom-Navigation -->
     <nav class="bottom-nav" aria-label="Hauptnavigation">
       <a class="nav-btn home-btn is-active" href="#top" id="homeBtn" aria-label="Home">
         <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -104,25 +95,22 @@
       </a>
     </nav>
 
-    <!-- WICHTIG: Toasts liegen jetzt innerhalb des <main> Tags -->
     <div class="toast" id="reportToast" hidden></div>
     <div id="creationToast" class="toast-simple" hidden>Treffen wurde erfolgreich erstellt!</div>
 
-  </main> <!-- HIER SCHLIESST DAS HANDY -->
-
-  <!-- Report-Overlay: kann draußen bleiben -->
-  <div class="overlay" id="reportOverlay" hidden>
+  </main> <div class="overlay" id="reportOverlay" hidden>
     <div class="overlay-card" role="dialog" aria-modal="true" aria-labelledby="reportTitle">
       <h2 id="reportTitle">Event melden</h2>
-      <p>Warum möchtest du dieses Event melden?</p>
+      <p>Warum möchtest du dieses Event melden? (Mehrfachauswahl möglich)</p>
       <form id="reportForm">
         <div class="report-list">
-          <label class="report-option"><input type="radio" name="reportReason" value="Unangemessen" required><span><strong>Unangemessen</strong><small>Beleidigend, sexuell oder gewaltbezogen.</small></span></label>
-          <label class="report-option"><input type="radio" name="reportReason" value="Fake-Event"><span><strong>Fake-Event</strong><small>Wirkt erfunden oder irreführend.</small></span></label>
-          <label class="report-option"><input type="radio" name="reportReason" value="Gefährlich"><span><strong>Gefährlich</strong><small>Unsicher oder ruft zu riskantem Verhalten auf.</small></span></label>
-          <label class="report-option"><input type="radio" name="reportReason" value="Spam"><span><strong>Spam</strong><small>Werbung oder mehrfach gepostet.</small></span></label>
-          <label class="report-option"><input type="radio" name="reportReason" value="Falsche Infos"><span><strong>Falsche Infos</strong><small>Kategorie, Ort oder Zeit stimmen nicht.</small></span></label>
+          <label class="report-option"><input type="checkbox" name="reportReason" value="Unangemessen"><span><strong>Unangemessen</strong><small>Beleidigend, sexuell oder gewaltbezogen.</small></span></label>
+          <label class="report-option"><input type="checkbox" name="reportReason" value="Fake-Event"><span><strong>Fake-Event</strong><small>Wirkt erfunden oder irreführend.</small></span></label>
+          <label class="report-option"><input type="checkbox" name="reportReason" value="Gefährlich"><span><strong>Gefährlich</strong><small>Unsicher oder ruft zu riskantem Verhalten auf.</small></span></label>
+          <label class="report-option"><input type="checkbox" name="reportReason" value="Spam"><span><strong>Spam</strong><small>Werbung oder mehrfach gepostet.</small></span></label>
+          <label class="report-option"><input type="checkbox" name="reportReason" value="Falsche Infos"><span><strong>Falsche Infos</strong><small>Kategorie, Ort oder Zeit stimmen nicht.</small></span></label>
         </div>
+        <div id="reportError" style="color: #d95c5c; font-size: 0.85rem; font-weight: bold; margin-bottom: 10px; display: none;">Bitte wähle mindestens einen Grund aus.</div>
         <div class="overlay-actions">
           <button class="overlay-close" type="button" id="closeReportOverlay">Abbrechen</button>
           <button class="overlay-submit" type="submit">Meldung senden</button>
@@ -131,7 +119,6 @@
     </div>
   </div>
 
-  <!-- Styling, damit die Toasts im Handy bleiben -->
   <style>
     .toast-simple {
       position: absolute; 
@@ -150,6 +137,7 @@
     
     .toast {
       position: absolute !important;
+      bottom: 100px;
     }
   </style>
 
@@ -188,6 +176,7 @@
     const reportForm     = $('#reportForm');
     const reportToast    = $('#reportToast');
     const scrollArea     = $('#scrollArea');
+    const reportError    = $('#reportError');
 
     let currentReportButton = null;
     let toastTimer = null;
@@ -264,6 +253,7 @@
           e.preventDefault();
           currentReportButton = btn;
           reportForm.reset();
+          if (reportError) reportError.style.display = 'none'; // Fehler zurücksetzen
           updateReportUI();
           reportOverlay.hidden = false;
         };
@@ -300,7 +290,7 @@
       reportToast.textContent = text;
       reportToast.hidden = false;
       clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => reportToast.hidden = true, 2200);
+      toastTimer = setTimeout(() => reportToast.hidden = true, 2800);
     }
 
     [searchInput, sortSelect, filterSelect].forEach(el =>
@@ -316,13 +306,30 @@
     $('#closeReportOverlay').onclick = () => reportOverlay.hidden = true;
     reportOverlay.onclick = e => { if (e.target === reportOverlay) reportOverlay.hidden = true; };
 
+    // NEUE MULTIPLE-CHOICE LOGIK
     reportForm.onsubmit = e => {
       e.preventDefault();
-      const selected = reportForm.querySelector('input[name="reportReason"]:checked');
-      if (!selected) return;
-      if (currentReportButton) currentReportButton.style.opacity = '.3';
+      
+      // Sammelt alle Checkboxen, die angekreuzt wurden
+      const selectedBoxes = [...reportForm.querySelectorAll('input[name="reportReason"]:checked')];
+      
+      if (selectedBoxes.length === 0) {
+        reportError.style.display = 'block'; // Fehler anzeigen, wenn nichts gewählt wurde
+        return;
+      }
+      
+      reportError.style.display = 'none';
+      
+      // Kombiniert die Werte zu einem Text (z.B. "Spam, Fake-Event")
+      const selectedValues = selectedBoxes.map(box => box.value).join(', ');
+
+      if (currentReportButton) {
+        currentReportButton.style.opacity = '.3';
+        currentReportButton.setAttribute('aria-label', 'Event gemeldet');
+      }
+      
       reportOverlay.hidden = true;
-      showToast(`Meldung gesendet: ${selected.value}`);
+      showToast(`Meldung gesendet: ${selectedValues}`);
     };
 
     // Erfolgs-Toast vom "Erstellen" prüfen
@@ -338,7 +345,6 @@
     filterAndSort();
   </script>
 
-  <!-- DEV-DASHBOARD -->
   <nav class="dev-nav">
     <div class="dev-nav-header">DEV-Navigation</div>
     <div><a href="login.html" class="dev-btn">🔑 Login</a></div>
@@ -349,7 +355,7 @@
     <div><a href="profile.html" class="dev-btn">👤 Eigenes Profil</a></div>
     <div><a href="profile-view.html" class="dev-btn">👁️ Fremdes Profil</a></div>
     <div><a href="profile-edit.html" class="dev-btn">✏️ Profil bearbeiten</a></div>
-    <div class="dev-btn is-disabled">🚫🗺️ Kartenansicht</div>
+    <div><a href="map.html" class="dev-btn">🗺️ Kartenansicht</a></div>
     <div class="dev-btn is-disabled">🚫📝 Event Details</div>
     <div class="dev-btn is-disabled">🚫💬 Chat</div>
   </nav>
