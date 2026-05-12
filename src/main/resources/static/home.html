@@ -350,29 +350,29 @@
 
     filterAndSort();
   </script>
+<!-- DEV Navigation - Nur für Entwickler sichtbar, um schnell zwischen Seiten zu wechseln -->
 <nav class="dev-nav">
-    <div class="dev-nav-header">DEV-Navigation</div>
-    <div><a href="login.html" class="dev-btn">🔑 Login</a></div>
-    <div><a href="register.html" class="dev-btn">📝 Registrieren</a></div>
-    <div><a href="home.html" class="dev-btn">🏠 Home</a></div>
-    <div><a href="meeting-form.html" class="dev-btn">➕ Erstellen</a></div>
-    <div><a href="saved.html" class="dev-btn">💾 Gespeichert</a></div>
-    <div><a href="profile.html" class="dev-btn">👤 Eigenes Profil</a></div>
-    <div><a href="profile-view.html" class="dev-btn">👁️ Fremdes Profil</a></div>
-    <div><a href="profile-edit.html" class="dev-btn">✏️ Profil bearbeiten</a></div>
-    <div><a href="settings.html" class="dev-btn">⚙️ Einstellungen</a></div>
-    <div><a href="map.html" class="dev-btn">🗺️ Kartenansicht</a></div>
-    
-    <div><a href="event-details.html" class="dev-btn">🚫 📝 Event Details</a></div>
-    <div><a href="chat.html" class="dev-btn">🚫 💬 Chat</a></div>
+  <div class="dev-nav-header">DEV-Navigation</div>
+  
+  <div><a href="login.html" class="dev-btn">🔑 Login</a></div>
+  <div><a href="register.html" class="dev-btn">📝 Registrieren</a></div>
+  <div><a href="home.html" class="dev-btn">🏠 Home</a></div>
+  <div><a href="meeting-form.html" class="dev-btn">➕ Erstellen</a></div>
+  <div><a href="saved.html" class="dev-btn">💾 Gespeichert</a></div>
+  <div><a href="profile.html" class="dev-btn">👤 Eigenes Profil</a></div>
+  <div><a href="profile-view.html" class="dev-btn">👁️ Fremdes Profil</a></div>
+  <div><a href="profile-edit.html" class="dev-btn">✏️ Profil bearbeiten</a></div>
+  <div><a href="settings.html" class="dev-btn">⚙️ Einstellungen</a></div>
+  <div><a href="map.html" class="dev-btn">🗺️ Kartenansicht</a></div>
+  <div><a href="event-details.html" class="dev-btn">🚫 📝 Event Details</a></div>
+  <div><a href="chat.html" class="dev-btn">🚫 💬 Chat</a></div>
 
-    <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #363434;">
-      <button id="devThemeToggle" class="dev-btn" style="background: none; border: none; cursor: pointer; width: 100%; text-align: left; padding: 4px 0;">
-        🌗 Modus wechseln
-      </button>
-    </div>
-  </nav>
-
+  <div style="margin-top: 5px; padding-top: 10px; border-top: 1px solid #363434;">
+    <button id="devThemeToggle" class="dev-btn-action">
+      🌗 Modus wechseln
+    </button>
+  </div>
+</nav>
   <script>
     // Logik für den Dev-Darkmode-Schalter
     const devThemeBtn = document.getElementById('devThemeToggle');

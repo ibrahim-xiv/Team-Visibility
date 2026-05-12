@@ -25,20 +25,18 @@
       background: var(--bg); 
     }
 
-    /* ── Der geniale Trick für lebendige Darkmode-Karten ── */
+    /* Lebendige Darkmode-Karte via Filter */
     body.dark-mode .leaflet-tile-pane {
-      /* Invertiert Farben, dreht den Farbkreis zurück (damit Wasser blau bleibt) und dimmt es ab */
       filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(85%);
     }
 
-    /* Overlay Steuerung (Filter Chips statt Dropdown) */
     .map-overlay {
       position: absolute;
       top: 15px;
       left: 0;
       right: 0;
       z-index: 1000;
-      pointer-events: none; /* Lässt Klicks durch, wo keine Buttons sind */
+      pointer-events: none;
     }
 
     .filter-scroll {
@@ -47,24 +45,18 @@
       overflow-x: auto;
       padding: 4px 15px 15px 15px;
       pointer-events: auto;
-      /* Scrollbar verstecken */
       scrollbar-width: none; 
       -ms-overflow-style: none; 
     }
     .filter-scroll::-webkit-scrollbar { display: none; }
 
-    /* Anpassung der Chips für die Karte (Schatten) */
     .filter-scroll .tag-chip {
       box-shadow: 0 4px 12px rgba(0,0,0,0.15);
       border-color: transparent;
       white-space: nowrap;
       transition: all 0.2s ease;
     }
-    body.dark-mode .filter-scroll .tag-chip {
-      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-    }
 
-    /* Floating Controls unten (Zentrieren & Radius) */
     .map-controls-bottom {
       position: absolute;
       bottom: 20px;
@@ -91,11 +83,7 @@
       justify-content: center;
       cursor: pointer;
       box-shadow: 0 6px 16px rgba(0,0,0,0.15);
-      transition: background 0.2s;
     }
-    body.dark-mode .center-btn { box-shadow: 0 6px 16px rgba(0,0,0,0.4); }
-
-    .center-btn:hover { background: var(--hover-bg); }
 
     .radius-card {
       pointer-events: auto;
@@ -104,16 +92,13 @@
       border-radius: var(--radius-sm);
       padding: 12px 16px;
       width: 100%;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
     }
-    body.dark-mode .radius-card { box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
 
     .radius-header {
       display: flex;
       justify-content: space-between;
       font-size: .95rem;
       font-weight: 800;
-      color: var(--text);
       margin-bottom: 10px;
     }
 
@@ -122,7 +107,6 @@
       accent-color: var(--primary);
     }
 
-    /* Marker Icons */
     .event-pin {
       background: var(--primary);
       color: white;
@@ -134,8 +118,6 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-      transition: opacity 0.3s ease; /* Weicher Übergang beim Radius-Filtern */
     }
     .pin-text { transform: rotate(45deg); font-weight: 800; font-size: 14px; }
 
@@ -148,26 +130,22 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
       font-size: 18px;
     }
 
-    /* Leaflet Popup Styling */
-    .leaflet-popup-content-wrapper {
-      background: var(--surface);
-      color: var(--text);
-      border-radius: var(--radius-sm);
-      border: 1px solid var(--border);
-      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    /* Fix für den Modus-Wechsel Button in der DEV-Nav */
+    #devThemeToggle {
+      background: none !important;
+      border: none !important;
+      color: #a8a8a8 !important;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      padding: 8px 0 !important;
+      cursor: pointer;
     }
-    .leaflet-popup-tip {
-      background: var(--surface);
-      border-right: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-    }
-    .popup-custom { font-family: 'Nunito', sans-serif; }
-    .popup-custom strong { display: block; font-size: 1.05rem; margin-bottom: 2px; }
-    .popup-custom small { color: var(--hint); font-weight: 700; }
   </style>
 </head>
 
@@ -177,14 +155,12 @@
   </script>
 
   <main class="phone">
-    
     <header class="header has-back">
-      <a class="back-btn" href="home.html" aria-label="Zurück">&#8249;</a>
+      <a class="back-btn" href="home.html">&#8249;</a>
       <h1>Entdecken</h1>
     </header>
 
     <section class="map-content">
-      
       <div class="map-overlay">
         <div class="filter-scroll" id="filterContainer">
           <div class="tag-chip is-selected" data-category="all">Alle Events</div>
@@ -197,7 +173,13 @@
       </div>
 
       <div class="map-controls-bottom">
-        <button id="centerMapBtn" class="center-btn" aria-label="Zentrieren">
+        <button id="gpsBtn" class="center-btn" style="margin-bottom: 8px;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="3 11 22 2 13 21 11 13 3 11"></polygon>
+          </svg>
+        </button>
+
+        <button id="centerMapBtn" class="center-btn">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="10"></circle>
             <circle cx="12" cy="12" r="3"></circle>
@@ -209,239 +191,167 @@
             <span>📍 Such-Radius</span>
             <span id="radiusLabel">450 m</span>
           </div>
-          <input type="range" id="radiusSlider" class="radius-slider" min="100" max="5000" step="50" value="450">
+          <input type="range" id="radiusSlider" class="radius-slider" min="100" max="15000" step="50" value="450">
         </div>
       </div>
 
       <div id="map"></div>
     </section>
 
-    <nav class="bottom-nav" aria-label="Hauptnavigation">
+    <nav class="bottom-nav">
       <a class="nav-btn" href="home.html"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3l9 8h-3v9h-5v-6H11v6H6v-9H3l9-8z"></path></svg></a>
       <a class="nav-btn" href="chat.html"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 5h16a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H9l-5 4v-4H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"></path></svg></a>
       <a class="nav-btn is-primary" href="meeting-form.html">+</a>
       <a class="nav-btn" href="saved.html"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"></path></svg></a>
       <a class="nav-btn" href="profile.html"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-4.4 0-8 2.2-8 5v2h16v-2c0-2.8-3.6-5-8-5z"></path></svg></a>
     </nav>
-  </main> 
+  </main>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
-    const userLoc = [53.521, 8.118]; // Basis-Standort
-    const eventMarkers = []; // Speichert alle Events
-    const activeCategories = new Set(); // Speichert aktive Filter
+    let userLoc = [53.521, 8.118]; 
+    const eventMarkers = []; 
+    const activeCategories = new Set();
+    const isDark = document.body.classList.contains('dark-mode');
 
-    // 1. Karte initialisieren (Immer helle Karte laden, CSS macht den Rest!)
-    const map = L.map('map', { zoomControl: false }).setView(userLoc, 14);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap'
-    }).addTo(map);
+    const map = L.map('map', { zoomControl: false, zoomSnap: 0.1, zoomDelta: 0.1 }).setView(userLoc, 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
-    // 2. Marker Funktion (jetzt mit Kategorie!)
     function addEvent(lat, lng, label, title, time, category) {
       const icon = L.divIcon({
         className: 'custom-icon',
         html: `<div class="event-pin"><span class="pin-text">${label}</span></div>`,
-        iconSize: [34, 34],
-        iconAnchor: [17, 34],
-        popupAnchor: [0, -34] 
+        iconSize: [34, 34], iconAnchor: [17, 34], popupAnchor: [0, -34] 
       });
-      
       const marker = L.marker([lat, lng], { icon: icon });
       marker.bindPopup(`<div class="popup-custom"><strong>${title}</strong><small>${time}</small></div>`);
-
-      // Im Array speichern
-      eventMarkers.push({
-        leafletObj: marker,
-        latlng: L.latLng(lat, lng),
-        category: category
-      });
+      eventMarkers.push({ leafletObj: marker, latlng: L.latLng(lat, lng), category: category });
     }
 
-    // 3. Ganz viele Events in und um Wilhelmshaven
+    // Ganz viele Events einbauen
     addEvent(53.528, 8.108, '🎲', 'Spieleabend: Catan', 'Heute, 19:00', 'spieleabend');
     addEvent(53.526, 8.125, '🏃', 'Morgenjogger', 'Morgen, 07:00', 'sport');
     addEvent(53.522, 8.108, '✨', 'Poker Abend', 'Samstag, 18.04.2026', 'freizeit');
     addEvent(53.518, 8.135, '🎭', 'Kultur Treff', 'Freitag, 20:00', 'kultur');
     addEvent(53.517, 8.128, '👥', 'Community Brunch', 'Sonntag, 10:00', 'community');
-    addEvent(53.513, 8.105, '🍹', 'Filmabend im Hof', 'Montag, 20:30', 'freizeit');
-    addEvent(53.535, 8.112, '⚽', 'Fussball im Park', 'Heute, 16:00', 'sport');
-    addEvent(53.525, 8.140, '🎸', 'Jam Session am See', 'Samstag, 15:00', 'kultur');
-    addEvent(53.530, 8.120, '🧩', 'Puzzle Contest', 'Morgen, 14:00', 'spieleabend');
-    addEvent(53.510, 8.115, '🧹', 'Park Cleanup', 'Sonntag, 09:00', 'community');
-    addEvent(53.520, 8.100, '🛹', 'Skate Treff', 'Heute, 18:00', 'sport');
-    addEvent(53.515, 8.122, '🍷', 'Wein & Lesen', 'Freitag, 21:00', 'freizeit');
+    addEvent(53.555, 8.145, '⛵', 'Segelkurs Rüstersiel', 'Samstag, 10:00', 'sport');
+    addEvent(53.610, 8.130, '🌊', 'Strand-Party Hooksiel', 'Samstag, 21:00', 'freizeit');
+    addEvent(53.430, 8.040, '🚴', 'MTB Tour Süd-Marsch', 'Sonntag, 11:00', 'sport');
+    addEvent(53.450, 8.150, '🚜', 'Bauernhof-Fest', 'Sonntag, 10:00', 'community');
+    addEvent(53.620, 8.050, '🪁', 'Drachenfest im Norden', 'Samstag, 14:00', 'freizeit');
 
-    // Haus-Marker (Standort)
     const homeIcon = L.divIcon({
       className: 'home-icon',
       html: `<div class="home-pin">🏠</div>`,
-      iconSize: [38, 38],
-      iconAnchor: [19, 19]
+      iconSize: [38, 38], iconAnchor: [19, 19]
     });
-    L.marker(userLoc, { icon: homeIcon }).addTo(map);
+    let homeMarker = L.marker(userLoc, { icon: homeIcon }).addTo(map);
 
-    // Sichtbarkeitskreis
-    const isDark = document.body.classList.contains('dark-mode');
     const radiusCircle = L.circle(userLoc, {
-      stroke: false,
-      color: isDark ? '#0095f6' : '#3b82f6',
-      weight: 0,
-      fillColor: isDark ? '#0095f6' : '#3b82f6',
-      fillOpacity: 0.15,
-      radius: 450
+      stroke: false, color: isDark ? '#0095f6' : '#3b82f6',
+      fillColor: isDark ? '#0095f6' : '#3b82f6', fillOpacity: 0.15, radius: 450
     }).addTo(map);
 
-
-    // ── 4. DIE LOGIK FÜR FILTER & RADIUS ──
-    const radiusSlider = document.getElementById('radiusSlider');
-    const radiusLabel = document.getElementById('radiusLabel');
-
-    // Diese Funktion berechnet, was sichtbar sein darf
     function updateMapDisplay() {
-      const radiusMeters = parseInt(radiusSlider.value);
-
+      const radiusMeters = parseInt(document.getElementById('radiusSlider').value);
       eventMarkers.forEach(event => {
-        // A) Passt die Kategorie? (Wenn activeCategories leer ist, zeige alle)
         const matchesCategory = activeCategories.size === 0 || activeCategories.has(event.category);
-        
+        const distance = map.distance(userLoc, event.latlng);
+        const inRadius = distance <= radiusMeters;
         if (!matchesCategory) {
-          // Komplett von der Karte löschen (Filter angewendet)
-          if (map.hasLayer(event.leafletObj)) {
-            map.removeLayer(event.leafletObj);
-          }
+          if (map.hasLayer(event.leafletObj)) map.removeLayer(event.leafletObj);
         } else {
-          // Marker auf die Karte setzen (falls nicht da)
-          if (!map.hasLayer(event.leafletObj)) {
-            event.leafletObj.addTo(map);
-          }
-
-          // B) Passt der Radius? (Wenn ja: Opacity 1.0, wenn nein: Opacity 0.3)
-          const distance = map.distance(userLoc, event.latlng);
-          if (distance > radiusMeters) {
-            event.leafletObj.setOpacity(0.25); // Ausgegraut
-          } else {
-            event.leafletObj.setOpacity(1.0);  // Sichtbar
-          }
+          if (!map.hasLayer(event.leafletObj)) event.leafletObj.addTo(map);
+          event.leafletObj.setOpacity(inRadius ? 1.0 : 0.2);
         }
       });
     }
 
-    // Filter Chips Klick-Events
-    document.querySelectorAll('.filter-scroll .tag-chip').forEach(chip => {
+    map.on('contextmenu', (e) => {
+      userLoc = [e.latlng.lat, e.latlng.lng];
+      homeMarker.setLatLng(e.latlng);
+      radiusCircle.setLatLng(e.latlng);
+      updateMapDisplay();
+    });
+
+    document.getElementById('gpsBtn').addEventListener('click', () => {
+      navigator.geolocation.getCurrentPosition((pos) => {
+        const newPos = [pos.coords.latitude, pos.coords.longitude];
+        userLoc = newPos; homeMarker.setLatLng(newPos); radiusCircle.setLatLng(newPos);
+        map.setView(newPos, 14, { animate: true }); updateMapDisplay();
+      }, () => alert("GPS Zugriff verweigert."));
+    });
+
+    document.querySelectorAll('.tag-chip').forEach(chip => {
       chip.addEventListener('click', () => {
         const cat = chip.dataset.category;
-
         if (cat === 'all') {
-          // "Alle" gedrückt: Alles andere abwählen
-          document.querySelectorAll('.filter-scroll .tag-chip').forEach(c => c.classList.remove('is-selected'));
-          chip.classList.add('is-selected');
-          activeCategories.clear();
+          document.querySelectorAll('.tag-chip').forEach(c => c.classList.remove('is-selected'));
+          chip.classList.add('is-selected'); activeCategories.clear();
         } else {
-          // Bestimmte Kategorie gedrückt: "Alle" abwählen
           document.querySelector('[data-category="all"]').classList.remove('is-selected');
-          
-          chip.classList.toggle('is-selected'); // Ein/Ausschalten
-
-          if (chip.classList.contains('is-selected')) {
-            activeCategories.add(cat);
-          } else {
-            activeCategories.delete(cat);
-          }
-
-          // Wenn nichts mehr ausgewählt ist, schalte "Alle" wieder ein
-          if (activeCategories.size === 0) {
-            document.querySelector('[data-category="all"]').classList.add('is-selected');
-          }
+          chip.classList.toggle('is-selected');
+          if (chip.classList.contains('is-selected')) activeCategories.add(cat);
+          else activeCategories.delete(cat);
+          if (activeCategories.size === 0) document.querySelector('[data-category="all"]').classList.add('is-selected');
         }
-        
-        // Karte sofort updaten!
         updateMapDisplay();
       });
     });
 
-    // Slider bewegen
+    const radiusSlider = document.getElementById('radiusSlider');
+    const radiusLabel = document.getElementById('radiusLabel');
     radiusSlider.addEventListener('input', (e) => {
-      const radiusMeters = parseInt(e.target.value);
-      if(radiusMeters >= 1000) {
-        radiusLabel.textContent = (radiusMeters / 1000).toFixed(1) + ' km';
-      } else {
-        radiusLabel.textContent = radiusMeters + ' m';
-      }
-      radiusCircle.setRadius(radiusMeters);
+      const r = parseInt(e.target.value);
+      radiusLabel.textContent = r >= 1000 ? (r / 1000).toFixed(1) + ' km' : r + ' m';
+      radiusCircle.setRadius(r);
       updateMapDisplay();
+      const zoomLevel = 15 - Math.log2(r / 450);
+      const clampedZoom = Math.max(9.5, Math.min(16, zoomLevel));
+      map.setView(userLoc, clampedZoom, { animate: true, duration: 0.25 });
     });
 
-    // Button: Karte zentrieren
     document.getElementById('centerMapBtn').addEventListener('click', () => {
-      map.setView(userLoc, 14, { animate: true });
+      map.flyTo(userLoc, 14, { animate: true, duration: 0.5 });
     });
 
-    // Beim Laden 1x auslösen
+    const fContainer = document.getElementById('filterContainer');
+    let isD = false, sX, sL;
+    fContainer.addEventListener('mousedown', (e) => { isD = true; sX = e.pageX - fContainer.offsetLeft; sL = fContainer.scrollLeft; });
+    fContainer.addEventListener('mouseup', () => { isD = false; });
+    fContainer.addEventListener('mousemove', (e) => { if (!isD) return; fContainer.scrollLeft = sL - (e.pageX - fContainer.offsetLeft - sX) * 1.5; });
+
     radiusSlider.dispatchEvent(new Event('input'));
-    // ── 5. DRAG-TO-SCROLL (Für den PC) ──
-    const filterContainer = document.getElementById('filterContainer');
-    let isDown = false;
-    let startX;
-    let scrollLeft;
-
-    filterContainer.addEventListener('mousedown', (e) => {
-      isDown = true;
-      filterContainer.style.cursor = 'grabbing'; // Mauszeiger wird zur greifenden Hand
-      startX = e.pageX - filterContainer.offsetLeft;
-      scrollLeft = filterContainer.scrollLeft;
-    });
-
-    filterContainer.addEventListener('mouseleave', () => {
-      isDown = false;
-      filterContainer.style.cursor = 'default';
-    });
-
-    filterContainer.addEventListener('mouseup', () => {
-      isDown = false;
-      filterContainer.style.cursor = 'default';
-    });
-
-    filterContainer.addEventListener('mousemove', (e) => {
-      if (!isDown) return; // Stoppt die Funktion, wenn die Maus nicht gedrückt ist
-      e.preventDefault();
-      const x = e.pageX - filterContainer.offsetLeft;
-      const walk = (x - startX) * 1.5; // Die 1.5 bestimmt, wie schnell gescrollt wird
-      filterContainer.scrollLeft = scrollLeft - walk;
-    });
   </script>
 
-  <nav class="dev-nav">
-    <div class="dev-nav-header">DEV-Navigation</div>
-    <div><a href="login.html" class="dev-btn">🔑 Login</a></div>
-    <div><a href="register.html" class="dev-btn">📝 Registrieren</a></div>
-    <div><a href="home.html" class="dev-btn">🏠 Home</a></div>
-    <div><a href="meeting-form.html" class="dev-btn">➕ Erstellen</a></div>
-    <div><a href="saved.html" class="dev-btn">💾 Gespeichert</a></div>
-    <div><a href="profile.html" class="dev-btn">👤 Eigenes Profil</a></div>
-    <div><a href="profile-view.html" class="dev-btn">👁️ Fremdes Profil</a></div>
-    <div><a href="profile-edit.html" class="dev-btn">✏️ Profil bearbeiten</a></div>
-    <div><a href="settings.html" class="dev-btn">⚙️ Einstellungen</a></div>
-    <div><a href="map.html" class="dev-btn">🗺️ Kartenansicht</a></div>
-    <div><a href="event-details.html" class="dev-btn">🚫 📝 Event Details</a></div>
-    <div><a href="chat.html" class="dev-btn">🚫 💬 Chat</a></div>
-    <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border);">
-      <button id="devThemeToggle" class="dev-btn" style="background: none; border: none; cursor: pointer; width: 100%; text-align: left; padding: 4px 0;">
-        🌗 Modus wechseln
-      </button>
-    </div>
-  </nav>
+<!-- DEV Navigation - Nur für Entwickler sichtbar, um schnell zwischen Seiten zu wechseln -->
+<nav class="dev-nav">
+  <div class="dev-nav-header">DEV-Navigation</div>
+  
+  <div><a href="login.html" class="dev-btn">🔑 Login</a></div>
+  <div><a href="register.html" class="dev-btn">📝 Registrieren</a></div>
+  <div><a href="home.html" class="dev-btn">🏠 Home</a></div>
+  <div><a href="meeting-form.html" class="dev-btn">➕ Erstellen</a></div>
+  <div><a href="saved.html" class="dev-btn">💾 Gespeichert</a></div>
+  <div><a href="profile.html" class="dev-btn">👤 Eigenes Profil</a></div>
+  <div><a href="profile-view.html" class="dev-btn">👁️ Fremdes Profil</a></div>
+  <div><a href="profile-edit.html" class="dev-btn">✏️ Profil bearbeiten</a></div>
+  <div><a href="settings.html" class="dev-btn">⚙️ Einstellungen</a></div>
+  <div><a href="map.html" class="dev-btn">🗺️ Kartenansicht</a></div>
+  <div><a href="event-details.html" class="dev-btn">🚫 📝 Event Details</a></div>
+  <div><a href="chat.html" class="dev-btn">🚫 💬 Chat</a></div>
 
+  <div style="margin-top: 5px; padding-top: 10px; border-top: 1px solid #363434;">
+    <button id="devThemeToggle" class="dev-btn-action">
+      🌗 Modus wechseln
+    </button>
+  </div>
+</nav>
   <script>
-    const devThemeBtn = document.getElementById('devThemeToggle');
-    if (devThemeBtn) {
-      devThemeBtn.addEventListener('click', () => {
-        const isDark = document.body.classList.toggle('dark-mode');
-        localStorage.setItem('theme', isDark ? 'dark' : 'light');
-        // Im neuen System brauchen wir keinen Reload mehr, 
-        // weil CSS das Invertieren live und ohne Ruckeln übernimmt!
-      });
-    }
+    document.getElementById('devThemeToggle').addEventListener('click', () => {
+      const isDark = document.body.classList.toggle('dark-mode');
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    });
   </script>
 </body>
 </html>
