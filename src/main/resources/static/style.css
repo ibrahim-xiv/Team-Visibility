@@ -1524,3 +1524,23 @@ form.register-form {
 body.dark-mode #devThemeToggle {
   color: #a8a8a8 !important;
 }
+/* Aktiver Navigations-Punkt */
+.nav-btn.is-active {
+  color: var(--primary) !important; /* Nutzt dein Blau für das aktive Icon */
+  background: var(--hover-bg);     /* Optional: Ein leichter Hintergrund-Effekt */
+}
+
+/* Damit das Icon im aktiven Zustand nicht verblasst */
+.nav-btn.is-active svg {
+  fill: var(--primary); 
+}
+
+// Automatische Markierung des aktiven Nav-Buttons
+document.querySelectorAll('.nav-btn').forEach(link => {
+  // Wenn die URL des Links im aktuellen Pfad vorkommt
+  if (link.href === window.location.href) {
+    link.classList.add('is-active');
+  } else {
+    link.classList.remove('is-active');
+  }
+});
