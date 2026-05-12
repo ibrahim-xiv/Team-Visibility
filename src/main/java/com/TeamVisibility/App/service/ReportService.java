@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 
 import com.TeamVisibility.App.model.Report;
 import com.TeamVisibility.App.repository.ReportRepository;
-
+import java.util.List;
 @Service
 public class ReportService {
 
@@ -17,4 +17,8 @@ public class ReportService {
     public Report createReport(Report report) {
         return reportRepository.save(report);
     }
+// Steve: Für Admin-Ansicht - alle Reports laden
+public List<Report> findAll() {
+    return reportRepository.findAll();
+}
 }
