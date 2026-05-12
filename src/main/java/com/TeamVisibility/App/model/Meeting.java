@@ -1,34 +1,83 @@
-package com.TeamVisibility.App.model; // Passe den Package-Namen an dein Projekt an
+package com.TeamVisibility.App.model;
+
+import java.time.LocalDateTime;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
+/**
+ * Meeting / Event entity.
+ *
+ * Merged from:
+ *   - feature/registration (base shape)
+ *   - feature/meeting-object (creator/category/lat/lng/locationName/date_time)
+ *   - feature/favorite (kept compatible field set)
+ *
+ * The simple Long foreign-key style (creator_id, category_id) is preserved
+ * intentionally - the branches do not yet model proper JPA relations, and the
+ * goal here is stabilization, not refactor.
+ */
 @Entity
+@Table(name = "meetings")
 public class Meeting {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private Long creatorId;
+    private Long categoryId;
+
     private String title;
-    private String meetingDate; // Fürs MVP reicht String, später LocalDateTime
-    private String location;
-    private boolean isNonProfit;
+    private String description;
 
-    // Leerer Konstruktor für Spring
-    public Meeting() {}
+    /** Free-text location name shown in UI (e.g. "Stadtpark"). */
+    private String locationName;
 
-    // Getter und Setter
+    /** Latitude / longitude for the map view. */
+    private Float lat;
+    private Float lng;
+
+    private LocalDateTime dateTime;
+
+    /** Branches enforced that meetings must be non-profit. Kept as a flag. */
+    private Boolean nonProfit;
+
+    public Meeting() {
+    }
+
+    // --- getters / setters ---
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
+
+    public Long getCreatorId() { return creatorId; }
+    public void setCreatorId(Long creatorId) { this.creatorId = creatorId; }
+
+    public Long getCategoryId() { return categoryId; }
+    public void setCategoryId(Long categoryId) { this.categoryId = categoryId; }
+
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }
-    public String getMeetingDate() { return meetingDate; }
-    public void setMeetingDate(String meetingDate) { this.meetingDate = meetingDate; }
-    public String getLocation() { return location; }
-    public void setLocation(String location) { this.location = location; }
-    public boolean isNonProfit() { return isNonProfit; }
-    public void setNonProfit(boolean isNonProfit) { this.isNonProfit = isNonProfit; }
+
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
+
+    public String getLocationName() { return locationName; }
+    public void setLocationName(String locationName) { this.locationName = locationName; }
+
+    public Float getLat() { return lat; }
+    public void setLat(Float lat) { this.lat = lat; }
+
+    public Float getLng() { return lng; }
+    public void setLng(Float lng) { this.lng = lng; }
+
+    public LocalDateTime getDateTime() { return dateTime; }
+    public void setDateTime(LocalDateTime dateTime) { this.dateTime = dateTime; }
+
+    public Boolean getNonProfit() { return nonProfit; }
+    public void setNonProfit(Boolean nonProfit) { this.nonProfit = nonProfit; }
 }
