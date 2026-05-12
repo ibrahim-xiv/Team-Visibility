@@ -20,6 +20,7 @@ public class Meeting {
 
     private String title;
     private String description;
+
     private Float lat;
     private Float lng;
     
@@ -28,6 +29,7 @@ public class Meeting {
     
     private LocalDateTime date_time;
     private Boolean isNonProfit;
+
 
     // Leerer Konstruktor für Spring
     public Meeting() {}
