@@ -97,35 +97,71 @@
     </div>
   </div>
 
-  <script>
-    const toggle = document.getElementById('darkModeToggle');
-    const logoutBtn = document.getElementById('logoutBtn');
-    const logoutOverlay = document.getElementById('logoutOverlay');
+ <script>
+  // ── ELEMENTE FINDEN ──
+  const toggle = document.getElementById('darkModeToggle');
+  const logoutBtn = document.getElementById('logoutBtn');
+  const logoutOverlay = document.getElementById('logoutOverlay');
+  const devThemeBtn = document.getElementById('devThemeToggle');
+  const devNav = document.querySelector('.dev-nav');
+  const devHeader = document.querySelector('.dev-nav-header');
 
-    // 1. Darkmode Logik
-    const isDark = localStorage.getItem('theme') === 'dark';
-    toggle.checked = isDark;
-    if(isDark) document.body.classList.add('dark-mode');
+  // ── 1. DARKMODE FUNKTION ──
+  function updateTheme(isDark) {
+    if (isDark) {
+      document.body.classList.add('dark-mode');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.body.classList.remove('dark-mode');
+      localStorage.setItem('theme', 'light');
+    }
+    // Beide Schalter synchronisieren
+    if (toggle) toggle.checked = isDark;
+  }
 
-    toggle.onchange = () => {
-      if(toggle.checked) {
-        document.body.classList.add('dark-mode');
-        localStorage.setItem('theme', 'dark');
-      } else {
-        document.body.classList.remove('dark-mode');
-        localStorage.setItem('theme', 'light');
-      }
-    };
+  // Initialer Check beim Laden
+  const currentIsDark = localStorage.getItem('theme') === 'dark';
+  updateTheme(currentIsDark);
 
-    // 2. Logout Logik
+  // Event für den normalen Toggle-Switch
+  if (toggle) {
+    toggle.onchange = () => updateTheme(toggle.checked);
+  }
+
+  // Event für den DEV-Modus Schalter
+  if (devThemeBtn) {
+    devThemeBtn.addEventListener('click', () => {
+      const isNowDark = !document.body.classList.contains('dark-mode');
+      updateTheme(isNowDark);
+    });
+  }
+
+  // ── 2. LOGOUT LOGIK ──
+  if (logoutBtn) {
     logoutBtn.onclick = () => logoutOverlay.hidden = false;
+  }
+  if (document.getElementById('cancelLogout')) {
     document.getElementById('cancelLogout').onclick = () => logoutOverlay.hidden = true;
+  }
+  if (document.getElementById('confirmLogout')) {
     document.getElementById('confirmLogout').onclick = () => {
-      localStorage.removeItem('visibility-profile'); // Daten löschen (optional)
+      localStorage.removeItem('visibility-profile');
       window.location.href = 'login.html';
     };
-}
-  </script>
+  }
+
+  // ── 3. DEV-NAV COLLAPSE LOGIK ──
+  if (devNav && devHeader) {
+    if (localStorage.getItem('devNavCollapsed') === 'true') {
+      devNav.classList.add('collapsed');
+    }
+
+    devHeader.addEventListener('click', () => {
+      const isNowCollapsed = devNav.classList.toggle('collapsed');
+      localStorage.setItem('devNavCollapsed', isNowCollapsed);
+    });
+  }
+</script>
 <!-- DEV Navigation - Nur für Entwickler sichtbar, um schnell zwischen Seiten zu wechseln -->
 <nav class="dev-nav">
   <div class="dev-nav-header">DEV-Navigation</div>
