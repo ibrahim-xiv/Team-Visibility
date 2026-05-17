@@ -1953,3 +1953,609 @@ form {
     bottom: auto !important;   /* Deaktiviert die Positionierung unten */
   }
 }
+
+/* ── KARTENANSICHT (map.html) ── */
+
+.map-content {
+  position: relative;
+  flex: 1; 
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+    
+#map { 
+  width: 100%; 
+  flex: 1; 
+  z-index: 1; 
+  background: var(--bg); 
+}
+
+/* Lebendige Darkmode-Karte via Filter */
+body.dark-mode .leaflet-tile-pane {
+  filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(85%);
+}
+
+.map-overlay {
+  position: absolute;
+  top: 15px;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+.filter-scroll {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 4px 15px 15px 15px;
+  pointer-events: auto;
+  scrollbar-width: none; 
+  -ms-overflow-style: none; 
+}
+.filter-scroll::-webkit-scrollbar { display: none; }
+
+.filter-scroll .tag-chip {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  border-color: transparent;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.map-controls-bottom {
+  position: absolute;
+  bottom: 20px;
+  right: 15px;
+  left: 15px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+  pointer-events: none; 
+}
+
+.center-btn {
+  pointer-events: auto;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+}
+
+.radius-card {
+  pointer-events: auto;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  width: 100%;
+}
+
+.radius-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: .95rem;
+  font-weight: 800;
+  margin-bottom: 10px;
+}
+
+.radius-slider {
+  width: 100%;
+  accent-color: var(--primary);
+}
+
+.event-pin {
+  background: var(--primary);
+  color: white;
+  border: 2px solid white;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.pin-text { 
+  transform: rotate(45deg); 
+  font-weight: 800; 
+  font-size: 14px; 
+}
+
+.home-pin {
+  background: var(--text);
+  border: 2px solid var(--surface);
+  border-radius: 50%;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+/* Fix für den Modus-Wechsel Button in der DEV-Nav */
+#devThemeToggle {
+  background: none !important;
+  border: none !important;
+  color: #a8a8a8 !important;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 0 !important;
+  cursor: pointer;
+}
+
+/* ── 23. EVENT DETAILS (event-details.html) ───────────────── */
+
+.event-top-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.btn-map-link {
+  background: rgba(34, 197, 94, 0.15);
+  color: #16a34a;
+  border: 1px solid #22c55e;
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 800;
+  text-align: center;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+.btn-map-link:hover { background: rgba(34, 197, 94, 0.25); }
+.btn-map-link svg { width: 20px; height: 20px; }
+
+.organizer-card {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  text-align: center;
+  text-decoration: none;
+  color: var(--text);
+}
+.organizer-card:hover { background: var(--hover-bg); }
+
+.organizer-avatar {
+  width: 32px; height: 32px;
+  background: var(--hover-bg);
+  border-radius: 50%;
+  display: grid; place-items: center;
+}
+.organizer-avatar svg { width: 18px; height: 18px; color: var(--muted); }
+.organizer-name { font-weight: 800; font-size: 0.9rem; margin: 0; }
+.organizer-sub { font-size: 0.75rem; color: var(--hint); margin: 0; }
+
+.event-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.event-header h2 { margin: 0; font-size: 1.4rem; font-weight: 900; }
+.distance-badge { font-weight: 800; color: var(--text); font-size: 1rem; }
+
+.event-info-text {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--text);
+  margin-bottom: 20px;
+}
+.event-info-text strong { font-weight: 800; }
+.event-info-text p { margin: 0 0 6px 0; }
+
+/* ── GALERIE ── */
+.event-gallery {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+  scrollbar-width: none;
+  cursor: grab;
+  user-select: none;
+}
+.event-gallery:active { cursor: grabbing; }
+.event-gallery::-webkit-scrollbar { display: none; }
+
+.gallery-img {
+  width: 130px;
+  height: 130px;
+  flex-shrink: 0;
+  background: var(--hover-bg);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-sm);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--hint);
+  font-size: 0.85rem;
+  font-weight: 700;
+  gap: 6px;
+}
+
+/* ── ACTION BUTTONS ── */
+.action-stack {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.action-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+/* Teilnehmen & Verlassen Button */
+.btn-join-main {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 16px;
+  border-radius: var(--radius-sm);
+  font-size: 1.05rem;
+  font-weight: 800;
+  text-align: center;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-join-main:hover { background: var(--primary-hover); }
+
+.btn-join-main.is-joined {
+  background: transparent;
+  color: var(--danger-text);
+  border: 1px solid var(--danger-hover);
+}
+.btn-join-main.is-joined:hover { background: var(--danger-hover); }
+
+/* Gruppenchat mit Split-Button */
+.btn-group-chat-wrap {
+  display: none;
+  grid-template-columns: 1fr 52px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+.btn-group-chat-wrap.is-visible {
+  display: grid;
+}
+
+.btn-group-chat {
+  background: #16a34a;
+  color: white;
+  border: none;
+  padding: 16px;
+  font-size: 1.05rem;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.btn-group-chat:hover { background: #15803d; }
+
+.btn-group-chat-toggle {
+  background: #15803d;
+  color: white;
+  border: none;
+  border-left: 1px solid rgba(255,255,255,0.2);
+  cursor: pointer;
+  font-size: 1.3rem;
+  transition: transform 0.2s;
+}
+.btn-group-chat-toggle.is-open { transform: rotate(180deg); }
+
+/* Dropdown */
+.btn-dropdown {
+  display: none;
+  flex-direction: column;
+  gap: 8px;
+}
+.btn-dropdown.is-open {
+  display: flex;
+}
+
+.btn-secondary {
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  padding: 14px;
+  border-radius: var(--radius-sm);
+  font-size: 0.95rem;
+  font-weight: 800;
+  text-align: center;
+  cursor: pointer;
+  width: 100%;
+}
+.btn-secondary:hover { background: var(--hover-bg); }
+
+/* Kompakte Speichern & Melden Buttons (Nur Text) */
+.btn-save, .btn-report {
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  padding: 14px;
+  border-radius: var(--radius-sm);
+  font-weight: 800;
+  font-size: 0.95rem;
+  text-align: center;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.btn-save:hover { background: var(--hover-bg); }
+.btn-report:hover { background: var(--danger); color: var(--danger-text); border-color: var(--danger-hover); }
+
+/* Gelber aktiver Status wie auf der Home-Seite */
+.btn-save.is-saved {
+  background: #fef08a !important; 
+  color: #f59e0b !important;
+  border-color: #fcd34d !important;
+}
+
+
+    /* Spezifisches CSS für die Event-Details Seite */
+    .event-top-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .btn-map-link {
+      background: rgba(34, 197, 94, 0.15);
+      color: #16a34a;
+      border: 1px solid #22c55e;
+      border-radius: var(--radius-sm, 10px);
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-weight: 800;
+      text-align: center;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+    .btn-map-link:hover { background: rgba(34, 197, 94, 0.25); }
+    .btn-map-link svg { width: 20px; height: 20px; }
+
+    .organizer-card {
+      border: 1px solid var(--border);
+      background: var(--surface);
+      border-radius: var(--radius-sm, 10px);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      text-align: center;
+      text-decoration: none;
+      color: var(--text);
+    }
+    .organizer-card:hover { background: var(--hover-bg); }
+
+    .organizer-avatar {
+      width: 32px; height: 32px;
+      background: var(--hover-bg);
+      border-radius: 50%;
+      display: grid; place-items: center;
+    }
+    .organizer-avatar svg { width: 18px; height: 18px; color: var(--muted); }
+    .organizer-name { font-weight: 800; font-size: 0.9rem; margin: 0; }
+    .organizer-sub { font-size: 0.75rem; color: var(--hint); margin: 0; }
+
+    .event-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .event-header h2 { margin: 0; font-size: 1.4rem; font-weight: 900; }
+    .distance-badge { font-weight: 800; color: var(--text); font-size: 1rem; }
+
+    .event-info-text {
+      font-size: 0.95rem;
+      line-height: 1.5;
+      color: var(--text);
+      margin-bottom: 20px;
+    }
+    .event-info-text strong { font-weight: 800; }
+    .event-info-text p { margin: 0 0 6px 0; }
+
+    /* ── GALERIE ── */
+    .event-gallery {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      padding-bottom: 10px;
+      margin-bottom: 20px;
+      scrollbar-width: none;
+      cursor: grab;
+      user-select: none;
+    }
+    .event-gallery:active { cursor: grabbing; }
+    .event-gallery::-webkit-scrollbar { display: none; }
+
+    .gallery-img {
+      width: 130px;
+      height: 130px;
+      flex-shrink: 0;
+      background: var(--hover-bg);
+      border: 1px dashed var(--border);
+      border-radius: var(--radius-sm, 10px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--hint);
+      font-size: 0.85rem;
+      font-weight: 700;
+      gap: 6px;
+    }
+
+    /* ── ACTION BUTTONS ── */
+    .action-stack {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .action-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    /* Teilnehmen & Verlassen Button */
+    .btn-join-main {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 16px;
+      border-radius: var(--radius-sm, 10px);
+      font-size: 1.05rem;
+      font-weight: 800;
+      text-align: center;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-join-main:hover { background: var(--primary-hover); }
+
+    .btn-leave {
+      background: transparent;
+      color: var(--danger-text);
+      border: 1px solid var(--danger-hover);
+      padding: 16px;
+      border-radius: var(--radius-sm, 10px);
+      font-size: 1.05rem;
+      font-weight: 800;
+      text-align: center;
+      cursor: pointer;
+      display: none;
+    }
+    .btn-leave.is-visible { display: block; }
+    .btn-leave:hover { background: var(--danger-hover); }
+
+    /* Gruppenchat mit Split-Button */
+    .btn-group-chat-wrap {
+      display: none;
+      grid-template-columns: 1fr 52px;
+      border-radius: var(--radius-sm, 10px);
+      overflow: hidden;
+    }
+    .btn-group-chat-wrap.is-visible {
+      display: grid;
+    }
+
+    .btn-group-chat {
+      background: #16a34a;
+      color: white;
+      border: none;
+      padding: 16px;
+      font-size: 1.05rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .btn-group-chat:hover { background: #15803d; }
+
+    .btn-group-chat-toggle {
+      background: #15803d;
+      color: white;
+      border: none;
+      border-left: 1px solid rgba(255,255,255,0.2);
+      cursor: pointer;
+      font-size: 1.3rem;
+      transition: transform 0.2s;
+    }
+    .btn-group-chat-toggle.is-open { transform: rotate(180deg); }
+
+    /* Dropdown */
+    .btn-dropdown {
+      display: none;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .btn-dropdown.is-open {
+      display: flex;
+    }
+
+    .btn-secondary {
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 14px;
+      border-radius: var(--radius-sm, 10px);
+      font-size: 0.95rem;
+      font-weight: 800;
+      text-align: center;
+      cursor: pointer;
+      width: 100%;
+    }
+    .btn-secondary:hover { background: var(--hover-bg); }
+
+    /* Kompakte Speichern & Melden Buttons */
+    .btn-save, .btn-report {
+      padding: 14px;
+      border-radius: var(--radius-sm, 10px);
+      font-weight: 800;
+      font-size: 0.95rem;
+      text-align: center;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s, border-color 0.2s;
+    }
+
+    .btn-save {
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-save:hover { background: var(--hover-bg); }
+    
+    /* Aktiver Gelber Status wie auf Home */
+    .btn-save.is-saved {
+      background: #fef08a !important; 
+      color: #f59e0b !important;
+      border-color: #fcd34d !important;
+    }
+
+    /* Melden Button standardmäßig Rot */
+    .btn-report {
+      background: var(--danger);
+      color: var(--danger-text);
+      border: 1px solid var(--danger-hover);
+    }
+    .btn-report:hover {
+      background: var(--danger-hover);
+    }

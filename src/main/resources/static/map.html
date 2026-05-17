@@ -213,11 +213,13 @@
     const eventMarkers = []; 
     const activeCategories = new Set();
     const isDark = document.body.classList.contains('dark-mode');
+    const urlParams = new URLSearchParams(window.location.search);
+    const mapEventId = urlParams.get('id');
 
     const map = L.map('map', { zoomControl: false, zoomSnap: 0.1, zoomDelta: 0.1 }).setView(userLoc, 13);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
-    function addEvent(lat, lng, label, title, time, category) {
+    function addEvent(id, lat, lng, label, title, time, category) {
       const icon = L.divIcon({
         className: 'custom-icon',
         html: `<div class="event-pin"><span class="pin-text">${label}</span></div>`,
@@ -225,20 +227,30 @@
       });
       const marker = L.marker([lat, lng], { icon: icon });
       marker.bindPopup(`<div class="popup-custom"><strong>${title}</strong><small>${time}</small></div>`);
-      eventMarkers.push({ leafletObj: marker, latlng: L.latLng(lat, lng), category: category });
+      eventMarkers.push({ id, leafletObj: marker, latlng: L.latLng(lat, lng), category: category });
     }
 
     // Ganz viele Events einbauen
-    addEvent(53.528, 8.108, '🎲', 'Spieleabend: Catan', 'Heute, 19:00', 'spieleabend');
-    addEvent(53.526, 8.125, '🏃', 'Morgenjogger', 'Morgen, 07:00', 'sport');
-    addEvent(53.522, 8.108, '✨', 'Poker Abend', 'Samstag, 18.04.2026', 'freizeit');
-    addEvent(53.518, 8.135, '🎭', 'Kultur Treff', 'Freitag, 20:00', 'kultur');
-    addEvent(53.517, 8.128, '👥', 'Community Brunch', 'Sonntag, 10:00', 'community');
-    addEvent(53.555, 8.145, '⛵', 'Segelkurs Rüstersiel', 'Samstag, 10:00', 'sport');
-    addEvent(53.610, 8.130, '🌊', 'Strand-Party Hooksiel', 'Samstag, 21:00', 'freizeit');
-    addEvent(53.430, 8.040, '🚴', 'MTB Tour Süd-Marsch', 'Sonntag, 11:00', 'sport');
-    addEvent(53.450, 8.150, '🚜', 'Bauernhof-Fest', 'Sonntag, 10:00', 'community');
-    addEvent(53.620, 8.050, '🪁', 'Drachenfest im Norden', 'Samstag, 14:00', 'freizeit');
+    addEvent('ev_1', 53.528, 8.108, '🎲', 'Brettspielabend', 'Samstag, 18.04.2026', 'spieleabend');
+    addEvent('ev_2', 53.526, 8.125, '🏃', 'Morgenjogger', 'Montag, 20.03.2026', 'sport');
+    addEvent('ev_3', 53.520, 8.120, '🐾', 'Hundespaziergang', 'Dienstag, 31.03.2026', 'community');
+    addEvent('ev_4', 53.522, 8.108, '✨', 'Poker Abend', 'Samstag, 18.04.2026', 'freizeit');
+    addEvent('ev_5', 53.518, 8.135, '🎉', 'Filmabend im Hof', 'Freitag, 20:00', 'freizeit');
+    addEvent('ev_6', 53.510, 8.130, '🧘', 'Yoga im Park', 'Sonntag, 27.04.2026', 'sport');
+    addEvent('ev_7', 53.515, 8.128, '🎭', 'Lesekreis', 'Dienstag, 05.05.2026', 'kultur');
+    addEvent('ev_8', 53.513, 8.117, '☕', 'Café-Stammtisch', 'Donnerstag, 14.05.2026', 'community');
+    addEvent('ev_x', 53.555, 8.145, '⛵', 'Segelkurs Rüstersiel', 'Samstag, 10:00', 'sport');
+    addEvent('ev_y', 53.610, 8.130, '🌊', 'Strand-Party Hooksiel', 'Samstag, 21:00', 'freizeit');
+    addEvent('ev_z', 53.430, 8.040, '🚴', 'MTB Tour Süd-Marsch', 'Sonntag, 11:00', 'sport');
+    addEvent('ev_w', 53.450, 8.150, '🚜', 'Bauernhof-Fest', 'Sonntag, 10:00', 'community');
+    addEvent('ev_v', 53.620, 8.050, '🪁', 'Drachenfest im Norden', 'Samstag, 14:00', 'freizeit');
+
+    if (mapEventId) {
+      const targetEvent = eventMarkers.find(e => e.id === mapEventId);
+      if (targetEvent) {
+        map.setView(targetEvent.latlng, 15);
+      }
+    }
 
     const homeIcon = L.divIcon({
       className: 'home-icon',
@@ -255,15 +267,18 @@
     function updateMapDisplay() {
       const radiusMeters = parseInt(document.getElementById('radiusSlider').value);
       eventMarkers.forEach(event => {
-        const matchesCategory = activeCategories.size === 0 || activeCategories.has(event.category);
+        const matchesCategory = mapEventId || activeCategories.size === 0 || activeCategories.has(event.category);
+        const matchesEventId = !mapEventId || event.id === mapEventId;
         const distance = map.distance(userLoc, event.latlng);
         const inRadius = distance <= radiusMeters;
-        if (!matchesCategory) {
+
+        if (!matchesEventId || !matchesCategory) {
           if (map.hasLayer(event.leafletObj)) map.removeLayer(event.leafletObj);
-        } else {
-          if (!map.hasLayer(event.leafletObj)) event.leafletObj.addTo(map);
-          event.leafletObj.setOpacity(inRadius ? 1.0 : 0.2);
+          return;
         }
+
+        if (!map.hasLayer(event.leafletObj)) event.leafletObj.addTo(map);
+        event.leafletObj.setOpacity(mapEventId ? 1.0 : (inRadius ? 1.0 : 0.2));
       });
     }
 
