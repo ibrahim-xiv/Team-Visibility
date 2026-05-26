@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css" />
+  <title>Visibility – Registrierung</title>
+</head>
+
+<body>
+
+  <script>
+    if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');
+  </script>
+
+
+  <main class="phone">
+    <header class="header">
+      <div class="brand">
+        <span>👁️</span>
+        <span>Visibility</span>
+      </div>
+    </header>
+
+    <section class="content">
+      <h2>Register</h2>
+      <form id="registerForm" novalidate>
+        <div class="form-group" data-field="firstname">
+          <label>Vorname</label>
+          <input class="input" id="firstname" type="text" placeholder="Max">
+        </div>
+        <div class="form-group" data-field="lastname">
+          <label>Nachname</label>
+          <input class="input" id="lastname" type="text" placeholder="Mustermann">
+        </div>
+        <div class="form-group" data-field="email">
+          <label>Email</label>
+          <input class="input" id="email" type="email" placeholder="name@email.de">
+        </div>
+        <div class="form-group" data-field="password">
+          <label>Passwort</label>
+          <input class="input" id="password" type="password" placeholder="******">
+          <div class="hint-text">Mindestens 1 Großbuchstabe und 1 Zahl.</div>
+        </div>
+        <button class="submit-btn" type="submit">Registrieren</button>
+        <a class="login-link" href="login.html">Bereits registriert? Anmelden ></a>
+      </form>
+    </section>
+  </main>
+
+  <div class="modal-overlay" id="verifyModal">
+    <div class="modal-content">
+      <h2>Code bestätigen</h2>
+      <p id="modalEmailText" style="color: var(--muted); margin-top: 8px; line-height: 1.4;">
+        Wir haben dir einen 5-stelligen Code gesendet.
+      </p>
+      
+      <div class="code-inputs">
+        <input class="code-input" type="text" maxlength="1">
+        <input class="code-input" type="text" maxlength="1">
+        <input class="code-input" type="text" maxlength="1">
+        <input class="code-input" type="text" maxlength="1">
+        <input class="code-input" type="text" maxlength="1">
+      </div>
+      <button class="btn-send-code" id="sendCodeBtn">Code erneut senden</button>
+      <button class="btn-confirm" id="confirmCodeBtn">Bestätigen</button>
+      
+      <button id="wrongEmailBtn" style="all: unset; color: var(--primary); font-size: 0.85rem; cursor: pointer; text-decoration: underline; margin-top: 15px; display: block; width: 100%; font-weight: 700;">
+        Falsche Email?
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // THEME LOGIK
+    const themeBtn = document.getElementById('devThemeToggle');
+    if (themeBtn) {
+      themeBtn.addEventListener('click', () => {
+        const isDark = document.body.classList.toggle('dark-mode');
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      });
+    }
+
+    // REGISTRIERUNGS LOGIK
+    const form = document.getElementById('registerForm');
+    const verifyModal = document.getElementById('verifyModal');
+    const emailInput = document.getElementById('email');
+    const modalEmailText = document.getElementById('modalEmailText');
+    const wrongEmailBtn = document.getElementById('wrongEmailBtn');
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      const emailValue = emailInput.value.trim();
+
+      if(emailValue.includes('@')) {
+          // --- EMAIL MASKIERUNG LOGIK ---
+          // Nimmt die ersten 2 Zeichen + "xx" + alles ab dem @-Zeichen
+          const atIndex = emailValue.lastIndexOf("@");
+          const domain = emailValue.substring(atIndex);
+          const start = emailValue.substring(0, 2);
+          const maskedEmail = start + "xx" + domain;
+
+          modalEmailText.innerHTML = `Wir haben dir einen 5-stelligen Code an <strong style="color: var(--text);">${maskedEmail}</strong> gesendet.`;
+          
+          verifyModal.style.display = 'flex';
+      } else {
+          alert('Bitte fülle das Formular aus.');
+      }
+    });
+
+    // Falsche Email Button schließt das Modal
+    wrongEmailBtn.addEventListener('click', () => {
+        verifyModal.style.display = 'none';
+        emailInput.focus(); // Direkt zurück zum Email-Feld springen
+    });
+
+    // --- TIMER LOGIK FÜR CODE ERNEUT SENDEN ---
+    const sendCodeBtn = document.getElementById('sendCodeBtn');
+    let timerInterval;
+    
+    sendCodeBtn.addEventListener('click', () => {
+      sendCodeBtn.disabled = true;
+      let secondsLeft = 60;
+      sendCodeBtn.textContent = `Warten (${secondsLeft}s)`;
+      
+      timerInterval = setInterval(() => {
+        secondsLeft--;
+        sendCodeBtn.textContent = `Warten (${secondsLeft}s)`;
+        if (secondsLeft <= 0) {
+          clearInterval(timerInterval);
+          sendCodeBtn.disabled = false;
+          sendCodeBtn.textContent = "Code erneut senden";
+        }
+      }, 1000);
+      console.log("Verifizierungs-Code wurde gesendet!");
+    });
+
+    // Auto-Focus für Code
+    const codeInputs = [...document.querySelectorAll('.code-input')];
+    codeInputs.forEach((input, index) => {
+      input.addEventListener('input', () => {
+        input.value = input.value.replace(/[^0-9]/g, '');
+        if (input.value && index < codeInputs.length - 1) codeInputs[index + 1].focus();
+      });
+      input.addEventListener('keydown', e => {
+        if (e.key === 'Backspace' && !input.value && index > 0) codeInputs[index - 1].focus();
+      });
+    });
+
+    verifyModal.addEventListener('click', e => {
+      if (e.target === verifyModal) verifyModal.style.display = 'none';
+    });
+
+    document.getElementById('confirmCodeBtn').addEventListener('click', () => {
+        window.location.href = 'home.html';
+    });
+
+    // ── DEV-NAV COLLAPSE LOGIK ──
+    const devNav = document.querySelector('.dev-nav');
+    const devHeader = document.querySelector('.dev-nav-header');
+
+    if (devNav && devHeader) {
+        if (localStorage.getItem('devNavCollapsed') === 'true') {
+            devNav.classList.add('collapsed');
+        }
+        devHeader.addEventListener('click', () => {
+            const isNowCollapsed = devNav.classList.toggle('collapsed');
+            localStorage.setItem('devNavCollapsed', isNowCollapsed);
+        });
+    }
+  </script>
+</body>
+</html>
