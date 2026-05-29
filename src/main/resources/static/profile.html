@@ -137,12 +137,29 @@
       </div>
     `).join('');
 
-    // Profil-Daten aus localStorage laden (von profile-edit.html)
+    // Profil-Daten aus localStorage laden
     const saved = JSON.parse(localStorage.getItem('visibility-profile') || 'null');
-    if (saved) {
-      if (saved.name) document.getElementById('profileName').textContent = saved.name;
-      if (saved.location) document.getElementById('profileLocation').textContent = saved.location;
-      if (saved.bio) document.getElementById('profileBio').textContent = saved.bio;
+
+    // Name: aus Profil oder leer
+    document.getElementById('profileName').textContent = saved?.name || '–';
+
+    // Ort: nur anzeigen wenn gesetzt
+    const locationEl = document.getElementById('profileLocation');
+    if (saved?.location) {
+      locationEl.textContent = saved.location;
+    } else {
+      locationEl.textContent = 'Noch kein Standort angegeben';
+    }
+
+    // Bio: nur anzeigen wenn gesetzt
+    const bioEl = document.getElementById('profileBio');
+    if (saved?.bio) {
+      bioEl.textContent = saved.bio;
+      bioEl.style.fontStyle = 'normal';
+    } else {
+      bioEl.textContent = 'Noch keine Beschreibung – Profil bearbeiten, um etwas über dich zu erzählen.';
+      bioEl.style.fontStyle = 'italic';
+      bioEl.style.opacity = '0.55';
     }
 
     // Interessen rendern
@@ -151,7 +168,7 @@
       'Kultur': '🎭', 'Freizeit': '🎉', 'Natur': '🌿',
       'Musik': '🎵', 'Kino': '🎬'
     };
-    const interests = saved?.interests ?? ['Spieleabend', 'Community'];
+    const interests = saved?.interests ?? [];
     const tagsWrap = document.getElementById('interestTags');
     if (interests.length) {
       tagsWrap.innerHTML = interests.map(tag =>
