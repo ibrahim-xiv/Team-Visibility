@@ -140,6 +140,19 @@
     });
 
     document.getElementById('confirmCodeBtn').addEventListener('click', () => {
+      // Namen aus dem Formular in localStorage speichern
+      const fn = document.getElementById('firstname').value.trim();
+      const ln = document.getElementById('lastname').value.trim();
+      if (fn || ln) {
+        // Neues Profil anlegen – nur mit Namen, alles andere leer
+        const newProfile = {
+          name: `${fn} ${ln}`.trim(),
+          location: '',
+          bio: '',
+          interests: []
+        };
+        localStorage.setItem('visibility-profile', JSON.stringify(newProfile));
+      }
       window.location.href = 'home.html';
     });
   </script>
