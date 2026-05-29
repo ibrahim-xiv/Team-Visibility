@@ -113,12 +113,38 @@
 
   <script>
     // DOM-Referenzen
-    const infoBadge      = document.querySelector('.info-badge');
-    const infoOverlay    = document.getElementById('infoOverlay');
+    const infoBadge       = document.querySelector('.info-badge');
+    const infoOverlay     = document.getElementById('infoOverlay');
     const closeOverlayBtn = document.querySelector('[data-close-overlay]');
-    const form           = document.getElementById('eventForm');
+    const form            = document.getElementById('eventForm');
 
     const requiredFields = ['titel', 'ort', 'kategorie', 'kostenlos'];
+
+    // ── EDIT MODE: Event-Daten vorladen wenn ?edit=ID in URL ──
+    const editParams = new URLSearchParams(window.location.search);
+    const editId = editParams.get('edit');
+    let isEditMode = false;
+
+    if (editId) {
+      const myEvents = JSON.parse(localStorage.getItem('visibility-my-events') || '[]');
+      const existingEvent = myEvents.find(e => e.id === editId);
+      if (existingEvent) {
+        isEditMode = true;
+        document.querySelector('h1').textContent = 'Treffen bearbeiten';
+        document.querySelector('.publish-btn').textContent = 'Änderungen speichern';
+        // Felder befüllen
+        document.getElementById('titel').value = existingEvent.title || '';
+        document.getElementById('datum').value = existingEvent.date || '';
+        document.getElementById('uhrzeit').value = existingEvent.time || '';
+        document.getElementById('ort').value = existingEvent.location || '';
+        if (existingEvent.category) {
+          const sel = document.getElementById('kategorie');
+          [...sel.options].forEach(o => { if (o.text === existingEvent.category) o.selected = true; });
+        }
+        document.getElementById('beschreibung').value = existingEvent.desc || existingEvent.description || '';
+        document.getElementById('kostenlos').checked = true;
+      }
+    }
 
     infoBadge.addEventListener('click', e => {
       e.preventDefault();
@@ -153,29 +179,33 @@
       const isValid = requiredFields.map(validateField).every(Boolean);
       
       if (isValid) {
-        // 1. Datenpaket schnüren
-        const neuesEvent = {
-          id: 'event_' + Date.now(),
+        const eventData = {
+          id: isEditMode ? editId : 'event_' + Date.now(),
           title: document.getElementById('titel').value,
           dateText: document.getElementById('datum').value || 'Bald',
+          date: document.getElementById('datum').value || '',
           time: document.getElementById('uhrzeit').value || '',
           location: document.getElementById('ort').value,
           category: document.getElementById('kategorie').value,
-          emoji: getEmojiForCategory(document.getElementById('kategorie').value)
+          emoji: getEmojiForCategory(document.getElementById('kategorie').value),
+          desc: document.getElementById('beschreibung').value || '',
+          organizer: 'Ich',
+          distance: 0
         };
 
-        // 2. Bisherige Liste holen (oder neu erstellen)
         let meineEvents = JSON.parse(localStorage.getItem('visibility-my-events') || '[]');
-        
-        // 3. Neues Event oben hinzufügen
-        meineEvents.unshift(neuesEvent);
-        
-        // 4. Liste speichern
+
+        if (isEditMode) {
+          // Vorhandenes Event aktualisieren
+          const idx = meineEvents.findIndex(ev => ev.id === editId);
+          if (idx !== -1) meineEvents[idx] = eventData;
+          else meineEvents.unshift(eventData);
+        } else {
+          meineEvents.unshift(eventData);
+        }
+
         localStorage.setItem('visibility-my-events', JSON.stringify(meineEvents));
-        
-        // 5. Popup Marker
         localStorage.setItem('showSuccessPopup', 'true');
-        
         window.location.href = 'home.html';
       }
     });
