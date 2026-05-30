@@ -3047,3 +3047,99 @@ body.dark-mode .leaflet-tile-pane {
       height: 20px;
       margin-left: 2px; /* Optische Zentrierung für den Pfeil */
     }
+
+/* ── 24. OWN EVENTS IN FEED ───────────────────────────────── */
+.event-card.is-own-event {
+  border-left: 4px solid var(--primary);
+}
+
+/* ── 25. EVENT DETAILS: 3-Spalten-Header ─────────────────── */
+.header.has-back.has-action-right {
+  display: grid;
+  grid-template-columns: 48px 1fr 48px;
+  align-items: center;
+  gap: 10px;
+}
+.header.has-back.has-action-right h1 {
+  text-align: center;
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+/* ── 26. EVENT DESCRIPTION ───────────────────────────────── */
+.event-description {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--text);
+  margin: 0 0 20px;
+  padding: 14px;
+  background: var(--hover-bg);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+}
+
+/* ── 27. SPLIT FIX (Mobile: Uhrzeit/Ort Überlappung) ─────── */
+@media (max-width: 390px) {
+  .split { grid-template-columns: 1fr; }
+}
+
+/* ── 28. PAST EVENTS ─────────────────────────────────────── */
+.event-card.is-past {
+  opacity: 0.5;
+  filter: grayscale(0.4);
+}
+.event-card.is-past .event-title {
+  color: var(--muted);
+}
+.event-card.is-past::after {
+  content: 'Vergangen';
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--muted);
+  background: var(--hover-bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 2px 7px;
+  margin-top: 4px;
+}
+
+/* ── 29. SAVED PAGE: TAB-CHIPS (Kartenansicht-Stil) ─────── */
+.saved-chip-bar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.saved-chip-scroll {
+  display: flex;
+  flex-wrap: nowrap;        /* KEIN Umbrechen — immer eine Zeile */
+  gap: 8px;
+  overflow-x: auto;         /* Horizontal scrollen wenn nötig */
+  padding: 10px 16px 12px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.saved-chip-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.saved-chip-scroll .tag-chip {
+  flex-shrink: 0;           /* Chips nicht zusammendrücken */
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12);
+  border-color: transparent;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  padding: 8px 18px;
+  font-size: 0.88rem;
+}
+
+.saved-chip-scroll .tag-chip:hover:not(.is-selected) {
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+  transform: translateY(-1px);
+}
+
+.saved-chip-scroll .tag-chip.is-selected {
+  box-shadow: 0 4px 14px rgba(59, 52, 46, 0.28);
+  border-color: transparent;
+}
