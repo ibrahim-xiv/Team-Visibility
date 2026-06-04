@@ -8,17 +8,20 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.TeamVisibility.App.model.User;
 import com.TeamVisibility.App.service.LoginService;
 import com.TeamVisibility.App.service.RegistrationService; // Neu importiert
+import com.TeamVisibility.App.service.EditService;
 
 @Controller 
 public class UserController {
 
     private final RegistrationService registrationService;
     private final LoginService loginService; // Neu hinzugefügt
+    private final EditService editService;
 
     // Der Konstruktor injiziert nun BEIDE Services automatisch
-    public UserController(RegistrationService registrationService, LoginService loginService) {
+    public UserController(RegistrationService registrationService, LoginService loginService, EditService editService) {
         this.registrationService = registrationService;
         this.loginService = loginService;
+        this.editService = editService;
     }
 
     /**
@@ -54,6 +57,19 @@ public class UserController {
         } else {
             System.out.println("DEBUG-WARN: Login fehlgeschlagen (Falsche Daten).");
             return "redirect:/login.html?error";
+        }
+    }
+    @PostMapping("/edit")
+    public String editUser(@RequestParam String username, @RequestParam  String firstName, @RequestParam String lastName, @RequestParam String password){
+        System.out.println("DEBUG: Edit versuch für" + username);
+
+        try{
+            editService.edit(username, firstName, lastName, password);
+            System.out.println("DEBUG: User erfolg editiert.");
+            return "redirect:/home.html";
+        } catch(Exception e) {
+            System.out.println("DEBUG-ERROR: Edit fehlgeschlagen: " + e.getMessage());
+            return "redirect:/edit.html?error";
         }
     }
 }
