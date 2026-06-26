@@ -89,8 +89,10 @@
         </div>
 
         <div class="action-stack">
+          <!-- Teilnehmen / Absagen -->
           <button class="btn-join-main" id="joinBtn" type="button">Teilnehmen</button>
 
+          <!-- Wird sichtbar, wenn man zugesagt hat -->
           <div class="btn-group-chat-wrap" id="groupChatWrap">
             <button class="btn-group-chat" type="button" onclick="window.location.href='chat.html'">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
@@ -101,10 +103,43 @@
             <button class="btn-group-chat-toggle" id="chatToggle" type="button" aria-label="Weitere Optionen">&#8964;</button>
           </div>
 
+          <!-- Dropdown für Chat-Optionen (falls benötigt) -->
           <div class="btn-dropdown" id="rideDropdown">
-            <button class="btn-secondary" type="button">🚗 Platz anbieten</button>
-            <button class="btn-secondary" type="button">🔍 Mitfahrgelegenheit suchen</button>
+            <!-- Platzhalter, falls noch andere Optionen in dieses Menü sollen -->
           </div>
+
+          <!-- NEU: Mitfahrgelegenheiten (Sichtbar nach Zusage) -->
+          <div id="ridesharePanel" style="display: none; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px; background: var(--hover-bg); margin-bottom: 20px;">
+            <h3 style="margin: 0 0 6px; font-size: 1.1rem; font-weight: 800;">🚗 Anreise & Mitfahrgelegenheiten</h3>
+            <p style="margin: 0 0 14px; font-size: 0.9rem; color: var(--text);">Du nimmst teil! Hast du noch Platz im Auto oder suchst du einen Lift?</p>
+            
+            <div class="action-row">
+              <a href="rideshare-form.html" class="btn-secondary" style="text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                ➕ Anbieten
+              </a>
+              <button id="searchRideBtn" class="btn-secondary" style="display: flex; align-items: center; justify-content: center; gap: 6px;">
+                🔍 Suchen (1)
+              </button>
+            </div>
+
+            <!-- Liste der gefundenen Fahrten (Klappt beim Klick auf Suchen aus) -->
+            <div id="ridesList" style="display: none; margin-top: 14px; flex-direction: column; gap: 8px;">
+              <div class="organizer-card" style="flex-direction: row; justify-content: space-between; text-align: left; padding: 10px;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                  <div class="organizer-avatar">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-4.4 0-8 2.2-8 5v2h16v-2c0-2.8-3.6-5-8-5z"></path></svg>
+                  </div>
+                  <div>
+                    <p class="organizer-name">Tim Gioh</p>
+                    <p class="organizer-sub">Ab Jade Hochschule • 2 Plätze</p>
+                  </div>
+                </div>
+                <button class="btn-secondary" style="width: auto; padding: 6px 12px; font-size: 0.85rem;" onclick="alert('Anfrage an Tim wurde im Chat gesendet!')">Anfragen</button>
+              </div>
+            </div>
+          </div>
+          <!-- ENDE Mitfahrgelegenheiten -->
+
 
           <div class="action-row">
             <button class="btn-save" id="saveBtn" type="button">🔖 Event speichern</button>
@@ -262,6 +297,7 @@
 
     const joinBtn = document.getElementById('joinBtn');
     const groupChatWrap = document.getElementById('groupChatWrap');
+    const ridesharePanel = document.getElementById('ridesharePanel'); // NEU
     const JOINED_KEY = 'visibility-joined-events';
 
     // Prüfen ob man schon teilnimmt
@@ -274,11 +310,21 @@
       joinBtn.textContent = isJoined ? 'Teilnahme zurückziehen' : 'Teilnehmen';
       joinBtn.classList.toggle('is-joined', isJoined);
       groupChatWrap.classList.toggle('is-visible', isJoined);
+      
+      // Mitfahr-Panel anzeigen/verstecken
+      if(isJoined) {
+          ridesharePanel.style.display = 'block';
+      } else {
+          ridesharePanel.style.display = 'none';
+          document.getElementById('ridesList').style.display = 'none'; // Liste auch wieder einklappen
+          document.getElementById('searchRideBtn').innerHTML = '🔍 Suchen (1)';
+      }
     }
 
     joinBtn.addEventListener('click', () => {
       let list = JSON.parse(localStorage.getItem(JOINED_KEY) || '[]');
       if (joined) {
+        if(!confirm('Teilnahme wirklich zurückziehen?')) return;
         // Teilnahme zurückziehen
         list = list.filter(e => e.id !== currentEvent.id);
         localStorage.setItem(JOINED_KEY, JSON.stringify(list));
@@ -300,6 +346,21 @@
         localStorage.setItem(JOINED_KEY, JSON.stringify(list));
         updateJoinBtn(true);
         showToast('Du nimmst teil! 🎉');
+      }
+    });
+
+    // --- FAHRT SUCHEN LOGIK ---
+    const searchRideBtn = document.getElementById('searchRideBtn');
+    const ridesList = document.getElementById('ridesList');
+
+    searchRideBtn.addEventListener('click', () => {
+      // Toggle Sichtbarkeit der Liste
+      if(ridesList.style.display === 'none') {
+        ridesList.style.display = 'flex';
+        searchRideBtn.innerHTML = 'Kürzer fassen ▴';
+      } else {
+        ridesList.style.display = 'none';
+        searchRideBtn.innerHTML = '🔍 Suchen (1)';
       }
     });
 
@@ -343,6 +404,6 @@
     }
   </script>
 
-    <script src="app.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
