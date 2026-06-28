@@ -794,9 +794,9 @@ textarea {
 
 .split {
   display: grid;
-  grid-template-columns: minmax(120px, 130px) 1fr;
+  grid-template-columns: minmax(0, 130px) 1fr;
   gap: 14px;
-  align-items: end;
+  align-items: start;
   padding-bottom: 22px;
 }
 
@@ -1036,39 +1036,118 @@ form.register-form {
   display: block;
 }
 
-
-/* ── 20. Responsive (Echtes Handy) ───────────────────────── */
-@media (max-width: 580px) {
+/* ── 20. Responsive Fix (iPhone 16 Pro Max & Co.) ───────────────── */
+@media (max-width: 600px) {
   body { 
-    padding: 0; 
-    background: var(--bg); 
+    padding: 0 !important; 
+    margin: 0 !important;
+    display: block !important;
+    background: var(--bg) !important; 
   }
 
   .phone { 
-    border-radius: 0; 
-    height: 100dvh; 
-    max-height: none; 
-    max-width: 100%; 
-    border: none;       
-    box-shadow: none;   
-    margin: 0;
+    width: 100vw !important;
+    max-width: 100% !important; 
+    height: 100dvh !important; /* Dynamische Höhe für Safari */
+    max-height: none !important;
+    border-radius: 0 !important; 
+    border: none !important;       
+    box-shadow: none !important;   
+    margin: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
   }
 
+  /* Deine spezifischen UI-Anpassungen für Mobile */
   .header { padding: 18px 16px 16px; }
   .header.has-action { padding: 18px 14px 16px; }
   h1, .header.has-action h1 { font-size: 1.5rem; }
   .brand { font-size: 1.5rem; }
   .brand.is-centered { font-size: 1.8rem; }
+  
   .toolbar { grid-template-columns: 1fr; }
   .toolbar select { min-width: 100%; }
   .toolbar-wrap, .content { padding: 16px; }
+  
   .event-title { font-size: 1.1rem; }
-  .split { grid-template-columns: minmax(108px, 118px) 1fr; gap: 12px; }
+  .split { grid-template-columns: minmax(0, 110px) 1fr; gap: 10px; }
   .publish-btn { font-size: 1.15rem; }
   .content.form-content { padding: 24px 16px 22px; }
   .code-inputs { gap: 8px; }
+
+  /* CRITICAL FIX: Dev-Nav auf dem Handy radikal und immer komplett unsichtbar machen */
+  .dev-nav { 
+    display: none !important; 
+  }
 }
 
+/* ── 22. Dev-Navigation (Nur auf dem Desktop sichtbar) ──────────────────── */
+.dev-nav {
+  position: fixed !important;
+  top: 20px !important;        /* Oben links fixiert */
+  left: 20px !important;
+  transform: none !important;
+  width: 200px;
+  background-color: #1d1c1c; 
+  padding: 20px;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3);
+  z-index: 999999;
+  border: 1px solid #363434;
+}
+
+.dev-nav-header {
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 900;
+  text-align: center;
+  border-bottom: 1px solid #363434;
+  padding-bottom: 10px;
+  margin-bottom: 5px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.dev-btn {
+  display: block;
+  color: #a8a8a8;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  padding: 4px 0;
+}
+
+.dev-btn:hover {
+  color: #ffffff;
+}
+
+/* Versteckt die Dev-Nav komplett, falls die Desktop-Ansicht mal schmaler als 1100px gezogen wird */
+@media (max-width: 1100px) {
+  .dev-nav { display: none !important; }
+}
+  /* Deine spezifischen UI-Anpassungen für Mobile */
+  .header { padding: 18px 16px 16px; }
+  .header.has-action { padding: 18px 14px 16px; }
+  h1, .header.has-action h1 { font-size: 1.5rem; }
+  .brand { font-size: 1.5rem; }
+  .brand.is-centered { font-size: 1.8rem; }
+  
+  .toolbar { grid-template-columns: 1fr; }
+  .toolbar select { min-width: 100%; }
+  .toolbar-wrap, .content { padding: 16px; }
+  
+  .event-title { font-size: 1.1rem; }
+  .split { grid-template-columns: minmax(0, 110px) 1fr; gap: 10px; }
+  .publish-btn { font-size: 1.15rem; }
+  .content.form-content { padding: 24px 16px 22px; }
+  .code-inputs { gap: 8px; }
+
+  /* Dev-Nav auf dem Handy immer verstecken */
+  .dev-nav { display: none !important; }
+}
 
 /* ── 21. Profil ──────────────────────────────────────────── */
 
@@ -1524,3 +1603,1721 @@ form.register-form {
 body.dark-mode #devThemeToggle {
   color: #a8a8a8 !important;
 }
+/* Aktiver Navigations-Punkt */
+.nav-btn.is-active {
+  color: var(--primary) !important; /* Nutzt dein Blau für das aktive Icon */
+  background: var(--hover-bg);     /* Optional: Ein leichter Hintergrund-Effekt */
+}
+
+/* Damit das Icon im aktiven Zustand nicht verblasst */
+.nav-btn.is-active svg {
+  fill: var(--primary); 
+}
+
+// Automatische Markierung des aktiven Nav-Buttons
+document.querySelectorAll('.nav-btn').forEach(link => {
+  // Wenn die URL des Links im aktuellen Pfad vorkommt
+  if (link.href === window.location.href) {
+    link.classList.add('is-active');
+  } else {
+    link.classList.remove('is-active');
+  }
+});
+
+/* Modal Hintergrund */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: none; /* Standardmäßig versteckt */
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+}
+
+/* Modal Box */
+.modal-content {
+  background: var(--surface);
+  padding: 24px;
+  border-radius: var(--radius-md);
+  width: 85%;
+  max-width: 320px;
+  text-align: center;
+  box-shadow: var(--shadow);
+}
+
+.verify-input {
+  width: 100%;
+  text-align: center;
+  font-size: 24px;
+  letter-spacing: 4px;
+  margin: 15px 0;
+  padding: 10px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+
+/* Der gewünschte grüne Button */
+.btn-send-code {
+  background-color: #22c55e; /* Erfolg-Grün */
+  color: white;
+  border: none;
+  padding: 12px;
+  width: 100%;
+  border-radius: var(--radius-sm);
+  font-weight: bold;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+
+.btn-send-code:hover {
+  background-color: #16a34a;
+}
+
+.btn-confirm {
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  padding: 12px;
+  width: 100%;
+  border-radius: var(--radius-sm);
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* ── 1. DESIGN VARIABLEN ── */
+:root {
+  --bg: #fafafa;
+  --surface: #ffffff;
+  --hover-bg: #efefef;
+  --text: #262626;
+  --muted: #8e8e8e;
+  --hint: #a8a8a8;
+  --primary: #0095f6;
+  --primary-hover: #1877f2;
+  --border: #dbdbdb;
+  --radius-lg: 34px;
+  --radius-md: 14px;
+  --radius-sm: 10px;
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  --error: #ed4956;
+  --error-bg: #fef2f2;
+}
+
+body.dark-mode {
+  --bg: #1d1c1c;
+  --surface: #1d1c1c;
+  --hover-bg: #2e2d2d;
+  --text: #f5f5f5;
+  --muted: #a8a8a8;
+  --hint: #8e8e8e;
+  --border: #363434;
+  --shadow: none;
+  --error-bg: #2c1a1a;
+}
+
+/* ── 2. BASIS SETUP ── */
+* { 
+  box-sizing: border-box; 
+  font-family: 'Nunito', sans-serif; 
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  color: var(--text);
+  transition: background 0.3s ease;
+}
+
+/* ── 3. HANDY CONTAINER (Festes Format) ── */
+.phone {
+  width: 100%;
+  max-width: 430px;
+  height: 880px;
+  max-height: 90vh;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.header {
+  padding: 22px;
+  border-bottom: 1px solid var(--border);
+  text-align: center;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 1.8rem;
+  font-weight: 800;
+}
+
+.content {
+  padding: 24px 18px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+h2 { 
+  margin: 0 0 20px; 
+  text-align: center; 
+  font-size: 1.6rem; 
+}
+
+form { 
+  display: grid; 
+  gap: 16px; 
+}
+
+.form-group label { 
+  display: block; 
+  margin-bottom: 7px; 
+  font-weight: 700; 
+}
+
+.input {
+  width: 100%;
+  min-height: 52px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+  outline: none;
+}
+
+.input:focus { 
+  border-color: var(--primary); 
+}
+
+.hint-text { 
+  margin-top: 6px; 
+  color: var(--hint); 
+  font-size: .85rem; 
+}
+
+.submit-btn {
+  width: 100%;
+  min-height: 52px;
+  border: none;
+  border-radius: 12px;
+  background: var(--primary);
+  color: white;
+  font-size: 1.1rem;
+  font-weight: 800;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.login-link {
+  text-align: center;
+  display: block;
+  margin-top: 20px;
+  color: var(--primary);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+/* ── 4. DEV NAVIGATION DESIGN (UI Upgrade) ── */
+.dev-nav {
+  position: fixed !important;
+  left: 25px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  width: 220px !important;
+  background: #1d1c1c !important;
+  border: 1px solid #363434 !important;
+  border-radius: 20px !important;
+  padding: 20px !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+  z-index: 999999 !important;
+}
+
+.dev-nav-header {
+  color: #0095f6 !important;
+  font-size: 11px !important;
+  font-weight: 900 !important;
+  letter-spacing: 1px !important;
+  text-transform: uppercase !important;
+  text-align: center !important;
+  margin-bottom: 12px !important;
+  padding-bottom: 8px !important;
+  border-bottom: 1px solid #363434 !important;
+}
+
+.dev-btn, .dev-btn-action {
+  all: unset !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  padding: 8px 12px !important;
+  border-radius: 8px !important;
+  color: #a8a8a8 !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  text-decoration: none !important;
+}
+
+.dev-btn:hover, .dev-btn-action:hover {
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: #ffffff !important;
+  transform: translateX(5px) !important;
+}
+
+.dev-nav-divider {
+  margin-top: 8px !important;
+  padding-top: 12px !important;
+  border-top: 1px solid #363434 !important;
+}
+
+/* Modal Styling */
+.modal-overlay {
+  position: fixed; 
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  display: none; 
+  justify-content: center; 
+  align-items: center;
+  z-index: 9999; 
+  padding: 20px;
+}
+
+.modal-content {
+  width: 100%; 
+  max-width: 340px;
+  background: var(--surface); 
+  border-radius: 18px;
+  padding: 24px; 
+  text-align: center; 
+  border: 1px solid var(--border);
+}
+
+.code-inputs { 
+  display: grid; 
+  grid-template-columns: repeat(5, 1fr); 
+  gap: 10px; 
+  margin: 20px 0; 
+}
+
+.code-input {
+  width: 100%; 
+  height: 52px; 
+  text-align: center; 
+  font-size: 1.4rem; 
+  font-weight: 800;
+  border: none; 
+  border-bottom: 2px solid var(--border); 
+  background: transparent;
+  color: var(--text); 
+  outline: none;
+}
+
+.btn-send-code { 
+  background: #22c55e; 
+  color: white; 
+  margin-bottom: 10px; 
+}
+
+.btn-confirm { 
+  background: var(--primary); 
+  color: white; 
+}
+
+.btn-send-code, .btn-confirm {
+  width: 100%; 
+  border: none; 
+  border-radius: 12px; 
+  padding: 12px; 
+  font-weight: 800; 
+  cursor: pointer;
+}
+
+/* Desktop-Anpassung für die Dev-Nav */
+@media (max-width: 1100px) { 
+  .dev-nav { display: none; } 
+}
+
+/* ── SPEZIELLE BUTTON-ZUSTÄNDE ── */
+
+/* Ergänzung für den deaktivierten Button-Look (z.B. während des Timers) */
+.btn-send-code:disabled {
+  opacity: 0.6;
+  background-color: #a8a8a8 !important;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* Optional: Ein leichter Hover-Effekt für den aktiven Senden-Button */
+.btn-send-code:not(:disabled):hover {
+  filter: brightness(1.1);
+}
+/* ── COLLAPSIBLE DEV-NAV ── */
+
+/* Die Navigation wird schmaler, wenn sie eingeklappt ist */
+.dev-nav.collapsed {
+  width: 180px !important; /* Etwas kompakter */
+  gap: 0 !important;
+}
+
+/* Versteckt alle Inhalte außer dem Header, wenn .collapsed aktiv ist */
+.dev-nav.collapsed > *:not(.dev-nav-header) {
+  display: none !important;
+}
+
+/* Zeiger-Feedback für den Header */
+.dev-nav-header {
+  cursor: pointer;
+  user-select: none;
+  transition: opacity 0.2s;
+}
+
+.dev-nav-header:hover {
+  opacity: 0.7;
+}
+
+/* Ein kleines Icon-Indikator (Optional) */
+.dev-nav-header::after {
+  content: ' ▾';
+  font-size: 10px;
+}
+
+.dev-nav.collapsed .dev-nav-header::after {
+  content: ' ▴';
+}
+/* ── DEV-NAV NACH OBEN LINKS VERSCHIEBEN ── */
+.dev-nav {
+  top: 20px !important;        /* Abstand von oben */
+  left: 20px !important;       /* Abstand von links */
+  transform: none !important;  /* Entfernt die mittige Zentrierung */
+  position: fixed !important;
+}
+
+/* Falls du den Hamburger-Modus für Mobile nutzt und er AUCH oben links sein soll: */
+@media (max-width: 600px) {
+  .dev-nav {
+    top: 15px !important;
+    left: 15px !important;
+    bottom: auto !important;   /* Deaktiviert die Positionierung unten */
+  }
+}
+
+/* ── KARTENANSICHT (map.html) ── */
+
+.map-content {
+  position: relative;
+  flex: 1; 
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+    
+#map { 
+  width: 100%; 
+  flex: 1; 
+  z-index: 1; 
+  background: var(--bg); 
+}
+
+/* Lebendige Darkmode-Karte via Filter */
+body.dark-mode .leaflet-tile-pane {
+  filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(85%);
+}
+
+.map-overlay {
+  position: absolute;
+  top: 15px;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+.filter-scroll {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 4px 15px 15px 15px;
+  pointer-events: auto;
+  scrollbar-width: none; 
+  -ms-overflow-style: none; 
+}
+.filter-scroll::-webkit-scrollbar { display: none; }
+
+.filter-scroll .tag-chip {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  border-color: transparent;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.map-controls-bottom {
+  position: absolute;
+  bottom: 20px;
+  right: 15px;
+  left: 15px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+  pointer-events: none; 
+}
+
+.center-btn {
+  pointer-events: auto;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+}
+
+.radius-card {
+  pointer-events: auto;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  width: 100%;
+}
+
+.radius-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: .95rem;
+  font-weight: 800;
+  margin-bottom: 10px;
+}
+
+.radius-slider {
+  width: 100%;
+  accent-color: var(--primary);
+}
+
+.event-pin {
+  background: var(--primary);
+  color: white;
+  border: 2px solid white;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.pin-text { 
+  transform: rotate(45deg); 
+  font-weight: 800; 
+  font-size: 14px; 
+}
+
+.home-pin {
+  background: var(--text);
+  border: 2px solid var(--surface);
+  border-radius: 50%;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+/* Fix für den Modus-Wechsel Button in der DEV-Nav */
+#devThemeToggle {
+  background: none !important;
+  border: none !important;
+  color: #a8a8a8 !important;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 0 !important;
+  cursor: pointer;
+}
+
+/* ── 23. EVENT DETAILS (event-details.html) ───────────────── */
+
+.event-top-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.btn-map-link {
+  background: rgba(34, 197, 94, 0.15);
+  color: #16a34a;
+  border: 1px solid #22c55e;
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 800;
+  text-align: center;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+.btn-map-link:hover { background: rgba(34, 197, 94, 0.25); }
+.btn-map-link svg { width: 20px; height: 20px; }
+
+.organizer-card {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  text-align: center;
+  text-decoration: none;
+  color: var(--text);
+}
+.organizer-card:hover { background: var(--hover-bg); }
+
+.organizer-avatar {
+  width: 32px; height: 32px;
+  background: var(--hover-bg);
+  border-radius: 50%;
+  display: grid; place-items: center;
+}
+.organizer-avatar svg { width: 18px; height: 18px; color: var(--muted); }
+.organizer-name { font-weight: 800; font-size: 0.9rem; margin: 0; }
+.organizer-sub { font-size: 0.75rem; color: var(--hint); margin: 0; }
+
+.event-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.event-header h2 { margin: 0; font-size: 1.4rem; font-weight: 900; }
+.distance-badge { font-weight: 800; color: var(--text); font-size: 1rem; }
+
+.event-info-text {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--text);
+  margin-bottom: 20px;
+}
+.event-info-text strong { font-weight: 800; }
+.event-info-text p { margin: 0 0 6px 0; }
+
+/* ── GALERIE ── */
+.event-gallery {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+  scrollbar-width: none;
+  cursor: grab;
+  user-select: none;
+}
+.event-gallery:active { cursor: grabbing; }
+.event-gallery::-webkit-scrollbar { display: none; }
+
+.gallery-img {
+  width: 130px;
+  height: 130px;
+  flex-shrink: 0;
+  background: var(--hover-bg);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-sm);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--hint);
+  font-size: 0.85rem;
+  font-weight: 700;
+  gap: 6px;
+}
+
+/* ── ACTION BUTTONS ── */
+.action-stack {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.action-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+/* Teilnehmen & Verlassen Button */
+.btn-join-main {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 16px;
+  border-radius: var(--radius-sm);
+  font-size: 1.05rem;
+  font-weight: 800;
+  text-align: center;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-join-main:hover { background: var(--primary-hover); }
+
+.btn-join-main.is-joined {
+  background: transparent;
+  color: var(--danger-text);
+  border: 1px solid var(--danger-hover);
+}
+.btn-join-main.is-joined:hover { background: var(--danger-hover); }
+
+/* Gruppenchat mit Split-Button */
+.btn-group-chat-wrap {
+  display: none;
+  grid-template-columns: 1fr 52px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+.btn-group-chat-wrap.is-visible {
+  display: grid;
+}
+
+.btn-group-chat {
+  background: #16a34a;
+  color: white;
+  border: none;
+  padding: 16px;
+  font-size: 1.05rem;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.btn-group-chat:hover { background: #15803d; }
+
+.btn-group-chat-toggle {
+  background: #15803d;
+  color: white;
+  border: none;
+  border-left: 1px solid rgba(255,255,255,0.2);
+  cursor: pointer;
+  font-size: 1.3rem;
+  transition: transform 0.2s;
+}
+.btn-group-chat-toggle.is-open { transform: rotate(180deg); }
+
+/* Dropdown */
+.btn-dropdown {
+  display: none;
+  flex-direction: column;
+  gap: 8px;
+}
+.btn-dropdown.is-open {
+  display: flex;
+}
+
+.btn-secondary {
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  padding: 14px;
+  border-radius: var(--radius-sm);
+  font-size: 0.95rem;
+  font-weight: 800;
+  text-align: center;
+  cursor: pointer;
+  width: 100%;
+}
+.btn-secondary:hover { background: var(--hover-bg); }
+
+/* Kompakte Speichern & Melden Buttons (Nur Text) */
+.btn-save, .btn-report {
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  padding: 14px;
+  border-radius: var(--radius-sm);
+  font-weight: 800;
+  font-size: 0.95rem;
+  text-align: center;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.btn-save:hover { background: var(--hover-bg); }
+.btn-report:hover { background: var(--danger); color: var(--danger-text); border-color: var(--danger-hover); }
+
+/* Gelber aktiver Status wie auf der Home-Seite */
+.btn-save.is-saved {
+  background: #fef08a !important; 
+  color: #f59e0b !important;
+  border-color: #fcd34d !important;
+}
+
+
+    /* Spezifisches CSS für die Event-Details Seite */
+    .event-top-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .btn-map-link {
+      background: rgba(34, 197, 94, 0.15);
+      color: #16a34a;
+      border: 1px solid #22c55e;
+      border-radius: var(--radius-sm, 10px);
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-weight: 800;
+      text-align: center;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+    .btn-map-link:hover { background: rgba(34, 197, 94, 0.25); }
+    .btn-map-link svg { width: 20px; height: 20px; }
+
+    .organizer-card {
+      border: 1px solid var(--border);
+      background: var(--surface);
+      border-radius: var(--radius-sm, 10px);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      text-align: center;
+      text-decoration: none;
+      color: var(--text);
+    }
+    .organizer-card:hover { background: var(--hover-bg); }
+
+    .organizer-avatar {
+      width: 32px; height: 32px;
+      background: var(--hover-bg);
+      border-radius: 50%;
+      display: grid; place-items: center;
+    }
+    .organizer-avatar svg { width: 18px; height: 18px; color: var(--muted); }
+    .organizer-name { font-weight: 800; font-size: 0.9rem; margin: 0; }
+    .organizer-sub { font-size: 0.75rem; color: var(--hint); margin: 0; }
+
+    .event-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .event-header h2 { margin: 0; font-size: 1.4rem; font-weight: 900; }
+    .distance-badge { font-weight: 800; color: var(--text); font-size: 1rem; }
+
+    .event-info-text {
+      font-size: 0.95rem;
+      line-height: 1.5;
+      color: var(--text);
+      margin-bottom: 20px;
+    }
+    .event-info-text strong { font-weight: 800; }
+    .event-info-text p { margin: 0 0 6px 0; }
+
+    /* ── GALERIE ── */
+    .event-gallery {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      padding-bottom: 10px;
+      margin-bottom: 20px;
+      scrollbar-width: none;
+      cursor: grab;
+      user-select: none;
+    }
+    .event-gallery:active { cursor: grabbing; }
+    .event-gallery::-webkit-scrollbar { display: none; }
+
+    .gallery-img {
+      width: 130px;
+      height: 130px;
+      flex-shrink: 0;
+      background: var(--hover-bg);
+      border: 1px dashed var(--border);
+      border-radius: var(--radius-sm, 10px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--hint);
+      font-size: 0.85rem;
+      font-weight: 700;
+      gap: 6px;
+    }
+
+    /* ── ACTION BUTTONS ── */
+    .action-stack {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .action-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    /* Teilnehmen & Verlassen Button */
+    .btn-join-main {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 16px;
+      border-radius: var(--radius-sm, 10px);
+      font-size: 1.05rem;
+      font-weight: 800;
+      text-align: center;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-join-main:hover { background: var(--primary-hover); }
+
+    .btn-leave {
+      background: transparent;
+      color: var(--danger-text);
+      border: 1px solid var(--danger-hover);
+      padding: 16px;
+      border-radius: var(--radius-sm, 10px);
+      font-size: 1.05rem;
+      font-weight: 800;
+      text-align: center;
+      cursor: pointer;
+      display: none;
+    }
+    .btn-leave.is-visible { display: block; }
+    .btn-leave:hover { background: var(--danger-hover); }
+
+    /* Gruppenchat mit Split-Button */
+    .btn-group-chat-wrap {
+      display: none;
+      grid-template-columns: 1fr 52px;
+      border-radius: var(--radius-sm, 10px);
+      overflow: hidden;
+    }
+    .btn-group-chat-wrap.is-visible {
+      display: grid;
+    }
+
+    .btn-group-chat {
+      background: #16a34a;
+      color: white;
+      border: none;
+      padding: 16px;
+      font-size: 1.05rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .btn-group-chat:hover { background: #15803d; }
+
+    .btn-group-chat-toggle {
+      background: #15803d;
+      color: white;
+      border: none;
+      border-left: 1px solid rgba(255,255,255,0.2);
+      cursor: pointer;
+      font-size: 1.3rem;
+      transition: transform 0.2s;
+    }
+    .btn-group-chat-toggle.is-open { transform: rotate(180deg); }
+
+    /* Dropdown */
+    .btn-dropdown {
+      display: none;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .btn-dropdown.is-open {
+      display: flex;
+    }
+
+    .btn-secondary {
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 14px;
+      border-radius: var(--radius-sm, 10px);
+      font-size: 0.95rem;
+      font-weight: 800;
+      text-align: center;
+      cursor: pointer;
+      width: 100%;
+    }
+    .btn-secondary:hover { background: var(--hover-bg); }
+
+    /* Kompakte Speichern & Melden Buttons */
+    .btn-save, .btn-report {
+      padding: 14px;
+      border-radius: var(--radius-sm, 10px);
+      font-weight: 800;
+      font-size: 0.95rem;
+      text-align: center;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s, border-color 0.2s;
+    }
+
+    .btn-save {
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-save:hover { background: var(--hover-bg); }
+    
+    /* Aktiver Gelber Status wie auf Home */
+    .btn-save.is-saved {
+      background: #fef08a !important; 
+      color: #f59e0b !important;
+      border-color: #fcd34d !important;
+    }
+
+    /* Melden Button standardmäßig Rot */
+    .btn-report {
+      background: var(--danger);
+      color: var(--danger-text);
+      border: 1px solid var(--danger-hover);
+    }
+    .btn-report:hover {
+      background: var(--danger-hover);
+    }
+
+      /* Spezifische Chat-Layout-Erweiterungen im Einklang mit style.css */
+    .chat-layout {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    /* Chat Partner Header Info */
+    .chat-partner-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+    }
+
+    .chat-partner-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: var(--hover-bg);
+      display: grid;
+      place-items: center;
+    }
+
+    .chat-partner-avatar svg {
+      width: 20px;
+      height: 20px;
+      color: var(--muted);
+    }
+
+    .chat-partner-details {
+      display: flex;
+      flex-direction: column;
+      text-align: left;
+    }
+
+    .chat-partner-name {
+      font-weight: 800;
+      font-size: 1.05rem;
+      line-height: 1.2;
+    }
+
+    .chat-partner-status {
+      font-size: 0.8rem;
+      color: #22c55e; /* Aktiv-Grün */
+      font-weight: 700;
+    }
+
+    /* Nachrichten-Verlauf Bereich */
+    .chat-messages-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      background: var(--surface);
+      overscroll-behavior: contain;
+      scrollbar-width: none;
+    }
+
+    .chat-messages-area::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* Message Bubbles */
+    .message-bubble {
+      max-width: 75%;
+      padding: 12px 16px;
+      border-radius: var(--radius-md);
+      font-size: 0.95rem;
+      line-height: 1.4;
+      font-weight: 700;
+      word-wrap: break-word;
+      position: relative;
+    }
+
+    /* Empfangene Nachricht (Links) */
+    .message-bubble.incoming {
+      background: var(--hover-bg);
+      color: var(--text);
+      align-self: flex-start;
+      border-bottom-left-radius: 4px;
+      border: 1px solid var(--border);
+    }
+
+    /* Gesendete Nachricht (Rechts) */
+    .message-bubble.outgoing {
+      background: var(--primary);
+      color: #ffffff;
+      align-self: flex-end;
+      border-bottom-right-radius: 4px;
+    }
+
+    /* Zeitstempel unter/neben der Nachricht */
+    .message-time {
+      font-size: 0.72rem;
+      margin-top: 4px;
+      display: block;
+      font-weight: 400;
+      opacity: 0.75;
+    }
+    
+    .message-bubble.incoming .message-time {
+      color: var(--hint);
+      text-align: left;
+    }
+
+    .message-bubble.outgoing .message-time {
+      color: rgba(255, 255, 255, 0.9);
+      text-align: right;
+    }
+
+    /* Chat Input Bereich unten */
+    .chat-input-wrap {
+      padding: 12px 16px;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+    }
+
+    .chat-input-form {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .chat-input-field {
+      width: 100%;
+      min-height: 48px;
+      padding: 12px 16px;
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      background: var(--bg);
+      color: var(--text);
+      outline: none;
+      font-size: 0.95rem;
+    }
+
+    .chat-input-field:focus {
+      border-color: var(--primary);
+      background: var(--surface);
+    }
+
+    .chat-send-btn {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      border: none;
+      background: var(--primary);
+      color: #ffffff;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .chat-send-btn:hover {
+      background: var(--primary-hover);
+    }
+
+    .chat-send-btn svg {
+      width: 20px;
+      height: 20px;
+      margin-left: 2px;
+    }
+/* ── 24. OWN EVENTS IN FEED ───────────────────────────────── */
+.event-card.is-own-event {
+  border-left: 4px solid var(--primary);
+}
+
+/* ── 25. EVENT DETAILS PAGE ───────────────────────────────── */
+/* Header with back + title + edit btn */
+.header.has-back.has-action-right {
+  display: grid;
+  grid-template-columns: 48px 1fr 48px;
+  align-items: center;
+  gap: 10px;
+  justify-content: unset;
+}
+
+.header.has-back.has-action-right h1 {
+  text-align: center;
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+/* Event description paragraph */
+.event-description {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--text);
+  margin: 0 0 20px;
+  padding: 14px;
+  background: var(--hover-bg);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+}
+
+/* ── 26. MEETING FORM: UHRZEIT/ORT FIX (Mobile) ──────────── */
+/* Uhrzeit-Feld soll nicht zu eng werden */
+@media (max-width: 390px) {
+  .split {
+    grid-template-columns: 1fr;
+  }
+  .split .error-text {
+    position: static;
+    margin-top: 4px;
+  }
+}
+
+/* ── 27. PAST EVENTS ─────────────────────────────────────── */
+.event-card.is-past {
+  opacity: 0.5;
+  filter: grayscale(0.4);
+}
+
+.event-card.is-past .event-title {
+  color: var(--muted);
+}
+
+.event-card.is-past::after {
+  content: 'Vergangen';
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--muted);
+  background: var(--hover-bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 2px 7px;
+  margin-top: 4px;
+}
+
+/* ── 28. TOAST-SIMPLE (moved from home.html inline style) ── */
+.toast-simple {
+  position: absolute;
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #3b342e;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  z-index: 2000;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  white-space: nowrap;
+}
+ /* Spezifische Chat-Layout-Erweiterungen im Einklang mit style.css */
+    .chat-layout {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    /* Chat Partner Header Info */
+    .chat-partner-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+    }
+
+    .chat-partner-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: var(--hover-bg);
+      display: grid;
+      place-items: center;
+    }
+
+    .chat-partner-avatar svg {
+      width: 20px;
+      height: 20px;
+      color: var(--muted);
+    }
+
+    .chat-partner-details {
+      display: flex;
+      flex-direction: column;
+      text-align: left;
+    }
+
+    .chat-partner-name {
+      font-weight: 800;
+      font-size: 1.05rem;
+      line-height: 1.2;
+    }
+
+    .chat-partner-status {
+      font-size: 0.8rem;
+      color: #22c55e; /* Aktiv-Grün */
+      font-weight: 700;
+    }
+
+    /* Nachrichten-Verlauf Bereich */
+    .chat-messages-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      background: var(--surface);
+      overscroll-behavior: contain;
+      scrollbar-width: none;
+    }
+
+    .chat-messages-area::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* Message Bubbles */
+    .message-bubble {
+      max-width: 75%;
+      padding: 12px 16px;
+      border-radius: var(--radius-md);
+      font-size: 0.95rem;
+      line-height: 1.4;
+      font-weight: 700;
+      word-wrap: break-word;
+      position: relative;
+    }
+
+    /* Empfangene Nachricht (Links) */
+    .message-bubble.incoming {
+      background: var(--hover-bg);
+      color: var(--text);
+      align-self: flex-start;
+      border-bottom-left-radius: 4px;
+      border: 1px solid var(--border);
+    }
+
+    /* Gesendete Nachricht (Rechts) */
+    .message-bubble.outgoing {
+      background: var(--primary);
+      color: #ffffff;
+      align-self: flex-end;
+      border-bottom-right-radius: 4px;
+    }
+
+    /* Zeitstempel unter/neben der Nachricht */
+    .message-time {
+      font-size: 0.72rem;
+      margin-top: 4px;
+      display: block;
+      font-weight: 400;
+      opacity: 0.75;
+    }
+    
+    .message-bubble.incoming .message-time {
+      color: var(--hint);
+      text-align: left;
+    }
+
+    .message-bubble.outgoing .message-time {
+      color: rgba(255, 255, 255, 0.9);
+      text-align: right;
+    }
+
+    /* Chat Input Bereich unten */
+    .chat-input-wrap {
+      padding: 12px 16px;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+    }
+
+    .chat-input-form {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .chat-input-field {
+      width: 100%;
+      min-height: 48px;
+      padding: 12px 16px;
+      border: 1px solid var(--border);
+      border-radius: 24px; /* Runde, moderne Pillenform für Messenger */
+      background: var(--bg);
+      color: var(--text);
+      outline: none;
+      font-size: 0.95rem;
+    }
+
+    .chat-input-field:focus {
+      border-color: var(--primary);
+      background: var(--surface);
+    }
+
+    .chat-send-btn {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      border: none;
+      background: var(--primary);
+      color: #ffffff;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .chat-send-btn:hover {
+      background: var(--primary-hover);
+    }
+
+    .chat-send-btn svg {
+      width: 20px;
+      height: 20px;
+      margin-left: 2px; /* Optische Zentrierung für den Pfeil */
+    }
+
+/* ── 24. OWN EVENTS IN FEED ───────────────────────────────── */
+.event-card.is-own-event {
+  border-left: 4px solid var(--primary);
+}
+
+/* ── 25. EVENT DETAILS: 3-Spalten-Header ─────────────────── */
+.header.has-back.has-action-right {
+  display: grid;
+  grid-template-columns: 48px 1fr 48px;
+  align-items: center;
+  gap: 10px;
+}
+.header.has-back.has-action-right h1 {
+  text-align: center;
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+/* ── 26. EVENT DESCRIPTION ───────────────────────────────── */
+.event-description {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--text);
+  margin: 0 0 20px;
+  padding: 14px;
+  background: var(--hover-bg);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+}
+
+/* ── 27. SPLIT FIX (Mobile: Uhrzeit/Ort Überlappung) ─────── */
+@media (max-width: 390px) {
+  .split { grid-template-columns: 1fr; }
+}
+
+/* ── 28. PAST EVENTS ─────────────────────────────────────── */
+.event-card.is-past {
+  opacity: 0.5;
+  filter: grayscale(0.4);
+}
+.event-card.is-past .event-title {
+  color: var(--muted);
+}
+.event-card.is-past::after {
+  content: 'Vergangen';
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--muted);
+  background: var(--hover-bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 2px 7px;
+  margin-top: 4px;
+}
+
+/* ── 29. SAVED PAGE: TAB-CHIPS (Kartenansicht-Stil) ─────── */
+.saved-chip-bar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.saved-chip-scroll {
+  display: flex;
+  flex-wrap: nowrap;        /* KEIN Umbrechen — immer eine Zeile */
+  gap: 8px;
+  overflow-x: auto;         /* Horizontal scrollen wenn nötig */
+  padding: 10px 16px 12px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.saved-chip-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.saved-chip-scroll .tag-chip {
+  flex-shrink: 0;           /* Chips nicht zusammendrücken */
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12);
+  border-color: transparent;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  padding: 8px 18px;
+  font-size: 0.88rem;
+}
+
+.saved-chip-scroll .tag-chip:hover:not(.is-selected) {
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+  transform: translateY(-1px);
+}
+
+.saved-chip-scroll .tag-chip.is-selected {
+  box-shadow: 0 4px 14px rgba(59, 52, 46, 0.28);
+  border-color: transparent;
+}
+
+
+    .map-content {
+      position: relative;
+      flex: 1; 
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+    
+    #map { 
+      width: 100%; 
+      flex: 1; 
+      z-index: 1; 
+      background: var(--bg); 
+    }
+
+    /* Lebendige Darkmode-Karte via Filter */
+    body.dark-mode .leaflet-tile-pane {
+      filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(85%);
+    }
+
+    .map-overlay {
+      position: absolute;
+      top: 15px;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      pointer-events: none;
+    }
+
+    .filter-scroll {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 4px 15px 15px 15px;
+      pointer-events: auto;
+      scrollbar-width: none; 
+      -ms-overflow-style: none; 
+    }
+    .filter-scroll::-webkit-scrollbar { display: none; }
+
+    .filter-scroll .tag-chip {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      border-color: transparent;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
+    .map-controls-bottom {
+      position: absolute;
+      bottom: 20px;
+      right: 15px;
+      left: 15px;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 12px;
+      pointer-events: none; 
+    }
+
+    .center-btn {
+      pointer-events: auto;
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+    }
+
+    .radius-card {
+      pointer-events: auto;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      width: 100%;
+    }
+
+    .radius-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: .95rem;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+
+    .radius-slider {
+      width: 100%;
+      accent-color: var(--primary);
+    }
+
+    .event-pin {
+      background: var(--primary);
+      color: white;
+      border: 2px solid white;
+      border-radius: 50% 50% 50% 0;
+      transform: rotate(-45deg);
+      width: 34px;
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .pin-text { transform: rotate(45deg); font-weight: 800; font-size: 14px; }
+
+    .home-pin {
+      background: var(--text);
+      border: 2px solid var(--surface);
+      border-radius: 50%;
+      width: 38px;
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    /* Fix für den Modus-Wechsel Button in der DEV-Nav */
+    #devThemeToggle {
+      background: none !important;
+      border: none !important;
+      color: #a8a8a8 !important;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      padding: 8px 0 !important;
+      cursor: pointer;
+    }
+    
+    /* Spezifisch für Einstellungen */
+    .settings-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px;
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: var(--radius-sm);
+      margin-bottom: 12px;
+    }
+
+    /* Der Switch (Toggle) */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 28px;
+    }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider {
+      position: absolute; cursor: pointer; inset: 0;
+      background-color: var(--muted);
+      transition: .4s; border-radius: 34px;
+    }
+    .slider:before {
+      position: absolute; content: ""; height: 20px; width: 20px;
+      left: 4px; bottom: 4px; background-color: #fff;
+      transition: .4s; border-radius: 50%;
+    }
+    input:checked + .slider { background-color: var(--primary); }
+    input:checked + .slider:before { transform: translateX(22px); }
+
+    .logout-section { margin-top: 40px; }
+        .saved-chip-scroll {
+      cursor: grab;
+      user-select: none;
+    }
+  .dev-nav { display: none !important; }

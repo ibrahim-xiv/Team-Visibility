@@ -4,249 +4,130 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Visibility – Registrierung</title>
   <link rel="stylesheet" href="style.css" />
-  <script src="app.js" defer></script>
+  <title>Visibility – Registrierung</title>
 </head>
 
 <body>
   <script>
-  // Prüfen, ob Darkmode in den Settings aktiviert wurde
-    if (localStorage.getItem('theme') === 'dark') {
-      document.body.classList.add('dark-mode');
-    }
+    if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');
   </script>
-  <main class="phone">
 
-    <!-- Header zeigt Visibility-Logo statt Seitentitel -->
+  <main class="phone">
     <header class="header">
-      <div class="brand" aria-label="Visibility">
-        <span class="brand-icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"
-            stroke-linejoin="round">
-            <path d="M2 12s3.8-6 10-6 10 6 10 6-3.8 6-10 6-10-6-10-6z"></path>
-            <circle cx="12" cy="12" r="3.2"></circle>
-          </svg>
-        </span>
+      <div class="brand">
+        <span>👁️</span>
         <span>Visibility</span>
       </div>
     </header>
 
-    <!-- Scrollbarer Formular-Bereich -->
-    <section class="content form-content">
-
-      <!-- Seitentitel jetzt im Content -->
-      <h2 style="margin: 0 0 20px; font-size: 1.6rem; font-weight: 800; text-align: center;">Register</h2>
-      <form id="registerForm" class="register-form" novalidate>
-
-        <!-- Vorname -->
+    <section class="content">
+      <h2>Register</h2>
+      <form id="registerForm" novalidate>
         <div class="form-group" data-field="firstname">
-          <label for="firstname">Vorname</label>
-          <input class="input" id="firstname" name="firstname" type="text" placeholder="Max">
-          <div class="error-text">Bitte Vornamen eingeben.</div>
+          <label>Vorname</label>
+          <input class="input" id="firstname" type="text" placeholder="Max">
         </div>
-
-        <!-- Nachname -->
         <div class="form-group" data-field="lastname">
-          <label for="lastname">Nachname</label>
-          <input class="input" id="lastname" name="lastname" type="text" placeholder="Mustermann">
-          <div class="error-text">Bitte Nachnamen eingeben.</div>
+          <label>Nachname</label>
+          <input class="input" id="lastname" type="text" placeholder="Mustermann">
         </div>
-
-        <!-- E-Mail -->
         <div class="form-group" data-field="email">
-          <label for="email">Email</label>
-          <input class="input" id="email" name="email" type="email" placeholder="name@email.de">
-          <div class="error-text">Bitte eine gültige Email eingeben.</div>
+          <label>Email</label>
+          <input class="input" id="email" type="email" placeholder="name@email.de">
         </div>
-
-        <!-- Passwort mit Hinweis zu den Anforderungen -->
         <div class="form-group" data-field="password">
-          <label for="password">Passwort</label>
-          <input class="input" id="password" name="password" type="password" placeholder="******">
+          <label>Passwort</label>
+          <input class="input" id="password" type="password" placeholder="******">
           <div class="hint-text">Mindestens 1 Großbuchstabe und 1 Zahl.</div>
-          <div class="error-text">Passwort muss mindestens 1 Großbuchstaben und 1 Zahl enthalten.</div>
         </div>
-
-        <!-- 5-stelliger Verifizierungscode: jede Ziffer ein eigenes Feld -->
-        <div class="form-group" data-field="code">
-          <label>Verifizierungs-Code (SMS/E-mail)</label>
-          <div class="code-wrap">
-            <div class="code-inputs">
-              <input class="code-input" type="text" maxlength="1" inputmode="numeric">
-              <input class="code-input" type="text" maxlength="1" inputmode="numeric">
-              <input class="code-input" type="text" maxlength="1" inputmode="numeric">
-              <input class="code-input" type="text" maxlength="1" inputmode="numeric">
-              <input class="code-input" type="text" maxlength="1" inputmode="numeric">
-            </div>
-          </div>
-
-          <!-- Code senden + Countdown bis erneutes Senden möglich ist -->
-          <div class="resend-row">
-            <button class="resend-btn" type="button" id="resendBtn">Code senden</button>
-            <div class="countdown-text" id="countdownText"></div>
-          </div>
-
-          <div class="error-text">Bitte vollständigen Verifizierungscode eingeben.</div>
-        </div>
-
         <button class="submit-btn" type="submit">Registrieren</button>
-
-        <!-- Link zur Login-Seite -->
-        <a class="login-link" href="/login.html">Bereits registriert? Anmelden &gt;</a>
-
+        <a class="login-link" href="login.html">Bereits registriert? Anmelden ></a>
       </form>
     </section>
   </main>
 
+  <div class="modal-overlay" id="verifyModal">
+    <div class="modal-content">
+      <h2>Code bestätigen</h2>
+      <p id="modalEmailText" style="color: var(--muted); margin-top: 8px; line-height: 1.4;">
+        Wir haben dir einen 5-stelligen Code gesendet.
+      </p>
+
+      <div class="code-inputs">
+        <!--
+          FIX MOBILE KEYBOARD:
+          - type="text" statt type="number" (verhindert Scrollen und Pfeile bei number)
+          - inputmode="numeric" zeigt numerische Tastatur auf Mobile
+          - pattern="[0-9]*" hilft iOS Safari die Zahlentastatur zu öffnen
+          - autocomplete="one-time-code" aktiviert SMS-Autofill auf iOS/Android
+        -->
+        <input class="code-input" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="one-time-code">
+        <input class="code-input" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1">
+        <input class="code-input" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1">
+        <input class="code-input" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1">
+        <input class="code-input" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1">
+      </div>
+      <button class="btn-send-code" id="sendCodeBtn">Code erneut senden</button>
+      <button class="btn-confirm" id="confirmCodeBtn">Bestätigen</button>
+
+      <button id="wrongEmailBtn" style="all: unset; color: var(--primary); font-size: 0.85rem; cursor: pointer; text-decoration: underline; margin-top: 15px; display: block; width: 100%; font-weight: 700;">
+        Falsche Email?
+      </button>
+    </div>
+  </div>
+
   <script>
-    // DOM-Referenzen
-    const form = document.getElementById('registerForm');
-    const firstnameInput = document.getElementById('firstname');
-    const lastnameInput = document.getElementById('lastname');
-    const emailInput = document.getElementById('email');
-    const passwordInput = document.getElementById('password');
-    const codeInputs = [...document.querySelectorAll('.code-input')];
-    const resendBtn = document.getElementById('resendBtn');
-    const countdownText = document.getElementById('countdownText');
+    const form         = document.getElementById('registerForm');
+    const verifyModal  = document.getElementById('verifyModal');
+    const emailInput   = document.getElementById('email');
+    const modalEmailText = document.getElementById('modalEmailText');
+    const wrongEmailBtn  = document.getElementById('wrongEmailBtn');
 
-    let countdown = 60;
-    let timer = null;
-    let codeWasSent = false;
-
-    // Merkt sich welche Felder der Nutzer bereits angefasst hat (für sanfte Validierung)
-    const touched = { firstname: false, lastname: false, email: false, password: false, code: false };
-
-    // Hilfsfunktionen: Fehler-Klassen setzen/entfernen
-    const getWrapper = name => document.querySelector(`[data-field="${name}"]`);
-    const setInvalid = (name, invalid) => getWrapper(name)?.classList.toggle('is-invalid', invalid);
-    const setTextError = (name, show) => getWrapper(name)?.classList.toggle('show-error-text', show);
-
-    // Gibt true zurück wenn der E-Mail-String ein valides Format hat
-    const isEmailValid = v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
-
-    // Gibt true zurück wenn das Passwort mind. 1 Großbuchstaben + 1 Zahl hat
-    const isPasswordValid = v => /[A-Z]/.test(v) && /[0-9]/.test(v);
-
-    // Einzelfeld-Validierungen: nur anzeigen wenn Feld bereits berührt wurde
-    function validateFirstname(show = false) {
-      const valid = firstnameInput.value.trim() !== '';
-      if (show && touched.firstname) setInvalid('firstname', !valid);
-      else if (valid) setInvalid('firstname', false);
-      return valid;
-    }
-
-    function validateLastname(show = false) {
-      const valid = lastnameInput.value.trim() !== '';
-      if (show && touched.lastname) setInvalid('lastname', !valid);
-      else if (valid) setInvalid('lastname', false);
-      return valid;
-    }
-
-    function validateEmail(show = false) {
-      const value = emailInput.value.trim();
-      if (!value) {
-        if (show && touched.email) setInvalid('email', true);
-        else setInvalid('email', false);
-        return false;
-      }
-      const valid = isEmailValid(value);
-      if (show && touched.email) setInvalid('email', !valid);
-      else if (valid) setInvalid('email', false);
-      return valid;
-    }
-
-    function validatePassword(show = false) {
-      const value = passwordInput.value;
-      if (!value) {
-        if (show && touched.password) setInvalid('password', true);
-        else setInvalid('password', false);
-        return false;
-      }
-      const valid = isPasswordValid(value);
-      if (show && touched.password) setInvalid('password', !valid);
-      else if (valid) setInvalid('password', false);
-      return valid;
-    }
-
-    // Code gilt als gültig wenn alle 5 Felder ausgefüllt sind
-    function validateCode(show = false) {
-      const complete = codeInputs.every(i => i.value.trim().length === 1);
-      setTextError('code', show && !complete);
-      return complete;
-    }
-
-    // Formatiert Sekunden als MM:SS für den Countdown
-    function formatTime(s) {
-      return `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
-    }
-
-    // Startet den 60-Sekunden-Countdown und sperrt den Senden-Button
-    function startCountdown() {
-      clearInterval(timer);
-      countdown = 60;
-      codeWasSent = true;
-      resendBtn.disabled = true;
-      resendBtn.textContent = 'Code erneut senden';
-      countdownText.classList.add('is-visible');
-      countdownText.textContent = `Erneut senden in ${formatTime(countdown)}`;
-
-      timer = setInterval(() => {
-        countdown--;
-        countdownText.textContent = `Erneut senden in ${formatTime(countdown)}`;
-        if (countdown <= 0) {
-          clearInterval(timer);
-          resendBtn.disabled = false;
-          countdownText.textContent = 'Du kannst jetzt einen neuen Code anfordern.';
-        }
-      }, 1000);
-    }
-
-    // Code senden / erneut senden
-    resendBtn.addEventListener('click', async () => {
-      const email = emailInput.value.trim();
-      if (!email || !isEmailValid(email)) {
-        alert('Bitte zuerst eine gültige E-Mail eingeben.');
-        return;
-      }
-      resendBtn.disabled = true;
-      resendBtn.textContent = 'Wird gesendet...';
-      try {
-        const firstname = document.getElementById('firstname').value.trim();
-        const lastname  = document.getElementById('lastname').value.trim();
-        const password  = document.getElementById('password').value;
-        await fetch('/api/users/register-and-send-code', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, firstName: firstname, lastName: lastname, username: email, password })
-        }).then(async r => {
-          const data = await r.json();
-          if (!r.ok) throw new Error(data.error || 'Fehler');
-        });
-        alert(codeWasSent ? 'Neuer Code wurde gesendet.' : 'Code wurde gesendet!');
-        startCountdown();
-      } catch (err) {
-        alert('Fehler: ' + err.message);
-        resendBtn.disabled = false;
-        resendBtn.textContent = codeWasSent ? 'Code erneut senden' : 'Code senden';
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      const emailValue = emailInput.value.trim();
+      if (emailValue.includes('@')) {
+        const atIndex    = emailValue.lastIndexOf('@');
+        const domain     = emailValue.substring(atIndex);
+        const start      = emailValue.substring(0, 2);
+        const maskedEmail = start + 'xx' + domain;
+        modalEmailText.innerHTML = `Wir haben dir einen 5-stelligen Code an <strong style="color: var(--text);">${maskedEmail}</strong> gesendet.`;
+        verifyModal.style.display = 'flex';
+      } else {
+        alert('Bitte fülle das Formular aus.');
       }
     });
 
-    // Echtzeit-Validierung: Fehler erscheinen sobald ein Feld berührt wurde
-    firstnameInput.addEventListener('input', () => { touched.firstname = true; validateFirstname(true); });
-    lastnameInput.addEventListener('input', () => { touched.lastname = true; validateLastname(true); });
-    passwordInput.addEventListener('input', () => { touched.password = true; validatePassword(true); });
+    wrongEmailBtn.addEventListener('click', () => {
+      verifyModal.style.display = 'none';
+      emailInput.focus();
+    });
 
-    // E-Mail: Fehler erst beim Verlassen des Feldes, danach live
-    emailInput.addEventListener('blur', () => { if (emailInput.value.trim()) { touched.email = true; validateEmail(true); } });
-    emailInput.addEventListener('input', () => { if (touched.email) validateEmail(true); });
+    const sendCodeBtn = document.getElementById('sendCodeBtn');
+    let timerInterval;
 
-    // Code-Felder: Fokus springt automatisch zum nächsten / vorherigen Feld
+    sendCodeBtn.addEventListener('click', () => {
+      sendCodeBtn.disabled = true;
+      let secondsLeft = 60;
+      sendCodeBtn.textContent = `Warten (${secondsLeft}s)`;
+      timerInterval = setInterval(() => {
+        secondsLeft--;
+        sendCodeBtn.textContent = `Warten (${secondsLeft}s)`;
+        if (secondsLeft <= 0) {
+          clearInterval(timerInterval);
+          sendCodeBtn.disabled = false;
+          sendCodeBtn.textContent = 'Code erneut senden';
+        }
+      }, 1000);
+    });
+
+    // Auto-Focus für Code – nur Ziffern erlaubt
+    const codeInputs = [...document.querySelectorAll('.code-input')];
     codeInputs.forEach((input, index) => {
       input.addEventListener('input', () => {
-        touched.code = true;
-        input.value = input.value.replace(/[^0-9a-zA-Z]/g, '').slice(0, 1);
-        validateCode(false);
+        // Nur Zahlen behalten
+        input.value = input.value.replace(/[^0-9]/g, '').slice(0, 1);
         if (input.value && index < codeInputs.length - 1) codeInputs[index + 1].focus();
       });
       input.addEventListener('keydown', e => {
@@ -254,101 +135,28 @@
       });
     });
 
-    // Submit: alle Felder prüfen, Daten zusammenbauen und weiterleiten
-    form.addEventListener('submit', async e => {
-      e.preventDefault();
+    verifyModal.addEventListener('click', e => {
+      if (e.target === verifyModal) verifyModal.style.display = 'none';
+    });
 
-      const isValid =
-        validateFirstname(true) &
-        validateLastname(true) &
-        validateEmail(true) &
-        validatePassword(true) &
-        validateCode(true);
-
-      if (!isValid) return;
-
-      // Integration: hit the real REST endpoint.
-      const payload = {
-        firstName: firstnameInput.value.trim(),
-        lastName:  lastnameInput.value.trim(),
-        username:  emailInput.value.trim(),
-        email:     emailInput.value.trim(),
-        password:  passwordInput.value
-      };
-
-      try {
-        const user = await TV.register(payload);
-
-        // Verify code before proceeding
-        const code = codeInputs.map(i => i.value).join('');
-        const verifyRes = await fetch('/api/users/verify', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: payload.email, code })
-        });
-        const verifyData = await verifyRes.json();
-        if (!verifyRes.ok) {
-          alert('Verifizierung fehlgeschlagen: ' + verifyData.error);
-          return;
-        }
-
-        TV.setCurrentUser(user);
-        window.location.href = 'home.html';
-      } catch (err) {
-        alert('Registrierung fehlgeschlagen: ' + err.message);
+    document.getElementById('confirmCodeBtn').addEventListener('click', () => {
+      // Namen aus dem Formular in localStorage speichern
+      const fn = document.getElementById('firstname').value.trim();
+      const ln = document.getElementById('lastname').value.trim();
+      if (fn || ln) {
+        // Neues Profil anlegen – nur mit Namen, alles andere leer
+        const newProfile = {
+          name: `${fn} ${ln}`.trim(),
+          location: '',
+          bio: '',
+          interests: []
+        };
+        localStorage.setItem('visibility-profile', JSON.stringify(newProfile));
       }
+      window.location.href = 'home.html';
     });
   </script>
-  <!-- ... restlicher Code (phone, etc.) ... -->
 
-<!-- DEV Navigation - Nur für Entwickler sichtbar, um schnell zwischen Seiten zu wechseln -->
-<nav class="dev-nav">
-  <div class="dev-nav-header">DEV-Navigation</div>
-  
-  <div><a href="login.html" class="dev-btn">🔑 Login</a></div>
-  <div><a href="register.html" class="dev-btn">📝 Registrieren</a></div>
-  <div><a href="home.html" class="dev-btn">🏠 Home</a></div>
-  <div><a href="meeting-form.html" class="dev-btn">➕ Erstellen</a></div>
-  <div><a href="saved.html" class="dev-btn">💾 Gespeichert</a></div>
-  <div><a href="profile.html" class="dev-btn">👤 Eigenes Profil</a></div>
-  <div><a href="profile-view.html" class="dev-btn">👁️ Fremdes Profil</a></div>
-  <div><a href="profile-edit.html" class="dev-btn">✏️ Profil bearbeiten</a></div>
-  <div><a href="settings.html" class="dev-btn">⚙️ Einstellungen</a></div>
-  <div><a href="map.html" class="dev-btn">🗺️ Kartenansicht</a></div>
-  <div><a href="event-details.html" class="dev-btn">🚫 📝 Event Details</a></div>
-  <div><a href="chat.html" class="dev-btn">🚫 💬 Chat</a></div>
-
-  <div style="margin-top: 5px; padding-top: 10px; border-top: 1px solid #363434;">
-    <button id="devThemeToggle" class="dev-btn-action">
-      🌗 Modus wechseln
-    </button>
-  </div>
-</nav>
-  <script>
-    // Logik für den Dev-Darkmode-Schalter
-    const devThemeBtn = document.getElementById('devThemeToggle');
-    if (devThemeBtn) {
-      devThemeBtn.addEventListener('click', () => {
-        // Body-Klasse umschalten
-        const isDark = document.body.classList.toggle('dark-mode');
-        
-        // In den Speicher schreiben, damit es auf der nächsten Seite bleibt
-        localStorage.setItem('theme', isDark ? 'dark' : 'light');
-        
-        // Sync mit dem Schalter auf der settings.html (falls man dort ist)
-        const settingsToggle = document.getElementById('darkModeToggle');
-        if(settingsToggle) settingsToggle.checked = isDark;
-
-        // Spezial-Fix: Wenn man auf der Karte ist, kurz neu laden, 
-        // damit die echten schwarzen Karten-Bilder (Tiles) von CartoDB geladen werden
-        if(window.location.pathname.includes('map.html')) {
-            window.location.reload();
-        }
-      });
-    }
-  </script>
+    <script src="app.js"></script>
 </body>
-</html>
-</body>
-
 </html>

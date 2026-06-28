@@ -4,18 +4,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Visibility – Gespeicherte Inhalte</title>
+  <title>Visibility – Meine Events</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
-<script>
-  // Prüfen, ob Darkmode in den Settings aktiviert wurde
-    if (localStorage.getItem('theme') === 'dark') {
-      document.body.classList.add('dark-mode');
-    }
+  <script>
+    if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');
   </script>
-  
+
   <main class="phone is-feed">
 
     <!-- Sticky Header -->
@@ -23,7 +20,8 @@
       <header class="header">
         <div class="brand" aria-label="Visibility">
           <span class="brand-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"
+              stroke-linejoin="round">
               <path d="M2 12s3.8-6 10-6 10 6 10 6-3.8 6-10 6-10-6-10-6z"></path>
               <circle cx="12" cy="12" r="3.2"></circle>
             </svg>
@@ -32,64 +30,53 @@
         </div>
       </header>
 
-      <!-- Toolbar -->
+      <!-- Such- und Kategorie-Toolbar -->
       <div class="toolbar-wrap">
         <div class="toolbar">
-          <input id="searchInput" class="search-input" type="text" placeholder="In Favoriten suchen..." aria-label="Gespeicherte Events suchen">
-          <select id="sortSelect" aria-label="Sortieren">
-            <option value="distance">Entfernung</option>
-            <option value="date">Datum</option>
-            <option value="title">Titel A–Z</option>
-          </select>
+          <input id="searchInput" class="search-input" type="text" placeholder="Suchen..." aria-label="Events suchen">
           <select id="filterSelect" aria-label="Filtern">
             <option value="all">Alle</option>
-            <option>Freizeit</option>
-            <option>Sport</option>
-            <option>Spieleabend</option>
-            <option>Kultur</option>
-            <option>Community</option>
-            <option>Anderes…</option>
+            <option value="upcoming">Kommende</option>
+            <option value="past">Vergangene</option>
+            <option value="Freizeit">Freizeit</option>
+            <option value="Sport">Sport</option>
+            <option value="Spieleabend">Spieleabend</option>
+            <option value="Kultur">Kultur</option>
+            <option value="Community">Community</option>
           </select>
+        </div>
+      </div>
+
+      <!-- Tab-Chips im Kartenansicht-Stil -->
+      <div class="saved-chip-bar">
+        <div class="saved-chip-scroll" id="tabBar">
+          <button class="tag-chip is-selected" data-tab="mine">⭐ Meine Treffen</button>
+          <button class="tag-chip" data-tab="saved">🔖 Gespeichert</button>
+          <button class="tag-chip" data-tab="joined">✅ Teilgenommen</button>
         </div>
       </div>
     </div>
 
-    <!-- Scrollbarer Hauptbereich -->
+    <!-- Scrollbarer Inhalt -->
     <div class="scroll-area" id="scrollArea">
       <section class="content">
 
-        <!-- Kartenansicht Button -->
-        <a class="map-cta" href="map.html" aria-label="Zur Kartenansicht" style="margin-bottom: 25px;">
+        <a class="map-cta" href="map.html" aria-label="Zur Kartenansicht">
           <span>Zur Kartenansicht</span>
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-            stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"
+            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M12 21s6-5.2 6-11a6 6 0 1 0-12 0c0 5.8 6 11 6 11z"></path>
             <circle cx="12" cy="10" r="2.2"></circle>
           </svg>
         </a>
 
-        <!-- EIGENE TREFFEN -->
         <div class="section-head">
-          <h2>Meine Treffen:</h2>
-          <span class="results-count" id="myEventsCount">0 Treffen</span>
-        </div>
-        
-        <div id="myEventsList" class="event-list"></div>
-        
-        <div id="myEventsEmpty" class="empty-state">
-          Du hast keine aktuellen Treffen erstellt.
+          <h2 id="sectionTitle">Meine Treffen</h2>
+          <span class="results-count" id="resultsCount">0</span>
         </div>
 
-        <hr style="border: 0; border-top: 1px solid rgba(0,0,0,0.1); margin: 25px 0;">
-
-        <!-- GESPEICHERTE FAVORITEN -->
-        <div class="section-head">
-          <h2 id="sectionTitle">Gespeicherte Favoriten:</h2>
-          <span class="results-count" id="resultsCount">0 Favoriten</span>
-        </div>
-
-        <div class="event-list" id="eventList"></div>
-        <div class="empty-state" id="emptyState">Keine Favoriten gespeichert.</div>
+        <div id="eventList" class="event-list"></div>
+        <div class="empty-state" id="emptyState">Nichts gefunden.</div>
 
       </section>
     </div>
@@ -97,171 +84,216 @@
     <!-- Bottom Navigation -->
     <nav class="bottom-nav" aria-label="Hauptnavigation">
       <a class="nav-btn" href="home.html" aria-label="Home">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3l9 8h-3v9h-5v-6H11v6H6v-9H3l9-8z"></path></svg>
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 3l9 8h-3v9h-5v-6H11v6H6v-9H3l9-8z"></path>
+        </svg>
       </a>
       <a class="nav-btn" href="chat.html" aria-label="Chat">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 5h16a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H9l-5 4v-4H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"></path></svg>
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M4 5h16a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H9l-5 4v-4H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"></path>
+        </svg>
       </a>
       <a class="nav-btn is-primary" href="meeting-form.html" aria-label="Treffen erstellen">+</a>
-      <a class="nav-btn saved-btn is-active" href="saved.html" aria-label="Gespeicherte Inhalte">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"></path></svg>
+      <a class="nav-btn is-active" href="saved.html" aria-label="Meine Events">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path
+            d="M19 4h-1V2h-2v2H8V2H6v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 16H5V10h14v10zM5 8V6h14v2H5z" />
+        </svg>
       </a>
       <a class="nav-btn" href="profile.html" aria-label="Profil">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-4.4 0-8 2.2-8 5v2h16v-2c0-2.8-3.6-5-8-5z"></path></svg>
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-4.4 0-8 2.2-8 5v2h16v-2c0-2.8-3.6-5-8-5z"></path>
+        </svg>
       </a>
     </nav>
   </main>
 
   <script>
-    const STORAGE_KEY = 'visibility-saved-events';
-    const MY_EVENTS_KEY = 'visibility-my-events'; // NEUER SCHLÜSSEL FÜR DAS ARRAY
+    const SAVED_KEY = 'visibility-saved-events';
+    const MY_KEY = 'visibility-my-events';
+    const JOINED_KEY = 'visibility-joined-events';
+    const TODAY = new Date(); TODAY.setHours(0, 0, 0, 0);
+
+    function isPast(dateStr) {
+      if (!dateStr) return false;
+      const d = new Date(dateStr); d.setHours(0, 0, 0, 0);
+      return d < TODAY;
+    }
 
     const $ = s => document.querySelector(s);
-    const $$ = s => [...document.querySelectorAll(s)];
+    let activeTab = 'mine';
 
-    // Dummy Favoriten
-    let savedEvents = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [
-      { id: 'brettspiel', title: 'Brettspielabend', category: 'Spieleabend', emoji: '🎲', location: 'Jugendherberge', distance: 1.2, date: '2026-04-18', dateText: 'Samstag 18.04.' },
-      { id: 'hunde', title: 'Hundespaziergang', category: 'Community', emoji: '👥', location: 'Nordsee', distance: 2.4, date: '2026-03-31', dateText: 'Dienstag 31.03.' }
-    ];
+    function getData() {
+      return {
+        mine: JSON.parse(localStorage.getItem(MY_KEY) || '[]'),
+        saved: JSON.parse(localStorage.getItem(SAVED_KEY) || '[]'),
+        joined: JSON.parse(localStorage.getItem(JOINED_KEY) || '[]'),
+      };
+    }
 
-    // NEU: EIGENE EVENTS RENDERN (ARRAY)
-    function renderMyEvents() {
-      const list = $('#myEventsList');
-      const empty = $('#myEventsEmpty');
-      const count = $('#myEventsCount');
-      
-      const myEvents = JSON.parse(localStorage.getItem(MY_EVENTS_KEY) || '[]');
+    function renderList(events) {
+      const list = $('#eventList');
+      const empty = $('#emptyState');
+      const countEl = $('#resultsCount');
 
-      if (myEvents.length > 0) {
-        empty.style.display = 'none';
-        count.textContent = myEvents.length === 1 ? "1 Treffen" : `${myEvents.length} Treffen`;
-        
-        list.innerHTML = myEvents.map(event => `
-          <article class="event-row">
-            <div class="event-card" style="border-left: 4px solid #3b342e;">
-              <div class="event-badge"><span>⭐</span><span>Eigenes Treffen (${event.category})</span></div>
-              <h3 class="event-title">${event.title}</h3>
-              <p class="event-meta">${event.dateText} ${event.time ? 'um ' + event.time + ' Uhr' : ''}</p>
-              <p class="event-location">📍 ${event.location}</p>
-            </div>
-            <div class="event-side">
-               <button class="icon-btn" onclick="deleteMyEvent('${event.id}')" aria-label="Löschen">
-                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18m-2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-               </button>
-            </div>
-          </article>
-        `).join('');
-      } else {
+      if (!events.length) {
         list.innerHTML = '';
         empty.style.display = 'block';
-        count.textContent = "0 Treffen";
+        countEl.textContent = '0';
+        return;
       }
-    }
+      empty.style.display = 'none';
+      countEl.textContent = events.length;
 
-    // NEU: EVENT LÖSCHEN (NACH ID)
-    function deleteMyEvent(eventId) {
-      if(confirm("Eigenes Treffen wirklich löschen?")) {
-        let myEvents = JSON.parse(localStorage.getItem(MY_EVENTS_KEY) || '[]');
-        myEvents = myEvents.filter(ev => ev.id !== eventId);
-        localStorage.setItem(MY_EVENTS_KEY, JSON.stringify(myEvents));
-        renderMyEvents();
-      }
-    }
+      list.innerHTML = events.map(e => {
+        const past = isPast(e.date);
+        const pastClass = past ? 'is-past' : '';
 
-    // FAVORITEN RENDERN
-    function renderFavoriten(list) {
-      const eventList = $('#eventList');
-      const emptyState = $('#emptyState');
-      
-      eventList.innerHTML = list.map(e => `
+        if (activeTab === 'mine') {
+          return `
+          <article class="event-row">
+            <a class="event-card is-own-event ${pastClass}" href="event-details.html?id=${e.id}">
+              <div class="event-badge"><span>⭐</span><span>Eigenes Treffen · ${e.category || ''}</span></div>
+              <h3 class="event-title">${e.title}</h3>
+              <p class="event-meta">${e.dateText || e.date || 'Datum offen'}${e.time ? ' · ' + e.time + ' Uhr' : ''}</p>
+              <p class="event-location">📍 ${e.location}</p>
+            </a>
+            <div class="event-side">
+              <a class="icon-btn" href="meeting-form.html?edit=${e.id}" aria-label="Bearbeiten">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                  <path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                </svg>
+              </a>
+              <button class="icon-btn" onclick="deleteMyEvent('${e.id}')" aria-label="Löschen">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 6h18m-2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                </svg>
+              </button>
+            </div>
+          </article>`;
+        }
+
+        if (activeTab === 'saved') {
+          return `
+          <article class="event-row">
+            <a class="event-card ${pastClass}" href="event-details.html?id=${e.id}">
+              <div class="event-badge"><span>${e.emoji || '📍'}</span><span>${e.category || ''}</span></div>
+              <h3 class="event-title">${e.title}</h3>
+              <p class="event-meta">${e.dateText || e.date || 'Datum offen'}</p>
+              <p class="event-location">📍 ${e.location}${e.distance ? ' · ' + e.distance + ' km' : ''}</p>
+            </a>
+            <div class="event-side">
+              <button class="icon-btn" onclick="unsave('${e.id}')" aria-label="Entfernen">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 6h18m-2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                </svg>
+              </button>
+            </div>
+          </article>`;
+        }
+
+        return `
         <article class="event-row">
-          <a class="event-card" href="#">
-            <div class="event-badge"><span>${e.emoji}</span><span>${e.category}</span></div>
+          <a class="event-card ${pastClass}" href="event-details.html?id=${e.id}">
+            <div class="event-badge"><span>${e.emoji || '✅'}</span><span>${e.category || ''}</span></div>
             <h3 class="event-title">${e.title}</h3>
-            <p class="event-meta">${e.dateText}</p>
-            <p class="event-location">${e.location} – ${e.distance} km</p>
+            <p class="event-meta">${e.dateText || e.date || 'Datum offen'}${e.time ? ' · ' + e.time + ' Uhr' : ''}</p>
+            <p class="event-location">📍 ${e.location}</p>
           </a>
           <div class="event-side">
-            <button class="icon-btn" onclick="unsave('${e.id}')">
-              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"></path></svg>
+            <button class="icon-btn" onclick="unjoin('${e.id}')" aria-label="Teilnahme zurückziehen" title="Teilnahme zurückziehen">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 6L6 18M6 6l12 12"/>
+              </svg>
             </button>
           </div>
-        </article>
-      `).join('');
+        </article>`;
+      }).join('');
+    }
 
-      $('#resultsCount').textContent = `${list.length} Favoriten`;
-      emptyState.style.display = list.length ? 'none' : 'block';
+    function filterAndRender() {
+      const data = getData();
+      const q = $('#searchInput').value.toLowerCase();
+      const cat = $('#filterSelect').value;
+      const titles = { mine: 'Meine Treffen', saved: 'Gespeicherte Favoriten', joined: 'Teilgenommene Events' };
+      $('#sectionTitle').textContent = titles[activeTab];
+
+      let list = data[activeTab].filter(e => {
+        const matchQ = e.title.toLowerCase().includes(q);
+        let matchCat = true;
+        if (cat === 'past') matchCat = isPast(e.date);
+        else if (cat === 'upcoming') matchCat = !isPast(e.date);
+        else if (cat !== 'all') matchCat = e.category === cat;
+        return matchQ && matchCat;
+      });
+
+      renderList(list);
+    }
+
+    function deleteMyEvent(id) {
+      if (!confirm('Treffen wirklich löschen?')) return;
+      let list = JSON.parse(localStorage.getItem(MY_KEY) || '[]');
+      list = list.filter(e => e.id !== id);
+      localStorage.setItem(MY_KEY, JSON.stringify(list));
+      filterAndRender();
     }
 
     function unsave(id) {
-      savedEvents = savedEvents.filter(ev => ev.id !== id);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(savedEvents));
-      filterAndSort();
+      let list = JSON.parse(localStorage.getItem(SAVED_KEY) || '[]');
+      list = list.filter(e => e.id !== id);
+      localStorage.setItem(SAVED_KEY, JSON.stringify(list));
+      filterAndRender();
     }
 
-    function filterAndSort() {
-      const q = $('#searchInput').value.toLowerCase();
-      const f = $('#filterSelect').value;
-      let list = savedEvents.filter(e => 
-        (e.title.toLowerCase().includes(q)) && (f === 'all' || e.category === f)
-      );
-      renderFavoriten(list);
+    function unjoin(id) {
+      if (!confirm('Teilnahme wirklich zurückziehen?')) return;
+      let list = JSON.parse(localStorage.getItem(JOINED_KEY) || '[]');
+      list = list.filter(e => e.id !== id);
+      localStorage.setItem(JOINED_KEY, JSON.stringify(list));
+      filterAndRender();
     }
 
-    $('#searchInput').oninput = filterAndSort;
-    $('#filterSelect').onchange = filterAndSort;
-
-    // Start
-    renderMyEvents();
-    filterAndSort();
-  </script>
-
-<!-- DEV Navigation - Nur für Entwickler sichtbar, um schnell zwischen Seiten zu wechseln -->
-<nav class="dev-nav">
-  <div class="dev-nav-header">DEV-Navigation</div>
-  
-  <div><a href="login.html" class="dev-btn">🔑 Login</a></div>
-  <div><a href="register.html" class="dev-btn">📝 Registrieren</a></div>
-  <div><a href="home.html" class="dev-btn">🏠 Home</a></div>
-  <div><a href="meeting-form.html" class="dev-btn">➕ Erstellen</a></div>
-  <div><a href="saved.html" class="dev-btn">💾 Gespeichert</a></div>
-  <div><a href="profile.html" class="dev-btn">👤 Eigenes Profil</a></div>
-  <div><a href="profile-view.html" class="dev-btn">👁️ Fremdes Profil</a></div>
-  <div><a href="profile-edit.html" class="dev-btn">✏️ Profil bearbeiten</a></div>
-  <div><a href="settings.html" class="dev-btn">⚙️ Einstellungen</a></div>
-  <div><a href="map.html" class="dev-btn">🗺️ Kartenansicht</a></div>
-  <div><a href="event-details.html" class="dev-btn">🚫 📝 Event Details</a></div>
-  <div><a href="chat.html" class="dev-btn">🚫 💬 Chat</a></div>
-
-  <div style="margin-top: 5px; padding-top: 10px; border-top: 1px solid #363434;">
-    <button id="devThemeToggle" class="dev-btn-action">
-      🌗 Modus wechseln
-    </button>
-  </div>
-</nav>
-  <script>
-    // Logik für den Dev-Darkmode-Schalter
-    const devThemeBtn = document.getElementById('devThemeToggle');
-    if (devThemeBtn) {
-      devThemeBtn.addEventListener('click', () => {
-        // Body-Klasse umschalten
-        const isDark = document.body.classList.toggle('dark-mode');
-        
-        // In den Speicher schreiben, damit es auf der nächsten Seite bleibt
-        localStorage.setItem('theme', isDark ? 'dark' : 'light');
-        
-        // Sync mit dem Schalter auf der settings.html (falls man dort ist)
-        const settingsToggle = document.getElementById('darkModeToggle');
-        if(settingsToggle) settingsToggle.checked = isDark;
-
-        // Spezial-Fix: Wenn man auf der Karte ist, kurz neu laden, 
-        // damit die echten schwarzen Karten-Bilder (Tiles) von CartoDB geladen werden
-        if(window.location.pathname.includes('map.html')) {
-            window.location.reload();
-        }
+    // Tab-Chips
+    document.querySelectorAll('#tabBar .tag-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        document.querySelectorAll('#tabBar .tag-chip').forEach(c => c.classList.remove('is-selected'));
+        chip.classList.add('is-selected');
+        activeTab = chip.dataset.tab;
+        filterAndRender();
       });
-    }
+    });
+
+    $('#searchInput').oninput = filterAndRender;
+    $('#filterSelect').onchange = filterAndRender;
+    filterAndRender();
+
+    // ── DRAG-SCROLL FÜR TAB-CHIPS ──
+    const chipScroll = document.getElementById('tabBar');
+    let isDragging = false, startX, scrollLeft;
+    chipScroll.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      startX = e.pageX - chipScroll.offsetLeft;
+      scrollLeft = chipScroll.scrollLeft;
+      chipScroll.style.cursor = 'grabbing';
+    });
+    chipScroll.addEventListener('mouseleave', () => {
+      isDragging = false;
+      chipScroll.style.cursor = 'grab';
+    });
+    chipScroll.addEventListener('mouseup', () => {
+      isDragging = false;
+      chipScroll.style.cursor = 'grab';
+    });
+    chipScroll.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+      e.preventDefault();
+      const x = e.pageX - chipScroll.offsetLeft;
+      chipScroll.scrollLeft = scrollLeft - (x - startX) * 1.5;
+    });
   </script>
+
+    <script src="app.js"></script>
 </body>
+
 </html>

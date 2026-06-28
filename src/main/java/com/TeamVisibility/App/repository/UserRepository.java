@@ -9,13 +9,8 @@ import com.TeamVisibility.App.model.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
-
     Optional<User> findByEmail(String email);
-
-    /**
-     * From feature/login: LoginService called userRepository.findByUsername(...)
-     * but the original UserRepository only declared findByEmail. Added here
-     * to make the login flow compile.
-     */
     Optional<User> findByUsername(String username);
+    Optional<User> findByEmailIgnoreCase(String email);
+    boolean existsByEmailIgnoreCase(String email);
 }

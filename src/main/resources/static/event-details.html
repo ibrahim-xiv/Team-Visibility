@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Visibility – Event Details</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <script>
+    if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');
+  </script>
+
+  <main class="phone is-feed">
+
+    <div class="header-wrap">
+      <header class="header has-back has-action-right" id="detailHeader">
+        <a class="back-btn" href="home.html" aria-label="Zurück">&#8249;</a>
+        <h1>Event Details</h1>
+        <a class="icon-btn is-header" id="editEventBtn" href="#" aria-label="Event bearbeiten" hidden>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+            <path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+          </svg>
+        </a>
+      </header>
+    </div>
+
+    <div class="scroll-area">
+      <section class="content" id="eventContent">
+
+        <div class="event-top-actions">
+          <a class="btn-map-link" href="map.html" id="mapLink">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 21s6-5.2 6-11a6 6 0 1 0-12 0c0 5.8 6 11 6 11z"/>
+              <circle cx="12" cy="10" r="2.2"/>
+            </svg>
+            Zur Karte
+          </a>
+          <a class="organizer-card" href="profile-view.html" id="organizerCard">
+            <div class="organizer-avatar">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-4.4 0-8 2.2-8 5v2h16v-2c0-2.8-3.6-5-8-5z"/>
+              </svg>
+            </div>
+            <p class="organizer-name" id="organizerName">–</p>
+            <p class="organizer-sub">Mitglied seit 2024</p>
+          </a>
+        </div>
+
+        <div class="event-header">
+          <h2 id="eventTitle">–</h2>
+          <span class="distance-badge" id="eventDistance"></span>
+        </div>
+
+        <div class="event-info-text" id="eventInfoText">
+          <p><strong id="eventDateText">–</strong> – <span id="eventTime"></span></p>
+          <p>📍 <span id="eventLocation">–</span></p>
+        </div>
+
+        <p class="event-description" id="eventDescription">Keine Beschreibung vorhanden.</p>
+
+        <div class="event-gallery" id="eventGallery">
+          <div class="gallery-img">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
+              <path d="M21 15l-5-5L5 21"/>
+            </svg>
+            Bild einfügen
+          </div>
+          <div class="gallery-img">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
+              <path d="M21 15l-5-5L5 21"/>
+            </svg>
+            Bild einfügen
+          </div>
+          <div class="gallery-img">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
+              <path d="M21 15l-5-5L5 21"/>
+            </svg>
+            Bild einfügen
+          </div>
+        </div>
+
+        <div class="action-stack">
+          <button class="btn-join-main" id="joinBtn" type="button">Teilnehmen</button>
+
+          <div class="btn-group-chat-wrap" id="groupChatWrap">
+            <button class="btn-group-chat" type="button" onclick="window.location.href='chat.html'">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M4 5h16a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H9l-5 4v-4H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"/>
+              </svg>
+              Gruppen-Chat
+            </button>
+            <button class="btn-group-chat-toggle" id="chatToggle" type="button" aria-label="Weitere Optionen">&#8964;</button>
+          </div>
+
+          <div class="btn-dropdown" id="rideDropdown"></div>
+
+          <div id="ridesharePanel" style="display: none; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px; background: var(--hover-bg); margin-bottom: 20px;">
+            <h3 style="margin: 0 0 6px; font-size: 1.1rem; font-weight: 800;">🚗 Anreise & Mitfahrgelegenheiten</h3>
+            <p style="margin: 0 0 14px; font-size: 0.9rem; color: var(--text);">Du nimmst teil! Hast du noch Platz im Auto oder suchst du einen Lift?</p>
+            <div class="action-row">
+              <a id="offerRideLink" href="rideshare-form.html" class="btn-secondary" style="text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                ➕ Anbieten
+              </a>
+              <button id="searchRideBtn" class="btn-secondary" style="display: flex; align-items: center; justify-content: center; gap: 6px;">
+                🔍 Suchen (1)
+              </button>
+            </div>
+            <div id="ridesList" style="display: none; margin-top: 14px; flex-direction: column; gap: 8px;">
+              <div class="organizer-card" style="flex-direction: row; justify-content: space-between; text-align: left; padding: 10px;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                  <div class="organizer-avatar">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-4.4 0-8 2.2-8 5v2h16v-2c0-2.8-3.6-5-8-5z"></path></svg>
+                  </div>
+                  <div>
+                    <p class="organizer-name">Tim Gioh</p>
+                    <p class="organizer-sub">Ab Jade Hochschule • 2 Plätze</p>
+                  </div>
+                </div>
+                <button class="btn-secondary" style="width: auto; padding: 6px 12px; font-size: 0.85rem;" onclick="alert('Anfrage an Tim wurde im Chat gesendet!')">Anfragen</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="action-row">
+            <button class="btn-save" id="saveBtn" type="button">🔖 Event speichern</button>
+            <button class="btn-report" id="reportBtn" type="button">⚑ Melden</button>
+          </div>
+        </div>
+
+      </section>
+    </div>
+
+    <nav class="bottom-nav" aria-label="Hauptnavigation">
+      <a class="nav-btn" href="home.html" aria-label="Home">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3l9 8h-3v9h-5v-6H11v6H6v-9H3l9-8z"/></svg>
+      </a>
+      <a class="nav-btn" href="chat.html" aria-label="Chat">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 5h16a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H9l-5 4v-4H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"/></svg>
+      </a>
+      <a class="nav-btn is-primary" href="meeting-form.html" aria-label="Treffen erstellen">+</a>
+      <a class="nav-btn" href="saved.html" aria-label="Gespeicherte Inhalte"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 16H5V10h14v10zM5 8V6h14v2H5z"/></svg></a>
+      <a class="nav-btn" href="profile.html" aria-label="Profil">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-4.4 0-8 2.2-8 5v2h16v-2c0-2.8-3.6-5-8-5z"/></svg>
+      </a>
+    </nav>
+  </main>
+
+  <div class="overlay" id="reportOverlay" hidden>
+    <div class="overlay-card" role="dialog" aria-modal="true" aria-labelledby="reportTitle">
+      <h2 id="reportTitle">Event melden</h2>
+      <p>Warum möchtest du dieses Event melden?</p>
+      <form id="reportForm">
+        <div class="report-list">
+          <label class="report-option">
+            <input type="radio" name="reportReason" value="Unangemessen" required>
+            <span><strong>Unangemessen</strong><small>Beleidigend, sexuell oder diskriminierend.</small></span>
+          </label>
+          <label class="report-option">
+            <input type="radio" name="reportReason" value="Fake-Event">
+            <span><strong>Fake-Event</strong><small>Wirkt erfunden oder irreführend.</small></span>
+          </label>
+          <label class="report-option">
+            <input type="radio" name="reportReason" value="Gefährlich">
+            <span><strong>Gefährlich</strong><small>Unsicher oder ruft zu riskantem Verhalten auf.</small></span>
+          </label>
+          <label class="report-option">
+            <input type="radio" name="reportReason" value="Spam">
+            <span><strong>Spam</strong><small>Werbung oder mehrfach gepostet.</small></span>
+          </label>
+        </div>
+        <div class="overlay-actions">
+          <button class="overlay-close" type="button" id="closeReport">Abbrechen</button>
+          <button class="overlay-submit" type="submit">Meldung senden</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="toast" id="detailToast" hidden></div>
+
+  <script>
+    // ─────────────────────────────────────────────────────────────────────────
+    // KONFIGURATION – API-URL hier anpassen, sobald das Backend steht
+    // ─────────────────────────────────────────────────────────────────────────
+    const API_EVENT_URL = (id) => `/api/events/${id}`; // TODO: echte URL eintragen
+
+    const STORAGE_KEY   = 'visibility-saved-events';
+    const MY_EVENTS_KEY = 'visibility-my-events';
+    const JOINED_KEY    = 'visibility-joined-events';
+
+    const params  = new URLSearchParams(window.location.search);
+    const eventId = params.get('id');
+
+    let currentEvent = null;
+    let isOwnEvent   = false;
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // EVENT LADEN – erst lokale eigene Events prüfen, dann API
+    // ─────────────────────────────────────────────────────────────────────────
+    async function loadEvent() {
+      if (!eventId) {
+        showError('Kein Event ausgewählt.');
+        return;
+      }
+
+      // 1. Eigene (lokal erstellte) Events prüfen
+      const myEvents = JSON.parse(localStorage.getItem(MY_EVENTS_KEY) || '[]');
+      const ownEvent = myEvents.find(e => e.id === eventId);
+      if (ownEvent) {
+        currentEvent = ownEvent;
+        isOwnEvent   = true;
+        renderEvent();
+        return;
+      }
+
+      // 2. API-Anfrage
+      try {
+        const res = await fetch(API_EVENT_URL(eventId));
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        currentEvent = await res.json();
+      } catch (err) {
+        console.warn('Event konnte nicht geladen werden:', err);
+        showError('Event konnte nicht geladen werden.');
+        return;
+      }
+
+      renderEvent();
+    }
+
+    function showError(msg) {
+      document.getElementById('eventTitle').textContent = msg;
+    }
+
+    function renderEvent() {
+      document.getElementById('eventTitle').textContent       = currentEvent.title || '–';
+      document.getElementById('eventDistance').textContent    = currentEvent.distance ? `${currentEvent.distance} km` : '';
+      document.getElementById('eventDateText').textContent    = currentEvent.dateText || 'Datum offen';
+      document.getElementById('eventTime').textContent        = currentEvent.time ? `${currentEvent.time} Uhr` : '';
+      document.getElementById('eventLocation').textContent    = currentEvent.location || '';
+      document.getElementById('eventDescription').textContent = currentEvent.desc || currentEvent.description || 'Keine Beschreibung vorhanden.';
+      document.getElementById('organizerName').textContent    = currentEvent.organizer || 'Unbekannt';
+
+      const orgCard = document.getElementById('organizerCard');
+      if (currentEvent.organizer) {
+        orgCard.href = `profile-view.html?name=${encodeURIComponent(currentEvent.organizer)}`;
+      }
+
+      if (isOwnEvent) {
+        const editBtn = document.getElementById('editEventBtn');
+        editBtn.hidden = false;
+        editBtn.href = `meeting-form.html?edit=${currentEvent.id}`;
+        orgCard.href = 'profile.html';
+        const myProfile = JSON.parse(localStorage.getItem('visibility-profile') || 'null');
+        document.getElementById('organizerName').textContent = myProfile?.name || 'Ich';
+      }
+
+      const offerRideLink = document.getElementById('offerRideLink');
+      if (offerRideLink && currentEvent) {
+        offerRideLink.href = `rideshare-form.html?eventId=${currentEvent.id}`;
+      }
+
+      initActions();
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // INTERAKTIONEN (Speichern, Teilnehmen, Melden)
+    // ─────────────────────────────────────────────────────────────────────────
+    function initActions() {
+      // Speichern
+      const saveBtn = document.getElementById('saveBtn');
+      let savedList = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      let isSaved   = savedList.some(e => e.id === currentEvent.id);
+      updateSaveBtn(isSaved);
+
+      function updateSaveBtn(saved) {
+        isSaved = saved;
+        saveBtn.textContent = saved ? '🔖 Gespeichert' : '🔖 Event speichern';
+        saveBtn.classList.toggle('is-saved', saved);
+      }
+
+      saveBtn.addEventListener('click', () => {
+        let list = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+        if (isSaved) {
+          list = list.filter(e => e.id !== currentEvent.id);
+          updateSaveBtn(false); showToast('Aus Favoriten entfernt');
+        } else {
+          list.push(currentEvent);
+          updateSaveBtn(true); showToast('In Favoriten gespeichert');
+        }
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+      });
+
+      // Teilnehmen
+      const joinBtn       = document.getElementById('joinBtn');
+      const groupChatWrap = document.getElementById('groupChatWrap');
+      const ridesharePanel = document.getElementById('ridesharePanel');
+
+      let joinedList = JSON.parse(localStorage.getItem(JOINED_KEY) || '[]');
+      let joined     = joinedList.some(e => e.id === currentEvent.id);
+      updateJoinBtn(joined);
+
+      function updateJoinBtn(isJoined) {
+        joined = isJoined;
+        joinBtn.textContent = isJoined ? 'Teilnahme zurückziehen' : 'Teilnehmen';
+        joinBtn.classList.toggle('is-joined', isJoined);
+        groupChatWrap.classList.toggle('is-visible', isJoined);
+        ridesharePanel.style.display = isJoined ? 'block' : 'none';
+        if (!isJoined) {
+          document.getElementById('ridesList').style.display = 'none';
+          document.getElementById('searchRideBtn').innerHTML = '🔍 Suchen (1)';
+        }
+      }
+
+      joinBtn.addEventListener('click', () => {
+        let list = JSON.parse(localStorage.getItem(JOINED_KEY) || '[]');
+        if (joined) {
+          if (!confirm('Teilnahme wirklich zurückziehen?')) return;
+          list = list.filter(e => e.id !== currentEvent.id);
+          localStorage.setItem(JOINED_KEY, JSON.stringify(list));
+          updateJoinBtn(false);
+          showToast('Teilnahme zurückgezogen');
+        } else {
+          list.push({
+            id:       currentEvent.id,
+            title:    currentEvent.title,
+            category: currentEvent.category,
+            emoji:    currentEvent.emoji || '✅',
+            location: currentEvent.location,
+            date:     currentEvent.date,
+            dateText: currentEvent.dateText,
+            time:     currentEvent.time || '',
+            organizer: currentEvent.organizer || '',
+          });
+          localStorage.setItem(JOINED_KEY, JSON.stringify(list));
+          updateJoinBtn(true);
+          showToast('Du nimmst teil! 🎉');
+        }
+      });
+
+      // Fahrt suchen
+      const searchRideBtn = document.getElementById('searchRideBtn');
+      const ridesList     = document.getElementById('ridesList');
+      searchRideBtn.addEventListener('click', () => {
+        if (ridesList.style.display === 'none') {
+          ridesList.style.display = 'flex';
+          searchRideBtn.innerHTML = 'Kürzer fassen ▴';
+        } else {
+          ridesList.style.display = 'none';
+          searchRideBtn.innerHTML = '🔍 Suchen (1)';
+        }
+      });
+
+      // Chat-Toggle Dropdown
+      const chatToggle   = document.getElementById('chatToggle');
+      const rideDropdown = document.getElementById('rideDropdown');
+      chatToggle.addEventListener('click', () => {
+        const open = rideDropdown.classList.toggle('is-open');
+        chatToggle.classList.toggle('is-open', open);
+      });
+
+      // Melden
+      const reportOverlay = document.getElementById('reportOverlay');
+      const reportForm    = document.getElementById('reportForm');
+
+      document.getElementById('reportBtn').addEventListener('click', () => {
+        reportForm.reset();
+        document.querySelectorAll('.report-option').forEach(o => o.classList.remove('is-selected'));
+        reportOverlay.hidden = false;
+      });
+      document.getElementById('closeReport').addEventListener('click', () => reportOverlay.hidden = true);
+      reportOverlay.addEventListener('click', e => { if (e.target === reportOverlay) reportOverlay.hidden = true; });
+      reportForm.addEventListener('change', () => {
+        document.querySelectorAll('.report-option').forEach(o =>
+          o.classList.toggle('is-selected', o.querySelector('input').checked)
+        );
+      });
+      reportForm.addEventListener('submit', e => {
+        e.preventDefault();
+        const sel = reportForm.querySelector('input[name="reportReason"]:checked');
+        if (!sel) return;
+        reportOverlay.hidden = true;
+        showToast(`Meldung gesendet: ${sel.value}`);
+      });
+    }
+
+    let toastTimer;
+    function showToast(msg) {
+      const toast = document.getElementById('detailToast');
+      toast.textContent = msg;
+      toast.hidden = false;
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.hidden = true, 2500);
+    }
+
+    // Starten
+    loadEvent();
+  </script>
+
+  <script src="app.js"></script>
+</body>
+</html>
