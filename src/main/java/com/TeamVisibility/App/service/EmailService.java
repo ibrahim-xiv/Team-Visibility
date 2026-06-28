@@ -19,7 +19,7 @@ public class EmailService {
     public void sendVerificationCode(String toEmail, String code) {
         String body = """
             {
-              "from": "onboarding@resend.dev",
+              "from": "noreply@visibility-app.xyz",
               "to": ["%s"],
               "subject": "Dein Visibility Verifizierungscode",
               "html": "<h2>Dein Code: <strong>%s</strong></h2><p>Dieser Code ist 15 Minuten gültig.</p>"
