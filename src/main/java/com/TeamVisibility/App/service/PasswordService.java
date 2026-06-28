@@ -70,8 +70,4 @@ public class PasswordService {
         }
         return result == 0;
     }
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> origin/dto

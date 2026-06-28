@@ -48,31 +48,6 @@ public class User {
     @Column(name = "notif_radius")
     private Integer notifRadius;
 
-<<<<<<< HEAD
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public String getUsername() { return username; }
-    public void setUsername(String username) { this.username = username; }
-    public String getFirstName() { return firstName; }
-    public void setFirstName(String firstName) { this.firstName = firstName; }
-    public String getLastName() { return lastName; }
-    public void setLastName(String lastName) { this.lastName = lastName; }
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
-    public String getPasswordHash() { return passwordHash; }
-    public void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }
-    public UserRole getRole() { return role; }
-    public void setRole(UserRole role) { this.role = role; }
-    public boolean isVerified() { return verified; }
-    public void setVerified(boolean verified) { this.verified = verified; }
-    public String getVerificationCode() { return verificationCode; }
-    public void setVerificationCode(String verificationCode) { this.verificationCode = verificationCode; }
-    public boolean isHighContrast() { return highContrast; }
-    public void setHighContrast(boolean highContrast) { this.highContrast = highContrast; }
-    public Integer getNotifRadius() { return notifRadius; }
-    public void setNotifRadius(Integer notifRadius) { this.notifRadius = notifRadius; }
-}
-=======
     public Long getId() {
         return id;
     }
@@ -161,4 +136,3 @@ public class User {
         this.notifRadius = notifRadius;
     }
 }
->>>>>>> origin/dto
