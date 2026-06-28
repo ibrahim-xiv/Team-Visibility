@@ -1075,59 +1075,12 @@ form.register-form {
   .content.form-content { padding: 24px 16px 22px; }
   .code-inputs { gap: 8px; }
 
-  /* CRITICAL FIX: Dev-Nav auf dem Handy radikal und immer komplett unsichtbar machen */
-  .dev-nav { 
-    display: none !important; 
-  }
-}
 
-/* ── 22. Dev-Navigation (Nur auf dem Desktop sichtbar) ──────────────────── */
-.dev-nav {
-  position: fixed !important;
-  top: 20px !important;        /* Oben links fixiert */
-  left: 20px !important;
-  transform: none !important;
-  width: 200px;
-  background-color: #1d1c1c; 
-  padding: 20px;
-  border-radius: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3);
-  z-index: 999999;
-  border: 1px solid #363434;
-}
-
-.dev-nav-header {
-  color: var(--primary);
-  font-size: 12px;
-  font-weight: 900;
-  text-align: center;
-  border-bottom: 1px solid #363434;
-  padding-bottom: 10px;
-  margin-bottom: 5px;
-  cursor: pointer;
-  user-select: none;
-}
-
-.dev-btn {
-  display: block;
-  color: #a8a8a8;
-  font-size: 13px;
-  font-weight: 700;
-  text-decoration: none;
-  padding: 4px 0;
-}
 
 .dev-btn:hover {
   color: #ffffff;
 }
 
-/* Versteckt die Dev-Nav komplett, falls die Desktop-Ansicht mal schmaler als 1100px gezogen wird */
-@media (max-width: 1100px) {
-  .dev-nav { display: none !important; }
-}
   /* Deine spezifischen UI-Anpassungen für Mobile */
   .header { padding: 18px 16px 16px; }
   .header.has-action { padding: 18px 14px 16px; }
@@ -1145,9 +1098,6 @@ form.register-form {
   .content.form-content { padding: 24px 16px 22px; }
   .code-inputs { gap: 8px; }
 
-  /* Dev-Nav auf dem Handy immer verstecken */
-  .dev-nav { display: none !important; }
-}
 
 /* ── 21. Profil ──────────────────────────────────────────── */
 
@@ -1527,42 +1477,6 @@ form.register-form {
 }
 
 
-/* ── 22. Dev-Navigation ──────────────────────────────────── */
-.dev-nav {
-  position: fixed;
-  left: 30px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 200px;
-  background-color: #1d1c1c; 
-  padding: 20px;
-  border-radius: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3);
-  z-index: 999999;
-  border: 1px solid #363434;
-}
-
-.dev-nav-header {
-  color: var(--primary);
-  font-size: 12px;
-  font-weight: 900;
-  text-align: center;
-  border-bottom: 1px solid #363434;
-  padding-bottom: 10px;
-  margin-bottom: 5px;
-}
-
-.dev-btn {
-  display: block;
-  color: #a8a8a8;
-  font-size: 13px;
-  font-weight: 700;
-  text-decoration: none;
-  padding: 4px 0;
-}
 
 .dev-btn:hover {
   color: #ffffff;
@@ -1579,7 +1493,7 @@ form.register-form {
 }
 
 @media (max-width: 1100px) {
-  .dev-nav { display: none; }
+  
 }
 
 #devThemeToggle {
@@ -1834,35 +1748,9 @@ form {
   text-decoration: none;
 }
 
-/* ── 4. DEV NAVIGATION DESIGN (UI Upgrade) ── */
-.dev-nav {
-  position: fixed !important;
-  left: 25px !important;
-  top: 50% !important;
-  transform: translateY(-50%) !important;
-  width: 220px !important;
-  background: #1d1c1c !important;
-  border: 1px solid #363434 !important;
-  border-radius: 20px !important;
-  padding: 20px !important;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4) !important;
-  display: flex !important;
-  flex-direction: column !important;
-  gap: 6px !important;
-  z-index: 999999 !important;
-}
 
-.dev-nav-header {
-  color: #0095f6 !important;
-  font-size: 11px !important;
-  font-weight: 900 !important;
-  letter-spacing: 1px !important;
-  text-transform: uppercase !important;
-  text-align: center !important;
-  margin-bottom: 12px !important;
-  padding-bottom: 8px !important;
-  border-bottom: 1px solid #363434 !important;
-}
+
+
 
 .dev-btn, .dev-btn-action {
   all: unset !important;
@@ -1885,11 +1773,7 @@ form {
   transform: translateX(5px) !important;
 }
 
-.dev-nav-divider {
-  margin-top: 8px !important;
-  padding-top: 12px !important;
-  border-top: 1px solid #363434 !important;
-}
+
 
 /* Modal Styling */
 .modal-overlay {
@@ -1953,10 +1837,6 @@ form {
   cursor: pointer;
 }
 
-/* Desktop-Anpassung für die Dev-Nav */
-@media (max-width: 1100px) { 
-  .dev-nav { display: none; } 
-}
 
 /* ── SPEZIELLE BUTTON-ZUSTÄNDE ── */
 
@@ -1973,54 +1853,25 @@ form {
 .btn-send-code:not(:disabled):hover {
   filter: brightness(1.1);
 }
-/* ── COLLAPSIBLE DEV-NAV ── */
 
-/* Die Navigation wird schmaler, wenn sie eingeklappt ist */
-.dev-nav.collapsed {
-  width: 180px !important; /* Etwas kompakter */
-  gap: 0 !important;
-}
 
 /* Versteckt alle Inhalte außer dem Header, wenn .collapsed aktiv ist */
-.dev-nav.collapsed > *:not(.dev-nav-header) {
-  display: none !important;
-}
+
 
 /* Zeiger-Feedback für den Header */
-.dev-nav-header {
-  cursor: pointer;
-  user-select: none;
-  transition: opacity 0.2s;
-}
 
-.dev-nav-header:hover {
-  opacity: 0.7;
-}
+
+
 
 /* Ein kleines Icon-Indikator (Optional) */
-.dev-nav-header::after {
-  content: ' ▾';
-  font-size: 10px;
-}
 
-.dev-nav.collapsed .dev-nav-header::after {
-  content: ' ▴';
-}
-/* ── DEV-NAV NACH OBEN LINKS VERSCHIEBEN ── */
-.dev-nav {
-  top: 20px !important;        /* Abstand von oben */
-  left: 20px !important;       /* Abstand von links */
-  transform: none !important;  /* Entfernt die mittige Zentrierung */
-  position: fixed !important;
-}
+
+
+
 
 /* Falls du den Hamburger-Modus für Mobile nutzt und er AUCH oben links sein soll: */
 @media (max-width: 600px) {
-  .dev-nav {
-    top: 15px !important;
-    left: 15px !important;
-    bottom: auto !important;   /* Deaktiviert die Positionierung unten */
-  }
+  
 }
 
 /* ── KARTENANSICHT (map.html) ── */
@@ -2152,19 +2003,7 @@ body.dark-mode .leaflet-tile-pane {
   font-size: 18px;
 }
 
-/* Fix für den Modus-Wechsel Button in der DEV-Nav */
-#devThemeToggle {
-  background: none !important;
-  border: none !important;
-  color: #a8a8a8 !important;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  width: 100%;
-  padding: 8px 0 !important;
-  cursor: pointer;
-}
+
 
 /* ── 23. EVENT DETAILS (event-details.html) ───────────────── */
 
@@ -3268,19 +3107,7 @@ body.dark-mode .leaflet-tile-pane {
       font-size: 18px;
     }
 
-    /* Fix für den Modus-Wechsel Button in der DEV-Nav */
-    #devThemeToggle {
-      background: none !important;
-      border: none !important;
-      color: #a8a8a8 !important;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      width: 100%;
-      padding: 8px 0 !important;
-      cursor: pointer;
-    }
+    
     
     /* Spezifisch für Einstellungen */
     .settings-row {

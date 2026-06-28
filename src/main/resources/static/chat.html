@@ -6,13 +6,12 @@
   <link rel="stylesheet" href="style.css"/>
   <style>
     .conversation-list{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px;}
-    .conversation-item{display:flex;align-items:center;gap:12px;padding:12px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);cursor:pointer;text-decoration:none;color:var(--text);}
+    .conv-section-title{font-size:0.82rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;padding:8px 0 4px;}
+    .conversation-item{display:flex;align-items:center;gap:12px;padding:12px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);cursor:pointer;color:var(--text);}
     .conversation-item:hover{background:var(--hover-bg);}
-    .conv-avatar{width:40px;height:40px;border-radius:50%;background:var(--hover-bg);border:1px solid var(--border);display:grid;place-items:center;flex-shrink:0;}
+    .conv-avatar{width:40px;height:40px;border-radius:50%;background:var(--hover-bg);border:1px solid var(--border);display:grid;place-items:center;flex-shrink:0;font-size:1.2rem;}
     .conv-avatar svg{width:22px;height:22px;color:var(--muted);}
-    .conv-info{flex:1;min-width:0;}
-    .conv-name{font-weight:800;font-size:1rem;}
-    .conv-last{font-size:0.82rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .conv-info{flex:1;min-width:0;}.conv-name{font-weight:800;font-size:1rem;}.conv-last{font-size:0.82rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
     .chat-partner-info{display:flex;align-items:center;gap:12px;flex:1;}
     .chat-partner-avatar{width:36px;height:36px;border-radius:50%;border:1px solid var(--border);background:var(--hover-bg);display:grid;place-items:center;}
     .chat-partner-avatar svg{width:20px;height:20px;color:var(--muted);}
@@ -23,27 +22,21 @@
     .message-bubble.incoming{background:var(--hover-bg);color:var(--text);align-self:flex-start;border-bottom-left-radius:4px;border:1px solid var(--border);}
     .message-bubble.outgoing{background:var(--primary);color:#fff;align-self:flex-end;border-bottom-right-radius:4px;}
     .message-time{font-size:0.72rem;margin-top:4px;display:block;font-weight:400;opacity:0.75;}
-    .message-bubble.incoming .message-time{color:var(--hint);text-align:left;}
-    .message-bubble.outgoing .message-time{color:rgba(255,255,255,0.9);text-align:right;}
+    .message-bubble.incoming .message-time{color:var(--hint);}.message-bubble.outgoing .message-time{color:rgba(255,255,255,0.9);text-align:right;}
+    .sender-label{font-size:0.75rem;font-weight:800;margin-bottom:4px;opacity:0.7;}
     .chat-input-wrap{padding:12px 16px;border-top:1px solid var(--border);background:var(--surface);}
     .chat-input-form{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;}
     .chat-input-field{width:100%;min-height:48px;padding:12px 16px;border:1px solid var(--border);border-radius:24px;background:var(--bg);color:var(--text);outline:none;font-size:0.95rem;}
     .chat-input-field:focus{border-color:var(--primary);}
     .chat-send-btn{width:48px;height:48px;border-radius:50%;border:none;background:var(--primary);color:#fff;display:grid;place-items:center;cursor:pointer;}
     .chat-send-btn svg{width:20px;height:20px;margin-left:2px;}
-    #chatView{display:none;flex-direction:column;height:100%;}
-    #listView{display:flex;flex-direction:column;height:100%;}
+    #chatView{display:none;flex-direction:column;height:100%;}#listView{display:flex;flex-direction:column;height:100%;}
     .empty-conv{text-align:center;padding:40px 20px;color:var(--muted);font-size:0.95rem;}
-    .sender-label{font-size:0.75rem;font-weight:800;margin-bottom:4px;opacity:0.7;}
     .profile-link{font-size:0.78rem;color:var(--primary);text-decoration:none;margin-left:8px;}
   </style>
 </head>
 <body>
-<script>
-  if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');
-  const user=JSON.parse(localStorage.getItem('tv-user')||'null');
-  if(!user)window.location.href='login.html';
-</script>
+<script>if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');</script>
 <main class="phone">
   <div id="listView">
     <div class="header-wrap"><header class="header"><div class="brand"><span>Chats</span></div></header></div>
@@ -61,11 +54,8 @@
       <header class="header has-back" style="display:flex;justify-content:flex-start;align-items:center;gap:12px;">
         <button class="back-btn" onclick="showList()" style="background:none;border:none;font-size:1.8rem;cursor:pointer;color:var(--text);">&#8249;</button>
         <div class="chat-partner-info">
-          <div class="chat-partner-avatar"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-4.4 0-8 2.2-8 5v2h16v-2c0-2.8-3.6-5-8-5z"/></svg></div>
-          <div>
-            <span class="chat-partner-name" id="chatPartnerName"></span>
-            <a class="profile-link" id="chatProfileLink" href="#">Profil ansehen</a>
-          </div>
+          <div class="chat-partner-avatar" id="chatAvatar"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-4.4 0-8 2.2-8 5v2h16v-2c0-2.8-3.6-5-8-5z"/></svg></div>
+          <div><span class="chat-partner-name" id="chatPartnerName"></span><a class="profile-link" id="chatProfileLink" href="#" style="display:none;">Profil</a></div>
         </div>
       </header>
     </div>
@@ -80,34 +70,41 @@
 </main>
 <script src="app.js"></script>
 <script>
+const user=JSON.parse(localStorage.getItem('tv-user')||'null');
 let currentRecipientId=null,currentGroupId=null,pollTimer=null;
 
-function showList(){
-  document.getElementById('listView').style.display='flex';
-  document.getElementById('chatView').style.display='none';
-  clearInterval(pollTimer);loadConversations();
-}
+function showList(){document.getElementById('listView').style.display='flex';document.getElementById('chatView').style.display='none';clearInterval(pollTimer);loadConversations();}
+
 function showChat(recipientId,recipientName,groupId,groupName){
-  document.getElementById('listView').style.display='none';
-  document.getElementById('chatView').style.display='flex';
+  document.getElementById('listView').style.display='none';document.getElementById('chatView').style.display='flex';
   currentRecipientId=recipientId||null;currentGroupId=groupId||null;
   document.getElementById('chatPartnerName').textContent=recipientName||groupName||'Chat';
-  const plink=document.getElementById('chatProfileLink');
-  if(recipientId){plink.href='profile-view.html?id='+recipientId;plink.style.display='inline';}
-  else{plink.style.display='none';}
+  const plink=document.getElementById('chatProfileLink'),avatar=document.getElementById('chatAvatar');
+  if(recipientId){plink.href='profile-view.html?id='+recipientId;plink.style.display='inline';avatar.innerHTML='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-4.4 0-8 2.2-8 5v2h16v-2c0-2.8-3.6-5-8-5z"/></svg>';}
+  else{plink.style.display='none';avatar.innerHTML='👥';avatar.style.fontSize='1.2rem';}
   loadMessages();pollTimer=setInterval(loadMessages,3000);
 }
 
 async function loadConversations(){
-  try{const r=await fetch('/api/chat/conversations');
-    if(r.status===401){window.location.href='login.html';return;}
+  try{const r=await fetch('/api/chat/conversations');if(r.status===401){window.location.href='login.html';return;}
     const convs=await r.json();const el=document.getElementById('convList');
     if(!convs.length){el.innerHTML='<div class="empty-conv">Noch keine Chats.<br>Schreibe jemandem über ein Event!</div>';return;}
-    el.innerHTML=convs.map(c=>`
-      <div class="conversation-item" onclick="showChat(${c.recipientId||'null'},'${(c.recipientName||'').replace(/'/g,"\\'")}','${c.groupEventId||''}','${(c.groupName||'').replace(/'/g,"\\'")}')">
+
+    const privates=convs.filter(c=>c.type==='private'),groups=convs.filter(c=>c.type==='group');
+    let html='';
+    if(privates.length){
+      html+='<div class="conv-section-title">Einzelchats</div>';
+      html+=privates.map(c=>`<div class="conversation-item" onclick="showChat(${c.recipientId},'${(c.recipientName||'').replace(/'/g,"\\'")}',null,null)">
         <div class="conv-avatar"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-4.4 0-8 2.2-8 5v2h16v-2c0-2.8-3.6-5-8-5z"/></svg></div>
-        <div class="conv-info"><div class="conv-name">${c.recipientName||c.groupName||'Gruppe'}</div><div class="conv-last">${c.lastMessage||''}</div></div>
-      </div>`).join('');
+        <div class="conv-info"><div class="conv-name">${c.recipientName||'User'}</div><div class="conv-last">${c.lastMessage||''}</div></div></div>`).join('');
+    }
+    if(groups.length){
+      html+='<div class="conv-section-title">Gruppen-Chats</div>';
+      html+=groups.map(c=>`<div class="conversation-item" onclick="showChat(null,null,'${c.groupEventId||''}','${(c.groupName||'').replace(/'/g,"\\'")}')">
+        <div class="conv-avatar">👥</div>
+        <div class="conv-info"><div class="conv-name">${c.groupName||'Gruppe'}</div><div class="conv-last">${c.lastMessage||''}</div></div></div>`).join('');
+    }
+    el.innerHTML=html;
   }catch(e){document.getElementById('convList').innerHTML='<p style="color:var(--muted);text-align:center;padding:20px;">Fehler.</p>';}
 }
 
@@ -117,10 +114,8 @@ async function loadMessages(){
     else if(currentGroupId)url+='groupEventId='+currentGroupId;
     const r=await fetch(url);const msgs=await r.json();const el=document.getElementById('chatMessages');
     el.innerHTML=msgs.map(m=>`<div class="message-bubble ${m.mine?'outgoing':'incoming'}">
-      ${m.mine?'':`<div class="sender-label">${m.senderName}</div>`}
-      ${m.content}
-      <span class="message-time">${new Date(m.createdAt).toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})}</span>
-    </div>`).join('');
+      ${m.mine?'':`<div class="sender-label">${m.senderName}</div>`}${m.content}
+      <span class="message-time">${new Date(m.createdAt).toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})}</span></div>`).join('');
     el.scrollTop=el.scrollHeight;
   }catch(e){}
 }
@@ -130,18 +125,20 @@ document.getElementById('chatInputForm').addEventListener('submit',async e=>{
   const content=input.value.trim();if(!content)return;input.value='';
   const body={content};
   if(currentRecipientId)body.recipientId=currentRecipientId;
-  if(currentGroupId)body.groupEventId=currentGroupId;
+  if(currentGroupId){body.groupEventId=currentGroupId;body.groupName=document.getElementById('chatPartnerName').textContent;}
   await fetch('/api/chat/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
   loadMessages();
 });
 
-// Auto-open chat from event-details
+// Auto-open from event-details or other pages
 const autoRecipient=localStorage.getItem('chat-open-recipient');
+const autoGroup=localStorage.getItem('chat-open-group');
 if(autoRecipient){
   localStorage.removeItem('chat-open-recipient');
-  fetch('/api/users/'+autoRecipient).then(r=>r.json()).then(u=>{
-    showChat(Number(autoRecipient),u.firstName+' '+u.lastName,null,null);
-  }).catch(()=>showList());
+  fetch('/api/users/'+autoRecipient).then(r=>r.json()).then(u=>showChat(Number(autoRecipient),u.firstName+' '+u.lastName,null,null)).catch(()=>showList());
+} else if(autoGroup){
+  localStorage.removeItem('chat-open-group');
+  try{const g=JSON.parse(autoGroup);showChat(null,null,g.id,g.name);}catch(e){showList();}
 } else { showList(); }
 </script>
 </body></html>
