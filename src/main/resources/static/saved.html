@@ -5,6 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Visibility – Gespeichert</title>
   <link rel="stylesheet" href="style.css" />
+  <style>
+    .own-events-scroll { display:flex;gap:8px;overflow-x:auto;padding:0 0 8px;scrollbar-width:none;margin-bottom:4px; }
+    .own-events-scroll::-webkit-scrollbar { display:none; }
+    .own-event-chip { flex-shrink:0;width:120px;background:var(--primary);color:#fff;border-radius:var(--radius-md);padding:8px 10px;text-decoration:none;display:block; }
+    .own-event-chip h4 { font-size:0.8rem;font-weight:800;margin:0 0 2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+    .own-event-chip p { font-size:0.72rem;opacity:0.85;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+    .section-label { font-size:1rem;font-weight:800;margin:16px 0 8px; }
+  </style>
 </head>
 <body>
   <script>
@@ -19,10 +27,19 @@
     </div>
     <div class="scroll-area">
       <section class="content">
+
+        <!-- Meine Events horizontal -->
+        <div id="myEventsSection" style="display:none;">
+          <div class="section-label">Meine Events</div>
+          <div class="own-events-scroll" id="myEventsList"></div>
+        </div>
+
+        <!-- Gespeicherte Events -->
+        <div class="section-label">Gespeicherte Events</div>
         <div class="event-list" id="savedList">
           <p style="color:var(--muted);font-size:0.9rem;padding:12px 0;">Wird geladen…</p>
         </div>
-        <div id="emptyState" style="display:none;text-align:center;padding:40px 20px;color:var(--muted);">Noch keine Events gespeichert.</div>
+        <div id="emptyState" style="display:none;text-align:center;padding:40px 20px;color:var(--muted);font-size:0.9rem;">Noch keine Events gespeichert.<br>Tippe auf das Lesezeichen-Symbol auf der Startseite!</div>
       </section>
     </div>
     <nav class="bottom-nav">
@@ -36,30 +53,45 @@
   <script src="app.js"></script>
   <script>
     const SAVED_KEY = 'visibility-saved';
-    async function loadSaved() {
-      const savedIds = JSON.parse(localStorage.getItem(SAVED_KEY) || '[]');
-      if (!savedIds.length) { document.getElementById('savedList').innerHTML = ''; document.getElementById('emptyState').style.display = 'block'; return; }
+    const user = JSON.parse(localStorage.getItem('tv-user') || 'null');
+
+    async function loadAll() {
       try {
         const res = await fetch('/api/meetings');
         const all = await res.json();
+
+        // My events
+        const mine = all.filter(e => e.creatorId === user?.id);
+        if (mine.length) {
+          document.getElementById('myEventsSection').style.display = 'block';
+          document.getElementById('myEventsList').innerHTML = mine.map(e => `
+            <a class="own-event-chip" href="event-details.html?id=${e.id}">
+              <h4>${e.title}</h4>
+              <p>${e.locationName || 'Kein Ort'}</p>
+            </a>`).join('');
+        }
+
+        // Saved events
+        const savedIds = JSON.parse(localStorage.getItem(SAVED_KEY) || '[]');
         const saved = all.filter(e => savedIds.includes(e.id));
         const el = document.getElementById('savedList');
-        if (!saved.length) { el.innerHTML = ''; document.getElementById('emptyState').style.display = 'block'; return; }
+        if (!saved.length) { el.innerHTML=''; document.getElementById('emptyState').style.display='block'; return; }
         el.innerHTML = saved.map(e => `
           <article class="event-row">
             <a class="event-card" href="event-details.html?id=${e.id}">
               <h3 class="event-title">${e.title}</h3>
               <p class="event-meta">${e.locationName || ''}</p>
-              <p class="event-meta">${e.dateTime ? new Date(e.dateTime).toLocaleDateString('de-DE') : ''}</p>
+              <p class="event-meta">${e.dateTime ? new Date(e.dateTime).toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric'}) : ''}</p>
             </a>
             <div class="event-side">
-              <button class="icon-btn save-btn is-active" data-id="${e.id}" type="button">
+              <button class="icon-btn save-btn is-active" data-id="${e.id}" type="button" aria-label="Entfernen">
                 <svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"></path>
                 </svg>
               </button>
             </div>
           </article>`).join('');
+
         document.querySelectorAll('.save-btn').forEach(btn => {
           btn.onclick = ev => {
             ev.preventDefault();
@@ -67,12 +99,15 @@
             let ids = JSON.parse(localStorage.getItem(SAVED_KEY) || '[]');
             ids = ids.filter(s => s !== id);
             localStorage.setItem(SAVED_KEY, JSON.stringify(ids));
-            loadSaved();
+            loadAll();
           };
         });
-      } catch(e) {}
+      } catch(e) {
+        document.getElementById('savedList').innerHTML = '<p style="color:var(--muted);">Fehler beim Laden.</p>';
+      }
     }
-    loadSaved();
+
+    loadAll();
   </script>
 </body>
 </html>

@@ -5,6 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Visibility – Event erstellen</title>
   <link rel="stylesheet" href="style.css" />
+  <style>
+    .autocomplete-wrap { position:relative; }
+    .autocomplete-list { display:none;position:absolute;top:calc(100% + 3px);left:0;right:0;background:var(--surface);border:2px solid var(--border);border-radius:var(--radius-sm);z-index:200;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,0.10); }
+    .autocomplete-item { display:flex;align-items:flex-start;gap:10px;padding:11px 13px;cursor:pointer;border-bottom:1px solid var(--border); }
+    .autocomplete-item:last-child { border-bottom:none; }
+    .autocomplete-item:hover,.autocomplete-item.is-focused { background:var(--hover-bg); }
+    .autocomplete-item-main { font-size:0.9rem;font-weight:700;color:var(--text); }
+    .autocomplete-item-sub { font-size:0.78rem;color:var(--muted); }
+    .autocomplete-status { padding:11px 13px;font-size:0.82rem;color:var(--muted); }
+  </style>
 </head>
 <body>
   <script>
@@ -36,7 +46,10 @@
         </div>
         <div class="form-group">
           <label for="locationName">Ort</label>
-          <input class="input" id="locationName" type="text" placeholder="Stadtpark, Wilhelmshaven" required>
+          <div class="autocomplete-wrap">
+            <input class="input" id="locationName" type="text" placeholder="z.B. Stadtpark, Wilhelmshaven" autocomplete="off" required>
+            <div class="autocomplete-list" id="locationList"></div>
+          </div>
         </div>
         <div class="form-group">
           <label for="dateTime">Datum & Uhrzeit</label>
@@ -52,32 +65,88 @@
   </main>
   <script src="app.js"></script>
   <script>
+    // Autocomplete
+    function initAutocomplete(inputId, listId) {
+      const input = document.getElementById(inputId);
+      const list = document.getElementById(listId);
+      if (!input || !list) return;
+      let timer, results = [], focusIdx = -1;
+      const PIN = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" width="15" height="15"><path d="M12 21s6-5.2 6-11a6 6 0 1 0-12 0c0 5.8 6 11 6 11z"/><circle cx="12" cy="10" r="2.2"/></svg>`;
+      const hide = () => { list.style.display='none'; focusIdx=-1; };
+      const show = (msg) => { list.innerHTML=`<div class="autocomplete-status">${msg}</div>`; list.style.display='block'; };
+      const setFocus = (idx) => { list.querySelectorAll('.autocomplete-item').forEach((el,i) => el.classList.toggle('is-focused',i===idx)); focusIdx=idx; };
+      const select = (item) => {
+        const p = item.display_name.split(', ');
+        input.value = p.slice(0,3).join(', ');
+        input.dataset.lat = item.lat;
+        input.dataset.lng = item.lon;
+        hide();
+      };
+      const render = (data) => {
+        results=data;
+        if (!data.length) { show('Keine Ergebnisse.'); return; }
+        list.innerHTML = data.map((item,i) => {
+          const p = item.display_name.split(', ');
+          return `<div class="autocomplete-item" data-idx="${i}"><div style="flex-shrink:0;margin-top:2px;opacity:.45;">${PIN}</div><div><div class="autocomplete-item-main">${p.slice(0,2).join(', ')}</div>${p[2]?`<div class="autocomplete-item-sub">${p.slice(2,4).join(', ')}</div>`:''}</div></div>`;
+        }).join('');
+        list.style.display='block';
+        list.querySelectorAll('.autocomplete-item').forEach(el => {
+          el.addEventListener('mouseenter', () => setFocus(+el.dataset.idx));
+          el.addEventListener('mousedown', e => { e.preventDefault(); select(results[+el.dataset.idx]); });
+        });
+      };
+      input.addEventListener('input', () => {
+        clearTimeout(timer);
+        const q=input.value.trim();
+        if(q.length<3){hide();return;}
+        timer=setTimeout(()=>{
+          show('Suche…');
+          fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=5&accept-language=de`,{headers:{'User-Agent':'Visibility-App'}})
+            .then(r=>r.json()).then(render).catch(()=>show('Fehler.'));
+        },350);
+      });
+      input.addEventListener('keydown', e => {
+        const items=list.querySelectorAll('.autocomplete-item');
+        if(!items.length||list.style.display==='none')return;
+        if(e.key==='ArrowDown'){e.preventDefault();setFocus(Math.min(focusIdx+1,items.length-1));}
+        if(e.key==='ArrowUp'){e.preventDefault();setFocus(Math.max(focusIdx-1,0));}
+        if(e.key==='Enter'&&focusIdx>=0){e.preventDefault();select(results[focusIdx]);}
+        if(e.key==='Escape')hide();
+      });
+      input.addEventListener('blur', ()=>setTimeout(hide,150));
+    }
+    initAutocomplete('locationName','locationList');
+
     document.getElementById('meetingForm').addEventListener('submit', async e => {
       e.preventDefault();
       const btn = document.getElementById('submitBtn');
       const errEl = document.getElementById('errorMsg');
-      btn.disabled = true; btn.textContent = 'Wird erstellt…';
-      errEl.style.display = 'none';
+      const locInput = document.getElementById('locationName');
+      btn.disabled=true; btn.textContent='Wird erstellt…';
+      errEl.style.display='none';
       try {
+        const body = {
+          title: document.getElementById('title').value.trim(),
+          category: document.getElementById('category').value,
+          locationName: locInput.value.trim(),
+          dateTime: document.getElementById('dateTime').value || null,
+          description: document.getElementById('description').value.trim(),
+          nonProfit: true
+        };
+        if (locInput.dataset.lat) body.lat = parseFloat(locInput.dataset.lat);
+        if (locInput.dataset.lng) body.lng = parseFloat(locInput.dataset.lng);
+
         const res = await fetch('/api/meetings', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            title: document.getElementById('title').value.trim(),
-            category: document.getElementById('category').value,
-            locationName: document.getElementById('locationName').value.trim(),
-            dateTime: document.getElementById('dateTime').value || null,
-            description: document.getElementById('description').value.trim(),
-            nonProfit: true
-          })
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify(body)
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Fehler beim Erstellen');
         window.location.href = `event-details.html?id=${data.id}`;
       } catch(err) {
-        errEl.textContent = err.message;
-        errEl.style.display = 'block';
-        btn.disabled = false; btn.textContent = 'Event erstellen';
+        errEl.textContent=err.message; errEl.style.display='block';
+        btn.disabled=false; btn.textContent='Event erstellen';
       }
     });
   </script>
