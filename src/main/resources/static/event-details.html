@@ -1,70 +1,161 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Visibility – Event Details</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css"/>
+  <style>
+    .ride-section{margin-top:24px;padding:16px;background:var(--hover-bg);border-radius:var(--radius-md);border:1px solid var(--border);}
+    .ride-item{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);font-size:0.88rem;}
+    .ride-item:last-child{border-bottom:none;}
+    .ride-btn{padding:6px 12px;border-radius:20px;border:none;font-size:0.8rem;font-weight:700;cursor:pointer;}
+    .ride-offer{background:#22c55e;color:#fff;}
+    .ride-request{background:var(--primary);color:#fff;}
+    .edit-form{margin-top:16px;}
+    .edit-form .form-group{margin-bottom:12px;}
+    .edit-form label{font-weight:700;font-size:0.85rem;display:block;margin-bottom:4px;}
+    .edit-form input,.edit-form textarea,.edit-form select{width:100%;padding:10px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);font-size:0.9rem;box-sizing:border-box;}
+  </style>
 </head>
 <body>
-  <script>if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');</script>
-  <main class="phone">
-    <header class="header has-back">
-      <a class="back-btn" href="home.html" aria-label="Zurück">&#8249;</a>
-      <div class="brand"><span id="eventTitleHeader">Event</span></div>
-    </header>
-    <div class="scroll-area">
-      <section class="content" id="eventContent">
-        <p style="color:var(--muted);">Wird geladen…</p>
-      </section>
+<script>if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');</script>
+<main class="phone">
+  <header class="header has-back">
+    <a class="back-btn" href="home.html">&#8249;</a>
+    <div class="brand"><span id="eventTitleHeader">Event</span></div>
+  </header>
+  <div class="scroll-area">
+    <section class="content" id="eventContent"><p style="color:var(--muted);">Wird geladen…</p></section>
+  </div>
+</main>
+<script src="app.js"></script>
+<script>
+const params=new URLSearchParams(window.location.search);
+const id=params.get('id');
+const user=JSON.parse(localStorage.getItem('tv-user')||'null');
+let eventData=null,editing=false;
+
+async function loadEvent(){
+  if(!id){document.getElementById('eventContent').innerHTML='<p>Event nicht gefunden.</p>';return;}
+  try{
+    const r=await fetch('/api/meetings/'+id);
+    if(!r.ok){document.getElementById('eventContent').innerHTML='<p>Event nicht gefunden.</p>';return;}
+    eventData=await r.json();
+    document.getElementById('eventTitleHeader').textContent=eventData.title||'Event';
+    renderEvent();
+    loadRides();
+  }catch(e){document.getElementById('eventContent').innerHTML='<p>Fehler beim Laden.</p>';}
+}
+
+function renderEvent(){
+  const e=eventData,isOwn=user&&e.creatorId===user.id;
+  const dateStr=e.dateTime?new Date(e.dateTime).toLocaleDateString('de-DE',{weekday:'long',day:'2-digit',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'}):'Kein Datum';
+  let html=`<div style="margin-bottom:20px;">
+    <h2 style="font-size:1.5rem;font-weight:800;margin-bottom:8px;">${e.title}</h2>
+    <p style="color:var(--muted);font-size:0.9rem;margin-bottom:4px;">📅 ${dateStr}</p>
+    <p style="color:var(--muted);font-size:0.9rem;margin-bottom:4px;">📍 ${e.locationName||'Kein Ort'}</p>
+    <p style="color:var(--muted);font-size:0.9rem;margin-bottom:16px;">📂 ${e.category||'Allgemein'}</p>
+    ${e.description?`<p style="line-height:1.6;">${e.description}</p>`:''}
+  </div>`;
+
+  if(isOwn){
+    html+=`<div style="display:flex;gap:10px;margin-bottom:16px;">
+      <button onclick="toggleEdit()" class="submit-btn" style="flex:1;background:var(--hover-bg);color:var(--text);border:1px solid var(--border);">✏️ Bearbeiten</button>
+      <button onclick="deleteEvent()" style="flex:1;padding:12px;background:#ef4444;color:#fff;border:none;border-radius:var(--radius-md);font-weight:800;cursor:pointer;">🗑️ Löschen</button>
     </div>
-  </main>
-  <script src="app.js"></script>
-  <script>
-    const params = new URLSearchParams(window.location.search);
-    const id = params.get('id');
-    const user = JSON.parse(localStorage.getItem('tv-user') || 'null');
+    <div id="editSection"></div>`;
+  } else {
+    html+=`<div style="display:flex;gap:10px;margin-bottom:16px;">
+      <button onclick="startChat(${e.creatorId})" class="submit-btn" style="flex:1;">💬 Veranstalter anschreiben</button>
+      <a href="profile-view.html?id=${e.creatorId}" class="submit-btn" style="flex:1;text-align:center;text-decoration:none;background:var(--hover-bg);color:var(--text);border:1px solid var(--border);">👤 Profil ansehen</a>
+    </div>`;
+  }
 
-    async function loadEvent() {
-      if (!id) { document.getElementById('eventContent').innerHTML = '<p>Event nicht gefunden.</p>'; return; }
-      try {
-        const res = await fetch(`/api/meetings/${id}`);
-        if (!res.ok) { document.getElementById('eventContent').innerHTML = '<p>Event nicht gefunden.</p>'; return; }
-        const e = await res.json();
-        document.getElementById('eventTitleHeader').textContent = e.title || 'Event';
-        const isOwn = user && e.creatorId === user.id;
-        const dateStr = e.dateTime ? new Date(e.dateTime).toLocaleDateString('de-DE', {weekday:'long',day:'2-digit',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'}) : 'Kein Datum';
-        document.getElementById('eventContent').innerHTML = `
-          <div style="margin-bottom:20px;">
-            <h2 style="font-size:1.5rem;font-weight:800;margin-bottom:8px;">${e.title}</h2>
-            <p style="color:var(--muted);font-size:0.9rem;margin-bottom:4px;">📅 ${dateStr}</p>
-            <p style="color:var(--muted);font-size:0.9rem;margin-bottom:16px;">📍 ${e.locationName || 'Kein Ort angegeben'}</p>
-            ${e.description ? `<p style="line-height:1.6;">${e.description}</p>` : ''}
-          </div>
-          ${isOwn ? `
-          <div style="display:flex;gap:10px;margin-top:20px;">
-            <button onclick="deleteEvent()" style="flex:1;padding:12px;background:#ef4444;color:#fff;border:none;border-radius:var(--radius-md);font-weight:800;cursor:pointer;">Event löschen</button>
-          </div>` : `
-          <div style="margin-top:20px;">
-            <button onclick="startChat(${e.creatorId})" class="submit-btn">Veranstalter anschreiben</button>
-          </div>`}`;
-      } catch(e) {
-        document.getElementById('eventContent').innerHTML = '<p>Fehler beim Laden.</p>';
-      }
-    }
+  html+=`<div class="ride-section">
+    <h3 style="margin:0 0 12px;font-size:1rem;font-weight:800;">🚗 Mitfahrgelegenheiten</h3>
+    <div id="rideList"><p style="color:var(--muted);font-size:0.85rem;">Wird geladen…</p></div>
+    <div style="display:flex;gap:8px;margin-top:12px;">
+      <button onclick="offerRide()" class="ride-btn ride-offer">🚗 Fahrt anbieten</button>
+      <button onclick="requestRide()" class="ride-btn ride-request">🙋 Mitfahrt anfragen</button>
+    </div>
+  </div>`;
 
-    async function deleteEvent() {
-      if (!confirm('Event wirklich löschen?')) return;
-      await fetch(`/api/meetings/${id}`, { method: 'DELETE' });
-      window.location.href = 'home.html';
-    }
+  document.getElementById('eventContent').innerHTML=html;
+}
 
-    function startChat(creatorId) {
-      localStorage.setItem('chat-open-recipient', creatorId);
-      window.location.href = 'chat.html';
-    }
+function toggleEdit(){
+  const sec=document.getElementById('editSection');
+  if(editing){sec.innerHTML='';editing=false;return;}
+  editing=true;
+  const e=eventData;
+  sec.innerHTML=`<div class="edit-form">
+    <div class="form-group"><label>Titel</label><input id="editTitle" value="${e.title||''}"></div>
+    <div class="form-group"><label>Ort</label><input id="editLocation" value="${e.locationName||''}"></div>
+    <div class="form-group"><label>Datum</label><input id="editDate" type="datetime-local" value="${e.dateTime?e.dateTime.slice(0,16):''}"></div>
+    <div class="form-group"><label>Kategorie</label><select id="editCategory">
+      ${['Freizeit','Sport','Spieleabend','Kultur','Community','Anderes…'].map(c=>`<option ${c===e.category?'selected':''}>${c}</option>`).join('')}
+    </select></div>
+    <div class="form-group"><label>Beschreibung</label><textarea id="editDesc" rows="3">${e.description||''}</textarea></div>
+    <button onclick="saveEdit()" class="submit-btn">Speichern</button>
+  </div>`;
+}
 
-    loadEvent();
-  </script>
-</body>
-</html>
+async function saveEdit(){
+  try{
+    const r=await fetch('/api/meetings/'+id,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+      title:document.getElementById('editTitle').value.trim(),
+      locationName:document.getElementById('editLocation').value.trim(),
+      dateTime:document.getElementById('editDate').value||null,
+      category:document.getElementById('editCategory').value,
+      description:document.getElementById('editDesc').value.trim()
+    })});
+    if(!r.ok){const d=await r.json();alert(d.error||'Fehler');return;}
+    eventData=await r.json();editing=false;renderEvent();loadRides();
+  }catch(e){alert('Fehler beim Speichern.');}
+}
+
+async function deleteEvent(){
+  if(!confirm('Event wirklich löschen?'))return;
+  await fetch('/api/meetings/'+id,{method:'DELETE'});
+  window.location.href='home.html';
+}
+
+async function loadRides(){
+  try{
+    const r=await fetch('/api/rides/'+id);const rides=await r.json();
+    const el=document.getElementById('rideList');
+    if(!rides.length){el.innerHTML='<p style="color:var(--muted);font-size:0.85rem;">Noch keine Mitfahrten.</p>';return;}
+    el.innerHTML=rides.map(rd=>{
+      const isOffer=rd.type==='OFFER';
+      const canMatch=rd.status==='OPEN'&&((isOffer&&rd.offererId!==user?.id)||(!isOffer&&rd.requesterId!==user?.id));
+      return`<div class="ride-item">
+        <span>${isOffer?'🚗 Bietet Fahrt an':'🙋 Sucht Mitfahrt'}${rd.pickup?' – '+rd.pickup:''}${rd.seats?' ('+rd.seats+' Plätze)':''} <span style="color:var(--muted);font-size:0.75rem;">[${rd.status}]</span></span>
+        ${canMatch?`<button onclick="matchRide(${rd.id})" class="ride-btn ${isOffer?'ride-request':'ride-offer'}">${isOffer?'Mitfahren':'Anbieten'}</button>`:''}
+      </div>`;
+    }).join('');
+  }catch(e){}
+}
+
+async function offerRide(){
+  const pickup=prompt('Treffpunkt/Abholort:');if(!pickup)return;
+  const seats=prompt('Anzahl freier Plätze:','2');
+  await fetch('/api/rides',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({meetingId:Number(id),type:'OFFER',pickup,seats:Number(seats)||2})});
+  loadRides();
+}
+async function requestRide(){
+  const note=prompt('Nachricht (optional):','');
+  await fetch('/api/rides',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({meetingId:Number(id),type:'REQUEST',note:note||''})});
+  loadRides();
+}
+async function matchRide(rideId){
+  await fetch('/api/rides/'+rideId+'/match',{method:'PUT'});
+  loadRides();
+}
+function startChat(creatorId){
+  localStorage.setItem('chat-open-recipient',creatorId);
+  window.location.href='chat.html';
+}
+
+loadEvent();
+</script>
+</body></html>

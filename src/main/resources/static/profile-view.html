@@ -1,242 +1,66 @@
 <!DOCTYPE html>
 <html lang="de">
-
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Visibility – Profil</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css"/>
+  <style>
+    .pv-card{text-align:center;padding:24px 0 16px;}
+    .pv-avatar{width:80px;height:80px;border-radius:50%;background:var(--hover-bg);border:2px solid var(--border);display:grid;place-items:center;margin:0 auto 12px;}
+    .pv-avatar svg{width:48px;height:48px;color:var(--muted);}
+    .pv-name{font-size:1.4rem;font-weight:800;margin:0 0 4px;}
+    .pv-email{color:var(--muted);font-size:0.85rem;}
+    .pv-events{margin-top:20px;}
+    .pv-event{padding:10px;border:1px solid var(--border);border-radius:var(--radius-md);margin-bottom:8px;}
+    .pv-event a{text-decoration:none;color:var(--text);font-weight:700;}
+  </style>
 </head>
-
 <body>
-  <script>
-    if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');
-  </script>
-  <main class="phone is-feed">
-
-    <div class="header-wrap">
-      <header class="header has-back">
-        <a class="back-btn" href="home.html" aria-label="Zurück">&#8249;</a>
-        <h1>Profil</h1>
-      </header>
-    </div>
-
-    <div class="scroll-area">
-      <section class="content">
-
-        <!-- Avatar -->
-        <div class="avatar-wrap">
-          <div class="avatar-circle">
-            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              <path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-4.4 0-8 2.2-8 5v2h16v-2c0-2.8-3.6-5-8-5z"/>
-            </svg>
-          </div>
-        </div>
-
-        <!-- Name -->
-        <h2 class="profile-name" id="viewName">–</h2>
-
-        <!-- Ort + Mitglied seit -->
-        <div class="profile-meta">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"
-            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M12 21s6-5.2 6-11a6 6 0 1 0-12 0c0 5.8 6 11 6 11z"/>
-            <circle cx="12" cy="10" r="2.2"/>
-          </svg>
-          <span id="viewLocation">–</span>
-        </div>
-
-        <!-- Aktions-Buttons -->
-        <div class="profile-action-row" style="margin-bottom: 22px;">
-          <button class="profile-action-btn is-friend" id="addFriendBtn" type="button">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"
-              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-              <circle cx="9" cy="7" r="4"/>
-              <line x1="19" y1="8" x2="19" y2="14"/>
-              <line x1="22" y1="11" x2="16" y2="11"/>
-            </svg>
-            Als Freund
-          </button>
-          <button class="profile-action-btn is-report" id="reportProfileBtn" type="button">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"
-              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M5 21V4"/>
-              <path d="M5 4h10l-1.5 3L17 10H5"/>
-            </svg>
-            Melden
-          </button>
-        </div>
-
-        <!-- Beschreibung -->
-        <div class="profile-section">
-          <p class="profile-section-title">Beschreibung:</p>
-          <p class="profile-bio" id="viewBio">–</p>
-        </div>
-
-        <!-- Interessen -->
-        <div class="profile-section" id="viewInterestSection">
-          <p class="profile-section-title">Interessen:</p>
-          <div class="tags-wrap" id="viewInterests"></div>
-        </div>
-
-      </section>
-    </div>
-
-    <nav class="bottom-nav" aria-label="Hauptnavigation">
-      <a class="nav-btn" href="home.html" aria-label="Home">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3l9 8h-3v9h-5v-6H11v6H6v-9H3l9-8z"/></svg>
-      </a>
-      <a class="nav-btn" href="chat.html" aria-label="Chat">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 5h16a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H9l-5 4v-4H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"/></svg>
-      </a>
-      <a class="nav-btn is-primary" href="meeting-form.html" aria-label="Treffen erstellen">+</a>
-      <a class="nav-btn" href="saved.html" aria-label="Gespeicherte Inhalte"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 16H5V10h14v10zM5 8V6h14v2H5z"/></svg></a>
-      <a class="nav-btn is-active" href="profile.html" aria-label="Profil">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-4.4 0-8 2.2-8 5v2h16v-2c0-2.8-3.6-5-8-5z"/></svg>
-      </a>
-    </nav>
-  </main>
-
-  <!-- Profil-Melden Overlay -->
-  <div class="overlay" id="reportOverlay" hidden>
-    <div class="overlay-card" role="dialog" aria-modal="true" aria-labelledby="reportTitle">
-      <h2 id="reportTitle">Profil melden</h2>
-      <p>Warum möchtest du dieses Profil melden?</p>
-      <form id="reportForm">
-        <div class="report-list">
-          <label class="report-option">
-            <input type="radio" name="reportReason" value="Unangemessen" required>
-            <span><strong>Unangemessen</strong><small>Beleidigend, sexuell oder diskriminierend.</small></span>
-          </label>
-          <label class="report-option">
-            <input type="radio" name="reportReason" value="Fake-Profil">
-            <span><strong>Fake-Profil</strong><small>Wirkt erfunden oder ist eine falsche Identität.</small></span>
-          </label>
-          <label class="report-option">
-            <input type="radio" name="reportReason" value="Spam">
-            <span><strong>Spam</strong><small>Ungewollte Werbung oder Belästigung.</small></span>
-          </label>
-          <label class="report-option">
-            <input type="radio" name="reportReason" value="Gefährlich">
-            <span><strong>Gefährlich</strong><small>Ruft zu riskantem oder illegalem Verhalten auf.</small></span>
-          </label>
-        </div>
-        <div class="overlay-actions">
-          <button class="overlay-close" type="button" id="closeReport">Abbrechen</button>
-          <button class="overlay-submit" type="submit">Meldung senden</button>
-        </div>
-      </form>
-    </div>
+<script>if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');</script>
+<main class="phone">
+  <header class="header has-back"><a class="back-btn" href="javascript:history.back();">&#8249;</a><div class="brand"><span>Profil</span></div></header>
+  <div class="scroll-area">
+    <section class="content">
+      <div class="pv-card">
+        <div class="pv-avatar"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-4.4 0-8 2.2-8 5v2h16v-2c0-2.8-3.6-5-8-5z"/></svg></div>
+        <h2 class="pv-name" id="pvName">Wird geladen…</h2>
+        <p class="pv-email" id="pvEmail"></p>
+      </div>
+      <div style="display:flex;gap:10px;margin-bottom:16px;">
+        <button onclick="openChat()" class="submit-btn" style="flex:1;">💬 Nachricht senden</button>
+      </div>
+      <div class="pv-events">
+        <h3 style="font-size:1rem;font-weight:800;margin-bottom:10px;">Events von dieser Person</h3>
+        <div id="pvEvents"><p style="color:var(--muted);font-size:0.85rem;">Wird geladen…</p></div>
+      </div>
+    </section>
   </div>
+</main>
+<script src="app.js"></script>
+<script>
+const uid=new URLSearchParams(window.location.search).get('id');
+let profileUser=null;
 
-  <div class="toast" id="toast" hidden></div>
+async function load(){
+  if(!uid){document.getElementById('pvName').textContent='Nicht gefunden';return;}
+  try{
+    const r=await fetch('/api/users/'+uid);profileUser=await r.json();
+    document.getElementById('pvName').textContent=profileUser.firstName+' '+profileUser.lastName;
+    document.getElementById('pvEmail').textContent='@'+profileUser.username;
+    const mr=await fetch('/api/meetings');const all=await mr.json();
+    const theirs=all.filter(e=>e.creatorId===Number(uid));
+    const el=document.getElementById('pvEvents');
+    if(!theirs.length){el.innerHTML='<p style="color:var(--muted);font-size:0.85rem;">Keine Events.</p>';return;}
+    el.innerHTML=theirs.map(e=>`<div class="pv-event"><a href="event-details.html?id=${e.id}">${e.title}</a><br><span style="font-size:0.8rem;color:var(--muted);">${e.locationName||''}</span></div>`).join('');
+  }catch(e){}
+}
 
-  <script>
-    // ── PROFIL-DATEN LADEN ──
-    // Priorität: URL-Parameter ?name=... ?bio=... ODER Dummy-Daten für Demo
-    const params = new URLSearchParams(window.location.search);
+function openChat(){
+  if(!profileUser)return;
+  localStorage.setItem('chat-open-recipient',uid);
+  window.location.href='chat.html';
+}
 
-    // Dummy-Profile für den Fall dass keine URL-Parameter gesetzt sind
-    const demoProfiles = [
-      { name: 'Tina M.',    location: '26388 Wilhelmshaven – Mitglied seit 08/2024', bio: 'Gehe gerne mit Hund spazieren', interests: ['Community', 'Natur', 'Freizeit'] },
-      { name: 'Anna K.',    location: '26382 Wilhelmshaven – Mitglied seit 01/2023', bio: 'Auf der Suche nach Gleichgesinnten für Boardgame-Abende!', interests: ['Spieleabend', 'Kultur'] },
-      { name: 'Tim Gioh',   location: '26386 Wilhelmshaven – Mitglied seit 03/2023', bio: 'Sportbegeistert, laufe jeden Morgen.', interests: ['Sport', 'Community'] },
-      { name: 'Leon N.',    location: '26384 Wilhelmshaven – Mitglied seit 06/2022', bio: 'Musikfan und Kinogeher.', interests: ['Musik', 'Kino', 'Freizeit'] },
-    ];
-
-    // Lade Profil: erst aus URL-Params, dann zufällig aus Demos
-    let profileName     = params.get('name');
-    let profileLocation = params.get('location');
-    let profileBio      = params.get('bio');
-    let profileInterests = params.get('interests') ? params.get('interests').split(',') : null;
-
-    if (!profileName) {
-      // Zufälliges Demo-Profil wählen, aber immer denselben wenn kein Param gesetzt
-      const idx = Math.floor(Math.random() * demoProfiles.length);
-      const demo = demoProfiles[idx];
-      profileName     = demo.name;
-      profileLocation = demo.location;
-      profileBio      = demo.bio;
-      profileInterests = demo.interests;
-    }
-
-    document.getElementById('viewName').textContent     = profileName     || '–';
-    document.getElementById('viewLocation').textContent = profileLocation || 'Ort unbekannt';
-    document.getElementById('viewBio').textContent      = profileBio      || 'Keine Beschreibung vorhanden.';
-
-    // Interessen rendern
-    const allTagEmojis = {
-      'Spieleabend': '🎲', 'Sport': '🏃', 'Community': '👥',
-      'Kultur': '🎭', 'Freizeit': '🎉', 'Natur': '🌿',
-      'Musik': '🎵', 'Kino': '🎬'
-    };
-    const tagsWrap = document.getElementById('viewInterests');
-    const interestSection = document.getElementById('viewInterestSection');
-    if (profileInterests && profileInterests.length > 0) {
-      tagsWrap.innerHTML = profileInterests.map(tag =>
-        `<span class="tag-chip">${allTagEmojis[tag] ?? ''} ${tag}</span>`
-      ).join('');
-    } else {
-      interestSection.style.display = 'none';
-    }
-
-    // ── REPORT / FREUND LOGIK ──
-    const reportOverlay    = document.getElementById('reportOverlay');
-    const reportForm       = document.getElementById('reportForm');
-    const closeReport      = document.getElementById('closeReport');
-    const addFriendBtn     = document.getElementById('addFriendBtn');
-    const reportProfileBtn = document.getElementById('reportProfileBtn');
-    const toast            = document.getElementById('toast');
-    let toastTimer;
-
-    function showToast(msg) {
-      toast.textContent = msg;
-      toast.hidden = false;
-      clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => toast.hidden = true, 2200);
-    }
-
-    reportForm.addEventListener('change', () => {
-      document.querySelectorAll('.report-option').forEach(o =>
-        o.classList.toggle('is-selected', o.querySelector('input').checked)
-      );
-    });
-
-    reportProfileBtn.addEventListener('click', () => {
-      reportForm.reset();
-      document.querySelectorAll('.report-option').forEach(o => o.classList.remove('is-selected'));
-      reportOverlay.hidden = false;
-    });
-
-    closeReport.addEventListener('click', () => reportOverlay.hidden = true);
-    reportOverlay.addEventListener('click', e => { if (e.target === reportOverlay) reportOverlay.hidden = true; });
-
-    reportForm.addEventListener('submit', e => {
-      e.preventDefault();
-      const sel = reportForm.querySelector('input[name="reportReason"]:checked');
-      if (!sel) return;
-      reportOverlay.hidden = true;
-      showToast(`Meldung gesendet: ${sel.value}`);
-    });
-
-    let added = false;
-    addFriendBtn.addEventListener('click', () => {
-      if (added) return;
-      added = true;
-      addFriendBtn.classList.remove('is-friend');
-      addFriendBtn.classList.add('is-added');
-      addFriendBtn.innerHTML = `
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"
-          stroke-linecap="round" stroke-linejoin="round" width="17" height="17">
-          <path d="M20 6L9 17l-5-5"/>
-        </svg>
-        Hinzugefügt
-      `;
-      showToast('Freundschaftsanfrage gesendet!');
-    });
-  </script>
-
-    <script src="app.js"></script>
-</body>
-</html>
+load();
+</script>
+</body></html>

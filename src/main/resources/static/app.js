@@ -1,36 +1,24 @@
 /**
  * app.js – Visibility gemeinsames Skript
-<<<<<<< HEAD
- * Übernimmt:
- *  1. Darkmode-Initialisierung (sofort, vor dem Rendern)
- *  2. Settings-Toggle Synchronisierung (nur auf settings.html)
-=======
  * Wird auf jeder Seite eingebunden und übernimmt:
  *  1. Darkmode-Initialisierung (sofort, vor dem Rendern)
  *  2. Dev-Nav HTML-Injection
  *  3. Dev-Nav Collapse-Logik
  *  4. Dev-Nav Theme-Toggle
  *  5. Settings-Toggle Synchronisierung (nur auf settings.html)
->>>>>>> origin/dto
  */
 
 (function () {
 
   /* ── 1. DARKMODE INIT ─────────────────────────────────────────────────── */
-<<<<<<< HEAD
-=======
   // Früh im Skript, damit kein Flash of unstyled content entsteht.
->>>>>>> origin/dto
   function applyTheme(isDark) {
     if (isDark) {
       document.body.classList.add('dark-mode');
     } else {
       document.body.classList.remove('dark-mode');
     }
-<<<<<<< HEAD
-=======
     // Wenn der Settings-Toggle existiert: synchronisieren
->>>>>>> origin/dto
     const settingsToggle = document.getElementById('darkModeToggle');
     if (settingsToggle) settingsToggle.checked = isDark;
   }
@@ -38,12 +26,6 @@
   const storedTheme = localStorage.getItem('theme');
   applyTheme(storedTheme === 'dark');
 
-<<<<<<< HEAD
-  /* ── 2. SETTINGS-TOGGLE SYNC ────────────────────────────────────────────── */
-  document.addEventListener('DOMContentLoaded', function () {
-    const settingsToggle = document.getElementById('darkModeToggle');
-    if (settingsToggle) {
-=======
   /* ── 2. DEV-NAV HTML-INJECTION ────────────────────────────────────────── */
   const DEV_NAV_HTML = `
 <nav class="dev-nav" id="devNavEl">
@@ -103,7 +85,6 @@
     const settingsToggle = document.getElementById('darkModeToggle');
     if (settingsToggle) {
       // Checkbox-Status mit gespeichertem Theme synchronisieren
->>>>>>> origin/dto
       settingsToggle.checked = localStorage.getItem('theme') === 'dark';
       settingsToggle.addEventListener('change', () => {
         applyTheme(settingsToggle.checked);
