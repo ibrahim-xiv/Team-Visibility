@@ -1,69 +1,75 @@
 package com.TeamVisibility.App.service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.Random;
 
 import org.springframework.stereotype.Service;
 
 import com.TeamVisibility.App.model.User;
 import com.TeamVisibility.App.repository.UserRepository;
 
-/**
- * Combined registration + login service.
- *
- * Merged from:
- *   - feature/registration RegistrationService.registerUser(...)
- *   - feature/login        LoginService.login(...)
- *
- * Conflicts resolved:
- *   - Package was com.visibility.service on disk under com/TeamVisibility/App/service.
- *     Standardized to com.TeamVisibility.App.service.
- *   - feature/login UserController called registrationService.register(user)
- *     while RegistrationService only defined registerUser(user). Both names
- *     are kept as a thin wrapper here so neither call site breaks.
- *
- * Known issue (left intentionally per "no JWT / no rewrite" instructions):
- *   - Passwords are stored and compared in plain text. Add BCrypt before
- *     anything resembling production use.
- */
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
+    private final EmailService emailService;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, EmailService emailService) {
         this.userRepository = userRepository;
+        this.emailService = emailService;
     }
 
     public User registerUser(User user) {
-        if (user.getEmail() != null
-            && userRepository.findByEmail(user.getEmail()).isPresent()) {
-            throw new IllegalArgumentException("Email already exists");
+        if (user.getEmail() != null && userRepository.findByEmail(user.getEmail()).isPresent()) {
+            throw new IllegalArgumentException("Email bereits vergeben");
         }
-        if (user.getUsername() != null
-            && userRepository.findByUsername(user.getUsername()).isPresent()) {
-            throw new IllegalArgumentException("Username already exists");
+        if (user.getUsername() != null && userRepository.findByUsername(user.getUsername()).isPresent()) {
+            throw new IllegalArgumentException("Username bereits vergeben");
         }
-        // Plain-text persistence - documented limitation, NOT for production.
+        user.setVerified(false);
         return userRepository.save(user);
     }
 
-    /** Alias preserved for backwards compatibility with feature/login UserController. */
     public User register(User user) {
         return registerUser(user);
     }
 
-    /**
-     * Try to log in by username OR email + password.
-     * Returns the matched user on success, or empty on failure.
-     */
+    public void sendVerificationCode(String email) {
+        User user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new IllegalArgumentException("Kein Konto mit dieser E-Mail gefunden"));
+
+        String code = String.format("%05d", new Random().nextInt(100000));
+        user.setVerificationCode(code);
+        user.setVerificationCodeExpiresAt(LocalDateTime.now().plusMinutes(15));
+        userRepository.save(user);
+
+        emailService.sendVerificationCode(email, code);
+    }
+
+    public void verifyCode(String email, String code) {
+        User user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new IllegalArgumentException("Kein Konto mit dieser E-Mail gefunden"));
+
+        if (user.getVerificationCode() == null || !user.getVerificationCode().equals(code)) {
+            throw new IllegalArgumentException("Ungültiger Code");
+        }
+        if (user.getVerificationCodeExpiresAt().isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("Code abgelaufen. Bitte neu anfordern.");
+        }
+
+        user.setVerified(true);
+        user.setVerificationCode(null);
+        user.setVerificationCodeExpiresAt(null);
+        userRepository.save(user);
+    }
+
     public Optional<User> login(String usernameOrEmail, String password) {
-        if (usernameOrEmail == null || password == null) {
-            return Optional.empty();
-        }
+        if (usernameOrEmail == null || password == null) return Optional.empty();
+
         Optional<User> userOpt = userRepository.findByUsername(usernameOrEmail);
-        if (userOpt.isEmpty()) {
-            userOpt = userRepository.findByEmail(usernameOrEmail);
-        }
+        if (userOpt.isEmpty()) userOpt = userRepository.findByEmail(usernameOrEmail);
+
         return userOpt.filter(u -> password.equals(u.getPasswordHash()));
     }
 

@@ -203,12 +203,30 @@
     }
 
     // Code senden / erneut senden
-    resendBtn.addEventListener('click', () => {
-      alert(codeWasSent
-        ? 'Neuer Verifizierungs-Code wurde erneut gesendet.'
-        : 'Verifizierungs-Code wurde gesendet.'
-      );
-      startCountdown();
+    resendBtn.addEventListener('click', async () => {
+      const email = emailInput.value.trim();
+      if (!email || !isEmailValid(email)) {
+        alert('Bitte zuerst eine gültige E-Mail eingeben.');
+        return;
+      }
+      resendBtn.disabled = true;
+      resendBtn.textContent = 'Wird gesendet...';
+      try {
+        await fetch('/api/users/send-code', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        }).then(async r => {
+          const data = await r.json();
+          if (!r.ok) throw new Error(data.error || 'Fehler');
+        });
+        alert(codeWasSent ? 'Neuer Code wurde gesendet.' : 'Code wurde gesendet!');
+        startCountdown();
+      } catch (err) {
+        alert('Fehler: ' + err.message);
+        resendBtn.disabled = false;
+        resendBtn.textContent = codeWasSent ? 'Code erneut senden' : 'Code senden';
+      }
     });
 
     // Echtzeit-Validierung: Fehler erscheinen sobald ein Feld berührt wurde
@@ -257,6 +275,20 @@
 
       try {
         const user = await TV.register(payload);
+
+        // Verify code before proceeding
+        const code = codeInputs.map(i => i.value).join('');
+        const verifyRes = await fetch('/api/users/verify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: payload.email, code })
+        });
+        const verifyData = await verifyRes.json();
+        if (!verifyRes.ok) {
+          alert('Verifizierung fehlgeschlagen: ' + verifyData.error);
+          return;
+        }
+
         TV.setCurrentUser(user);
         window.location.href = 'home.html';
       } catch (err) {

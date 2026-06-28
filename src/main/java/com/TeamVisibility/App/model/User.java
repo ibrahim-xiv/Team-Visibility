@@ -9,19 +9,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
-/**
- * Application user.
- *
- * Merged from feature/registration + feature/login.
- *
- * Conflicts resolved:
- *   - Package: was com.visibility.model on disk under com/TeamVisibility/App/model
- *     (would not compile). Standardized to com.TeamVisibility.App.model.
- *   - Lombok @Getter/@Setter/@NoArgsConstructor/@AllArgsConstructor stripped.
- *     Lombok was never declared in pom.xml on any branch, so the original
- *     User.java failed to compile. Replaced with explicit constructors and
- *     getters/setters to avoid adding a dependency.
- */
 @Entity
 @Table(name = "users")
 public class User {
@@ -51,19 +38,21 @@ public class User {
     @Column(name = "is_verified")
     private Boolean isVerified = false;
 
-    public User() {
-    }
+    @Column(name = "verification_code")
+    private String verificationCode;
 
-    public User(String username, String firstName, String lastName,
-                String email, String passwordHash) {
+    @Column(name = "verification_code_expires_at")
+    private java.time.LocalDateTime verificationCodeExpiresAt;
+
+    public User() {}
+
+    public User(String username, String firstName, String lastName, String email, String passwordHash) {
         this.username = username;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.passwordHash = passwordHash;
     }
-
-    // --- getters / setters ---
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -88,4 +77,10 @@ public class User {
 
     public Boolean getVerified() { return isVerified; }
     public void setVerified(Boolean verified) { this.isVerified = verified; }
+
+    public String getVerificationCode() { return verificationCode; }
+    public void setVerificationCode(String verificationCode) { this.verificationCode = verificationCode; }
+
+    public java.time.LocalDateTime getVerificationCodeExpiresAt() { return verificationCodeExpiresAt; }
+    public void setVerificationCodeExpiresAt(java.time.LocalDateTime expiresAt) { this.verificationCodeExpiresAt = expiresAt; }
 }

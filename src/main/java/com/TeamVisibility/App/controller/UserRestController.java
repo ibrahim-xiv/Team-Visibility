@@ -16,13 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.TeamVisibility.App.model.User;
 import com.TeamVisibility.App.service.UserService;
 
-/**
- * User REST API.
- *
- * Replaces the Thymeleaf-flavored UserController from feature/login which
- * returned "redirect:/..." view names. The static frontend (extension/frontend +
- * extensions/map) calls these endpoints with fetch().
- */
 @RestController
 @RequestMapping("/api/users")
 public class UserRestController {
@@ -33,24 +26,14 @@ public class UserRestController {
         this.userService = userService;
     }
 
-    /** Request payload for /login (so we don't expose passwordHash on User). */
-    public static class LoginRequest {
-        public String usernameOrEmail;
-        public String password;
-    }
-
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody Map<String, String> body) {
         try {
             User u = new User();
-            u.setUsername(body.getOrDefault("username",
-                body.getOrDefault("email", ""))); // fallback if username omitted
-            u.setFirstName(body.getOrDefault("firstName",
-                body.getOrDefault("firstname", "")));
-            u.setLastName(body.getOrDefault("lastName",
-                body.getOrDefault("lastname", "")));
+            u.setUsername(body.getOrDefault("username", body.getOrDefault("email", "")));
+            u.setFirstName(body.getOrDefault("firstName", body.getOrDefault("firstname", "")));
+            u.setLastName(body.getOrDefault("lastName", body.getOrDefault("lastname", "")));
             u.setEmail(body.get("email"));
-            // Plain-text storage - see UserService docs for rationale.
             u.setPasswordHash(body.get("password"));
 
             User saved = userService.register(u);
@@ -60,24 +43,49 @@ public class UserRestController {
             out.put("email", saved.getEmail());
             return ResponseEntity.status(HttpStatus.CREATED).body(out);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest()
-                .body(Map.of("error", e.getMessage()));
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/send-code")
+    public ResponseEntity<?> sendCode(@RequestBody Map<String, String> body) {
+        try {
+            userService.sendVerificationCode(body.get("email"));
+            return ResponseEntity.ok(Map.of("message", "Code gesendet"));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", "E-Mail konnte nicht gesendet werden: " + e.getMessage()));
+        }
+    }
+
+    @PostMapping("/verify")
+    public ResponseEntity<?> verify(@RequestBody Map<String, String> body) {
+        try {
+            userService.verifyCode(body.get("email"), body.get("code"));
+            return ResponseEntity.ok(Map.of("message", "Verifizierung erfolgreich"));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Map<String, String> body) {
         String key = body.getOrDefault("usernameOrEmail",
-            body.getOrDefault("username",
-                body.getOrDefault("email", "")));
+            body.getOrDefault("username", body.getOrDefault("email", "")));
         String password = body.get("password");
 
         Optional<User> userOpt = userService.login(key, password);
         if (userOpt.isEmpty()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(Map.of("error", "Invalid credentials"));
+                .body(Map.of("error", "Ungültige Anmeldedaten"));
         }
         User u = userOpt.get();
+        if (!Boolean.TRUE.equals(u.getVerified())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(Map.of("error", "Bitte zuerst E-Mail verifizieren", "needsVerification", true));
+        }
         Map<String, Object> out = new HashMap<>();
         out.put("id", u.getId());
         out.put("username", u.getUsername());
@@ -87,13 +95,12 @@ public class UserRestController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getUser(@PathVariable Long id) {
-        // Light projection - never return passwordHash over the wire.
         return userService.findById(id)
             .map(u -> ResponseEntity.ok((Object) Map.of(
                 "id", u.getId(),
                 "username", u.getUsername(),
                 "email", u.getEmail())))
             .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(Map.of("error", "User not found: " + id)));
+                .body(Map.of("error", "User nicht gefunden: " + id)));
     }
 }
