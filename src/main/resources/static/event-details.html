@@ -89,10 +89,8 @@
         </div>
 
         <div class="action-stack">
-          <!-- Teilnehmen / Absagen -->
           <button class="btn-join-main" id="joinBtn" type="button">Teilnehmen</button>
 
-          <!-- Wird sichtbar, wenn man zugesagt hat -->
           <div class="btn-group-chat-wrap" id="groupChatWrap">
             <button class="btn-group-chat" type="button" onclick="window.location.href='chat.html'">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
@@ -103,18 +101,12 @@
             <button class="btn-group-chat-toggle" id="chatToggle" type="button" aria-label="Weitere Optionen">&#8964;</button>
           </div>
 
-          <!-- Dropdown für Chat-Optionen (falls benötigt) -->
-          <div class="btn-dropdown" id="rideDropdown">
-            <!-- Platzhalter -->
-          </div>
+          <div class="btn-dropdown" id="rideDropdown"></div>
 
-          <!-- MITFAHRGELEGENHEITEN (Sichtbar nach Zusage) -->
           <div id="ridesharePanel" style="display: none; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px; background: var(--hover-bg); margin-bottom: 20px;">
             <h3 style="margin: 0 0 6px; font-size: 1.1rem; font-weight: 800;">🚗 Anreise & Mitfahrgelegenheiten</h3>
             <p style="margin: 0 0 14px; font-size: 0.9rem; color: var(--text);">Du nimmst teil! Hast du noch Platz im Auto oder suchst du einen Lift?</p>
-            
             <div class="action-row">
-              <!-- ID HINZUGEFÜGT für JavaScript -->
               <a id="offerRideLink" href="rideshare-form.html" class="btn-secondary" style="text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 6px;">
                 ➕ Anbieten
               </a>
@@ -122,8 +114,6 @@
                 🔍 Suchen (1)
               </button>
             </div>
-
-            <!-- Liste der gefundenen Fahrten (Klappt beim Klick auf Suchen aus) -->
             <div id="ridesList" style="display: none; margin-top: 14px; flex-direction: column; gap: 8px;">
               <div class="organizer-card" style="flex-direction: row; justify-content: space-between; text-align: left; padding: 10px;">
                 <div style="display: flex; align-items: center; gap: 10px;">
@@ -139,8 +129,6 @@
               </div>
             </div>
           </div>
-          <!-- ENDE Mitfahrgelegenheiten -->
-
 
           <div class="action-row">
             <button class="btn-save" id="saveBtn" type="button">🔖 Event speichern</button>
@@ -200,39 +188,14 @@
   <div class="toast" id="detailToast" hidden></div>
 
   <script>
-    const STATIC_EVENTS = [
-      { id: "ev_1",  title: "Brettspielabend",      category: "Spieleabend", emoji: "🎲", location: "Jugendherberge",    distance: 1.2, date: "2026-04-18", dateText: "Samstag 18.04.2026",    time: "19:00", organizer: "Max M.",       desc: "Ein gemütlicher Abend mit Brett- und Kartenspielen für alle. Anfänger und Profis herzlich willkommen!" },
-      { id: "ev_2",  title: "Morgenjogger",          category: "Sport",       emoji: "🏃", location: "Stadtpark",         distance: 0.5, date: "2026-03-20", dateText: "Montag 20.03.2026",     time: "07:00", organizer: "Sandra K.",    desc: "Gemeinsam den Tag starten! Wir laufen eine lockere Runde durch den Park. Alle Tempos willkommen." },
-      { id: "ev_3",  title: "Hundespaziergang",      category: "Community",   emoji: "👥", location: "Nordseepassage",    distance: 2.4, date: "2026-03-31", dateText: "Dienstag 31.03.2026",   time: "07:00", organizer: "Tina M.",      desc: "Wir gehen jeden Dienstag zusammen mit den Hunden spazieren. Bei Interesse gerne teilnehmen!" },
-      { id: "ev_4",  title: "Poker Abend",           category: "Anderes…",    emoji: "✨", location: "Grenzstraße",       distance: 0.1, date: "2026-04-18", dateText: "Samstag 18.04.2026",    time: "20:00", organizer: "Tom G.",       desc: "Texas Hold'em für Einsteiger und Fortgeschrittene. Eintritt frei, keine echten Einsätze!" },
-      { id: "ev_5",  title: "Filmabend im Hof",      category: "Freizeit",    emoji: "🎉", location: "Innenhof",          distance: 0.8, date: "2026-04-25", dateText: "Freitag 25.04.2026",    time: "21:00", organizer: "Lisa B.",      desc: "Open-Air-Kino auf der Leinwand. Decken und Knabbereien gerne mitbringen!" },
-      { id: "ev_6",  title: "Yoga im Park",          category: "Sport",       emoji: "🏃", location: "Rosengarten",       distance: 1.8, date: "2026-04-27", dateText: "Sonntag 27.04.2026",    time: "09:00", organizer: "Mia R.",       desc: "Entspannter Vinyasa-Flow im Freien. Matte mitbringen, alle Level willkommen." },
-      { id: "ev_7",  title: "Lesekreis",             category: "Kultur",      emoji: "🎭", location: "Bibliothek",        distance: 1.0, date: "2026-05-05", dateText: "Dienstag 05.05.2026",   time: "18:00", organizer: "Clara M.",     desc: "Aktuell lesen wir gemeinsam 'Alles Licht, das wir nicht sehen'. Alle Lesegeschwindigkeiten sind okay!" },
-      { id: "ev_8",  title: "Café-Stammtisch",       category: "Community",   emoji: "👥", location: "Altstadt-Café",     distance: 0.9, date: "2026-05-14", dateText: "Donnerstag 14.05.2026", time: "16:00", organizer: "Paul S.",      desc: "Einfach vorbeikommen und Leute kennenlernen. Kein Programm, nur nette Gespräche." },
-      { id: "ev_9",  title: "Beachvolleyball",       category: "Sport",       emoji: "🏐", location: "Südstrand",         distance: 3.1, date: "2026-05-20", dateText: "Mittwoch 20.05.2026",   time: "15:00", organizer: "Niklas O.",    desc: "Ein paar entspannte Runden Volleyball im Sand. Jeder Skill-Level ist willkommen!" },
-      { id: "ev_10", title: "Kicker-Turnier",        category: "Spieleabend", emoji: "⚽", location: "Campus Bar",         distance: 1.5, date: "2026-05-22", dateText: "Freitag 22.05.2026",    time: "18:00", organizer: "Lukas B.",     desc: "Spontanes Doppel-Kickerturnier. Partner kann auch vor Ort gefunden werden." },
-      { id: "ev_11", title: "Fotowalk am Hafen",     category: "Kultur",      emoji: "📸", location: "Großer Hafen",      distance: 2.2, date: "2026-05-24", dateText: "Sonntag 24.05.2026",    time: "17:30", organizer: "Marie J.",     desc: "Gemeinsam die goldene Stunde für coole Hafenmotive nutzen. Egal ob Smartphone oder Spiegelreflex." },
-      { id: "ev_12", title: "Flohmarkt-Bummel",      category: "Freizeit",    emoji: "🛍️", location: "Börsenplatz",       distance: 0.7, date: "2026-05-30", dateText: "Samstag 30.05.2026",    time: "10:00", organizer: "Laura S.",     desc: "Gemeinsam über den Flohmarkt stöbern und nach Schätzen jagen. Danach ein Eis?" },
-      { id: "ev_13", title: "Inliner-Runde",         category: "Sport",       emoji: "🛼", location: "Deichpromenade",    distance: 2.8, date: "2026-06-02", dateText: "Dienstag 02.06.2026",   time: "16:00", organizer: "Felix T.",     desc: "Wir skaten entspannt den Deich entlang. Bitte Schutzkleidung nicht vergessen." },
-      { id: "ev_14", title: "Billard & Dart",        category: "Spieleabend", emoji: "🎱", location: "Pub Underground",   distance: 0.4, date: "2026-06-05", dateText: "Freitag 05.06.2026",    time: "19:00", organizer: "Kevin N.",     desc: "Zwei Tische sind reserviert. Einfach vorbeikommen und mitspielen." },
-      { id: "ev_15", title: "Sprachcafé Englisch",   category: "Community",   emoji: "🗣️", location: "Hochschul-Foyer",   distance: 1.3, date: "2026-06-08", dateText: "Montag 08.06.2026",     time: "17:00", organizer: "Prof. Meyer",  desc: "Just talking in English! Keine Angst vor Fehlern, einfach locker quatschen." },
-      { id: "ev_16", title: "Grillen & Chill",       category: "Freizeit",    emoji: "🥩", location: "Stadtparkwiese",    distance: 0.6, date: "2026-06-13", dateText: "Samstag 13.06.2026",    time: "14:00", organizer: "Dennis R.",    desc: "Bringt euer eigenes Grillgut mit, Einweggrills und Kohle besorge ich." },
-      { id: "ev_17", title: "Museumsbesuch",         category: "Kultur",      emoji: "🏛️", location: "Marinemuseum",      distance: 3.5, date: "2026-06-14", dateText: "Sonntag 14.06.2026",    time: "11:00", organizer: "Clara M.",     desc: "Gemeinsam das Museum erkunden, aktuell gibt es eine interessante Sonderausstellung." },
-      { id: "ev_18", title: "Bouldern in Oldenburg", category: "Sport",       emoji: "🧗", location: "Hbf (Treffpunkt)", distance: 0.2, date: "2026-06-20", dateText: "Samstag 20.06.2026",    time: "09:30", organizer: "Simon P.",     desc: "Wir fahren gemeinsam mit dem Zug rüber zum Bouldern. Niedersachsenticket teilen!" },
-      { id: "ev_19", title: "Mario Kart Cup",        category: "Spieleabend", emoji: "🎮", location: "WG Rheinstraße",    distance: 0.9, date: "2026-06-23", dateText: "Dienstag 23.06.2026",   time: "19:00", organizer: "Tim K.",       desc: "Klassisches Switch-Turnier auf der Leinwand. Snacks werden gestellt." },
-      { id: "ev_20", title: "Repair Café",           category: "Community",   emoji: "🛠️", location: "Gemeindehaus",      distance: 1.1, date: "2026-06-27", dateText: "Samstag 27.06.2026",    time: "10:00", organizer: "Wilfried H.",  desc: "Toaster kaputt oder Fahrradkette hakt? Wir reparieren kaputte Dinge zusammen." },
-      { id: "ev_21", title: "Fahrradtour Dangast",   category: "Sport",       emoji: "🚴", location: "Valoisplatz",       distance: 0.3, date: "2026-07-05", dateText: "Sonntag 05.07.2026",    time: "08:00", organizer: "Jonas V.",     desc: "Tagestour nach Dangast für das legendäre Rhabarberkuchen-Stück. Ca. 40km insgesamt." },
-      { id: "ev_22", title: "Pub Quiz Night",        category: "Spieleabend", emoji: "🧠", location: "The Irish Pub",     distance: 0.5, date: "2026-07-09", dateText: "Donnerstag 09.07.2026", time: "20:00", organizer: "Julia G.",     desc: "Wir bilden ein Visibility-Team und holen uns den Gruppensieg beim Kneipenquiz!" },
-      { id: "ev_23", title: "Open Mic Abend",        category: "Kultur",      emoji: "🎤", location: "Kulturzentrum",     distance: 1.7, date: "2026-07-11", dateText: "Samstag 11.07.2026",    time: "19:30", organizer: "Stephan E.",   desc: "Lokale Talente, Comedy und Live-Musik. Eintritt ist frei, Spenden erwünscht." },
-      { id: "ev_24", title: "Paddeln auf Kanälen",   category: "Sport",       emoji: "🛶", location: "Bootsverleih",      distance: 1.9, date: "2026-07-15", dateText: "Mittwoch 15.07.2026",   time: "11:00", organizer: "Svenja W.",    desc: "Kanus ausleihen und entspannt über die Wilhelmshavener Kanäle schippern." },
-      { id: "ev_25", title: "Pflanzentausch",        category: "Community",   emoji: "🌱", location: "Botanischer Garten", distance: 2.1, date: "2026-07-18", dateText: "Samstag 18.07.2026",   time: "10:00", organizer: "Nadine B.",    desc: "Bringt Ableger oder überschüssige Pflanzen mit und tauscht sie gegen neue grüne Mitbewohner." },
-      { id: "ev_26", title: "Astronomie-Nacht",      category: "Anderes…",    emoji: "🌌", location: "Südstrand-Damm",    distance: 3.2, date: "2026-07-24", dateText: "Freitag 24.07.2026",    time: "22:00", organizer: "Christian F.", desc: "Sterne gucken bei klarem Himmel. Wer ein Teleskop oder Fernglas hat, gerne mitbringen." },
-      { id: "ev_27", title: "Spiele-Prototypen",     category: "Spieleabend", emoji: "📦", location: "Jade HS Raum 12",  distance: 1.4, date: "2026-07-28", dateText: "Dienstag 28.07.2026",   time: "17:00", organizer: "Alex R.",      desc: "Wir testen selbstgemachte Brettspiel-Entwürfe von Studierenden. Euer Feedback zählt!" },
-      { id: "ev_28", title: "Kinoabend: Blockbuster",category: "Freizeit",    emoji: "🍿", location: "UCI Kinowelt",      distance: 1.6, date: "2026-08-01", dateText: "Samstag 01.08.2026",    time: "19:30", organizer: "Michael D.",   desc: "Wir treffen uns im Foyer und schauen zusammen den neuen Sci-Fi-Film." }
-    ];
+    // ─────────────────────────────────────────────────────────────────────────
+    // KONFIGURATION – API-URL hier anpassen, sobald das Backend steht
+    // ─────────────────────────────────────────────────────────────────────────
+    const API_EVENT_URL = (id) => `/api/events/${id}`; // TODO: echte URL eintragen
 
-    const STORAGE_KEY  = 'visibility-saved-events';
+    const STORAGE_KEY   = 'visibility-saved-events';
     const MY_EVENTS_KEY = 'visibility-my-events';
+    const JOINED_KEY    = 'visibility-joined-events';
 
     const params  = new URLSearchParams(window.location.search);
     const eventId = params.get('id');
@@ -240,165 +203,194 @@
     let currentEvent = null;
     let isOwnEvent   = false;
 
-    if (eventId) {
+    // ─────────────────────────────────────────────────────────────────────────
+    // EVENT LADEN – erst lokale eigene Events prüfen, dann API
+    // ─────────────────────────────────────────────────────────────────────────
+    async function loadEvent() {
+      if (!eventId) {
+        showError('Kein Event ausgewählt.');
+        return;
+      }
+
+      // 1. Eigene (lokal erstellte) Events prüfen
       const myEvents = JSON.parse(localStorage.getItem(MY_EVENTS_KEY) || '[]');
       const ownEvent = myEvents.find(e => e.id === eventId);
-      if (ownEvent) { currentEvent = ownEvent; isOwnEvent = true; }
-      else currentEvent = STATIC_EVENTS.find(e => e.id === eventId) || null;
-    }
-    if (!currentEvent) currentEvent = STATIC_EVENTS[2];
-
-    document.getElementById('eventTitle').textContent       = currentEvent.title;
-    document.getElementById('eventDistance').textContent    = currentEvent.distance ? `${currentEvent.distance} km` : '';
-    document.getElementById('eventDateText').textContent    = currentEvent.dateText || 'Datum offen';
-    document.getElementById('eventTime').textContent        = currentEvent.time ? `${currentEvent.time} Uhr` : '';
-    document.getElementById('eventLocation').textContent    = currentEvent.location || '';
-    document.getElementById('eventDescription').textContent = currentEvent.desc || currentEvent.description || 'Keine Beschreibung vorhanden.';
-    document.getElementById('organizerName').textContent    = currentEvent.organizer || 'Unbekannt';
-
-    // Organizer-Link mit Profil-Daten bestücken
-    const orgCard = document.getElementById('organizerCard');
-    if (currentEvent.organizer) {
-      orgCard.href = `profile-view.html?name=${encodeURIComponent(currentEvent.organizer)}`;
-    }
-
-    if (isOwnEvent) {
-      const editBtn = document.getElementById('editEventBtn');
-      editBtn.hidden = false;
-      editBtn.href = `meeting-form.html?edit=${currentEvent.id}`;
-      // Eigenes Profil verlinken statt fremdes
-      orgCard.href = 'profile.html';
-      const orgName = document.getElementById('organizerName');
-      const myProfile = JSON.parse(localStorage.getItem('visibility-profile') || 'null');
-      orgName.textContent = myProfile?.name || 'Ich';
-    }
-
-    // NEU: Hänge die Event-ID dynamisch an den Fahrt-Anbieten Button an
-    const offerRideLink = document.getElementById('offerRideLink');
-    if (offerRideLink && currentEvent) {
-      offerRideLink.href = `rideshare-form.html?eventId=${currentEvent.id}`;
-    }
-
-    const saveBtn = document.getElementById('saveBtn');
-    let savedList = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-    let isSaved   = savedList.some(e => e.id === currentEvent.id);
-    updateSaveBtn(isSaved);
-
-    function updateSaveBtn(saved) {
-      isSaved = saved;
-      saveBtn.textContent = saved ? '🔖 Gespeichert' : '🔖 Event speichern';
-      saveBtn.classList.toggle('is-saved', saved);
-    }
-
-    saveBtn.addEventListener('click', () => {
-      let list = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-      if (isSaved) {
-        list = list.filter(e => e.id !== currentEvent.id);
-        updateSaveBtn(false); showToast('Aus Favoriten entfernt');
-      } else {
-        list.push(currentEvent);
-        updateSaveBtn(true); showToast('In Favoriten gespeichert');
+      if (ownEvent) {
+        currentEvent = ownEvent;
+        isOwnEvent   = true;
+        renderEvent();
+        return;
       }
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
-    });
 
-    const joinBtn = document.getElementById('joinBtn');
-    const groupChatWrap = document.getElementById('groupChatWrap');
-    const ridesharePanel = document.getElementById('ridesharePanel');
-    const JOINED_KEY = 'visibility-joined-events';
+      // 2. API-Anfrage
+      try {
+        const res = await fetch(API_EVENT_URL(eventId));
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        currentEvent = await res.json();
+      } catch (err) {
+        console.warn('Event konnte nicht geladen werden:', err);
+        showError('Event konnte nicht geladen werden.');
+        return;
+      }
 
-    // Prüfen ob man schon teilnimmt
-    let joinedList = JSON.parse(localStorage.getItem(JOINED_KEY) || '[]');
-    let joined = joinedList.some(e => e.id === currentEvent.id);
-    updateJoinBtn(joined);
+      renderEvent();
+    }
 
-    function updateJoinBtn(isJoined) {
-      joined = isJoined;
-      joinBtn.textContent = isJoined ? 'Teilnahme zurückziehen' : 'Teilnehmen';
-      joinBtn.classList.toggle('is-joined', isJoined);
-      groupChatWrap.classList.toggle('is-visible', isJoined);
-      
-      // Mitfahr-Panel anzeigen/verstecken
-      if(isJoined) {
-          ridesharePanel.style.display = 'block';
-      } else {
-          ridesharePanel.style.display = 'none';
-          document.getElementById('ridesList').style.display = 'none'; 
+    function showError(msg) {
+      document.getElementById('eventTitle').textContent = msg;
+    }
+
+    function renderEvent() {
+      document.getElementById('eventTitle').textContent       = currentEvent.title || '–';
+      document.getElementById('eventDistance').textContent    = currentEvent.distance ? `${currentEvent.distance} km` : '';
+      document.getElementById('eventDateText').textContent    = currentEvent.dateText || 'Datum offen';
+      document.getElementById('eventTime').textContent        = currentEvent.time ? `${currentEvent.time} Uhr` : '';
+      document.getElementById('eventLocation').textContent    = currentEvent.location || '';
+      document.getElementById('eventDescription').textContent = currentEvent.desc || currentEvent.description || 'Keine Beschreibung vorhanden.';
+      document.getElementById('organizerName').textContent    = currentEvent.organizer || 'Unbekannt';
+
+      const orgCard = document.getElementById('organizerCard');
+      if (currentEvent.organizer) {
+        orgCard.href = `profile-view.html?name=${encodeURIComponent(currentEvent.organizer)}`;
+      }
+
+      if (isOwnEvent) {
+        const editBtn = document.getElementById('editEventBtn');
+        editBtn.hidden = false;
+        editBtn.href = `meeting-form.html?edit=${currentEvent.id}`;
+        orgCard.href = 'profile.html';
+        const myProfile = JSON.parse(localStorage.getItem('visibility-profile') || 'null');
+        document.getElementById('organizerName').textContent = myProfile?.name || 'Ich';
+      }
+
+      const offerRideLink = document.getElementById('offerRideLink');
+      if (offerRideLink && currentEvent) {
+        offerRideLink.href = `rideshare-form.html?eventId=${currentEvent.id}`;
+      }
+
+      initActions();
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // INTERAKTIONEN (Speichern, Teilnehmen, Melden)
+    // ─────────────────────────────────────────────────────────────────────────
+    function initActions() {
+      // Speichern
+      const saveBtn = document.getElementById('saveBtn');
+      let savedList = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      let isSaved   = savedList.some(e => e.id === currentEvent.id);
+      updateSaveBtn(isSaved);
+
+      function updateSaveBtn(saved) {
+        isSaved = saved;
+        saveBtn.textContent = saved ? '🔖 Gespeichert' : '🔖 Event speichern';
+        saveBtn.classList.toggle('is-saved', saved);
+      }
+
+      saveBtn.addEventListener('click', () => {
+        let list = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+        if (isSaved) {
+          list = list.filter(e => e.id !== currentEvent.id);
+          updateSaveBtn(false); showToast('Aus Favoriten entfernt');
+        } else {
+          list.push(currentEvent);
+          updateSaveBtn(true); showToast('In Favoriten gespeichert');
+        }
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+      });
+
+      // Teilnehmen
+      const joinBtn       = document.getElementById('joinBtn');
+      const groupChatWrap = document.getElementById('groupChatWrap');
+      const ridesharePanel = document.getElementById('ridesharePanel');
+
+      let joinedList = JSON.parse(localStorage.getItem(JOINED_KEY) || '[]');
+      let joined     = joinedList.some(e => e.id === currentEvent.id);
+      updateJoinBtn(joined);
+
+      function updateJoinBtn(isJoined) {
+        joined = isJoined;
+        joinBtn.textContent = isJoined ? 'Teilnahme zurückziehen' : 'Teilnehmen';
+        joinBtn.classList.toggle('is-joined', isJoined);
+        groupChatWrap.classList.toggle('is-visible', isJoined);
+        ridesharePanel.style.display = isJoined ? 'block' : 'none';
+        if (!isJoined) {
+          document.getElementById('ridesList').style.display = 'none';
           document.getElementById('searchRideBtn').innerHTML = '🔍 Suchen (1)';
+        }
       }
+
+      joinBtn.addEventListener('click', () => {
+        let list = JSON.parse(localStorage.getItem(JOINED_KEY) || '[]');
+        if (joined) {
+          if (!confirm('Teilnahme wirklich zurückziehen?')) return;
+          list = list.filter(e => e.id !== currentEvent.id);
+          localStorage.setItem(JOINED_KEY, JSON.stringify(list));
+          updateJoinBtn(false);
+          showToast('Teilnahme zurückgezogen');
+        } else {
+          list.push({
+            id:       currentEvent.id,
+            title:    currentEvent.title,
+            category: currentEvent.category,
+            emoji:    currentEvent.emoji || '✅',
+            location: currentEvent.location,
+            date:     currentEvent.date,
+            dateText: currentEvent.dateText,
+            time:     currentEvent.time || '',
+            organizer: currentEvent.organizer || '',
+          });
+          localStorage.setItem(JOINED_KEY, JSON.stringify(list));
+          updateJoinBtn(true);
+          showToast('Du nimmst teil! 🎉');
+        }
+      });
+
+      // Fahrt suchen
+      const searchRideBtn = document.getElementById('searchRideBtn');
+      const ridesList     = document.getElementById('ridesList');
+      searchRideBtn.addEventListener('click', () => {
+        if (ridesList.style.display === 'none') {
+          ridesList.style.display = 'flex';
+          searchRideBtn.innerHTML = 'Kürzer fassen ▴';
+        } else {
+          ridesList.style.display = 'none';
+          searchRideBtn.innerHTML = '🔍 Suchen (1)';
+        }
+      });
+
+      // Chat-Toggle Dropdown
+      const chatToggle   = document.getElementById('chatToggle');
+      const rideDropdown = document.getElementById('rideDropdown');
+      chatToggle.addEventListener('click', () => {
+        const open = rideDropdown.classList.toggle('is-open');
+        chatToggle.classList.toggle('is-open', open);
+      });
+
+      // Melden
+      const reportOverlay = document.getElementById('reportOverlay');
+      const reportForm    = document.getElementById('reportForm');
+
+      document.getElementById('reportBtn').addEventListener('click', () => {
+        reportForm.reset();
+        document.querySelectorAll('.report-option').forEach(o => o.classList.remove('is-selected'));
+        reportOverlay.hidden = false;
+      });
+      document.getElementById('closeReport').addEventListener('click', () => reportOverlay.hidden = true);
+      reportOverlay.addEventListener('click', e => { if (e.target === reportOverlay) reportOverlay.hidden = true; });
+      reportForm.addEventListener('change', () => {
+        document.querySelectorAll('.report-option').forEach(o =>
+          o.classList.toggle('is-selected', o.querySelector('input').checked)
+        );
+      });
+      reportForm.addEventListener('submit', e => {
+        e.preventDefault();
+        const sel = reportForm.querySelector('input[name="reportReason"]:checked');
+        if (!sel) return;
+        reportOverlay.hidden = true;
+        showToast(`Meldung gesendet: ${sel.value}`);
+      });
     }
-
-    joinBtn.addEventListener('click', () => {
-      let list = JSON.parse(localStorage.getItem(JOINED_KEY) || '[]');
-      if (joined) {
-        if(!confirm('Teilnahme wirklich zurückziehen?')) return;
-        // Teilnahme zurückziehen
-        list = list.filter(e => e.id !== currentEvent.id);
-        localStorage.setItem(JOINED_KEY, JSON.stringify(list));
-        updateJoinBtn(false);
-        showToast('Teilnahme zurückgezogen');
-      } else {
-        // Teilnehmen – Event-Daten speichern
-        list.push({
-          id:       currentEvent.id,
-          title:    currentEvent.title,
-          category: currentEvent.category,
-          emoji:    currentEvent.emoji || '✅',
-          location: currentEvent.location,
-          date:     currentEvent.date,
-          dateText: currentEvent.dateText,
-          time:     currentEvent.time || '',
-          organizer: currentEvent.organizer || '',
-        });
-        localStorage.setItem(JOINED_KEY, JSON.stringify(list));
-        updateJoinBtn(true);
-        showToast('Du nimmst teil! 🎉');
-      }
-    });
-
-    // --- FAHRT SUCHEN LOGIK ---
-    const searchRideBtn = document.getElementById('searchRideBtn');
-    const ridesList = document.getElementById('ridesList');
-
-    searchRideBtn.addEventListener('click', () => {
-      if(ridesList.style.display === 'none') {
-        ridesList.style.display = 'flex';
-        searchRideBtn.innerHTML = 'Kürzer fassen ▴';
-      } else {
-        ridesList.style.display = 'none';
-        searchRideBtn.innerHTML = '🔍 Suchen (1)';
-      }
-    });
-
-    const chatToggle  = document.getElementById('chatToggle');
-    const rideDropdown = document.getElementById('rideDropdown');
-    chatToggle.addEventListener('click', () => {
-      const open = rideDropdown.classList.toggle('is-open');
-      chatToggle.classList.toggle('is-open', open);
-    });
-
-    const reportOverlay = document.getElementById('reportOverlay');
-    const reportForm    = document.getElementById('reportForm');
-
-    document.getElementById('reportBtn').addEventListener('click', () => {
-      reportForm.reset();
-      document.querySelectorAll('.report-option').forEach(o => o.classList.remove('is-selected'));
-      reportOverlay.hidden = false;
-    });
-    document.getElementById('closeReport').addEventListener('click', () => reportOverlay.hidden = true);
-    reportOverlay.addEventListener('click', e => { if (e.target === reportOverlay) reportOverlay.hidden = true; });
-    reportForm.addEventListener('change', () => {
-      document.querySelectorAll('.report-option').forEach(o =>
-        o.classList.toggle('is-selected', o.querySelector('input').checked)
-      );
-    });
-    reportForm.addEventListener('submit', e => {
-      e.preventDefault();
-      const sel = reportForm.querySelector('input[name="reportReason"]:checked');
-      if (!sel) return;
-      reportOverlay.hidden = true;
-      showToast(`Meldung gesendet: ${sel.value}`);
-    });
 
     let toastTimer;
     function showToast(msg) {
@@ -408,6 +400,9 @@
       clearTimeout(toastTimer);
       toastTimer = setTimeout(() => toast.hidden = true, 2500);
     }
+
+    // Starten
+    loadEvent();
   </script>
 
   <script src="app.js"></script>
