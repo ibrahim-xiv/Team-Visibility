@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Visibility – Einstellungen</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  
+  <script>
+  // Prüfen, ob Darkmode in den Settings aktiviert wurde
+    if (localStorage.getItem('theme') === 'dark') {
+      document.body.classList.add('dark-mode');
+    }
+  </script>
+  <main class="phone">
+    
+    <header class="header has-back">
+      <a class="back-btn" href="profile.html" aria-label="Zurück">&#8249;</a>
+      <h1>Einstellungen</h1>
+    </header>
+
+    <div class="scroll-area">
+      <section class="content">
+        
+        <div class="settings-row">
+          <span><strong>Dunkelmodus</strong></span>
+          <label class="switch">
+            <input type="checkbox" id="darkModeToggle">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="logout-section">
+          <button class="danger-btn" id="logoutBtn">Abmelden</button>
+        </div>
+
+      </section>
+    </div>
+
+    <nav class="bottom-nav">
+      <a class="nav-btn" href="home.html"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3l9 8h-3v9h-5v-6H11v6H6v-9H3l9-8z"/></svg></a>
+      <a class="nav-btn" href="chat.html"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 5h16a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H9l-5 4v-4H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"/></svg></a>
+      <a class="nav-btn is-primary" href="meeting-form.html">+</a>
+      <a class="nav-btn" href="saved.html"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 16H5V10h14v10zM5 8V6h14v2H5z"/></svg></a>
+      <a class="nav-btn is-active" href="profile.html"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-4.4 0-8 2.2-8 5v2h16v-2c0-2.8-3.6-5-8-5z"/></svg></a>
+    </nav>
+  </main>
+
+  <div class="overlay" id="logoutOverlay" hidden>
+    <div class="overlay-card is-narrow">
+      <h2>Abmelden?</h2>
+      <p>Möchtest du dich wirklich ausloggen?</p>
+      <div class="overlay-actions">
+        <button class="overlay-close" id="cancelLogout">Abbrechen</button>
+        <button class="overlay-submit" id="confirmLogout">Ja, Abmelden</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  // Nur Logout-Logik hier – Darkmode, Dev-Nav und Toggle werden von app.js übernommen
+  document.addEventListener('DOMContentLoaded', function () {
+    const logoutBtn     = document.getElementById('logoutBtn');
+    const logoutOverlay = document.getElementById('logoutOverlay');
+
+    if (logoutBtn)    logoutBtn.onclick = () => logoutOverlay.hidden = false;
+    const cancelBtn   = document.getElementById('cancelLogout');
+    const confirmBtn  = document.getElementById('confirmLogout');
+    if (cancelBtn)   cancelBtn.onclick  = () => logoutOverlay.hidden = true;
+    if (confirmBtn)  confirmBtn.onclick = () => {
+      localStorage.removeItem('visibility-profile');
+      window.location.href = 'login.html';
+    };
+  });
+  </script>
+  <script src="app.js"></script>
+</body>
+</html>

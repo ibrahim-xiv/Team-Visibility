@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fahrt anbieten</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <script>
+    // Prüfen, ob Darkmode in den Settings aktiviert wurde
+    if (localStorage.getItem('theme') === 'dark') {
+      document.body.classList.add('dark-mode');
+    }
+  </script>
+  <main class="phone">
+
+    <header class="header has-back">
+      <!-- ID HINZUGEFÜGT für JavaScript -->
+      <a id="backBtn" class="back-btn" href="/home.html" aria-label="Zurück">&#8249;</a>
+      <h1>Fahrt anbieten</h1>
+    </header>
+
+    <section class="content form-content">
+      <form id="rideshareForm" novalidate>
+
+        <div class="form-group" data-field="start">
+          <label for="start">Von<span class="required-star">*</span></label>
+          <input id="start" name="start" type="text" placeholder="z.B. Jade Hochschule oder Adresse" required>
+          <div class="error-text">Bitte Startpunkt ausfüllen.</div>
+        </div>
+
+        <div class="form-group" data-field="ziel">
+          <label for="ziel">Nach (Ziel)<span class="required-star">*</span></label>
+          <input id="ziel" name="ziel" type="text" placeholder="z.B. Nordseepassage" required>
+          <div class="error-text">Bitte Ziel ausfüllen.</div>
+        </div>
+
+        <div class="split" style="padding-bottom: 14px;">
+          <div class="form-group" data-field="datum">
+            <label for="datum">Datum<span class="required-star">*</span></label>
+            <input id="datum" name="datum" type="date" required>
+            <div class="error-text">Pflichtfeld.</div>
+          </div>
+          <div class="form-group" data-field="uhrzeit">
+            <label for="uhrzeit">Uhrzeit<span class="required-star">*</span></label>
+            <input id="uhrzeit" name="uhrzeit" type="time" required>
+            <div class="error-text">Pflichtfeld.</div>
+          </div>
+        </div>
+
+        <div class="form-group" data-field="plaetze">
+          <label for="plaetze">Freie Plätze<span class="required-star">*</span></label>
+          <div class="select-wrap">
+            <select id="plaetze" name="plaetze" required>
+              <option value="">Anzahl wählen</option>
+              <option value="1">1 Platz</option>
+              <option value="2">2 Plätze</option>
+              <option value="3">3 Plätze</option>
+              <option value="4">4+ Plätze</option>
+            </select>
+          </div>
+          <div class="error-text">Bitte Anzahl der Plätze wählen.</div>
+        </div>
+
+        <div class="form-group" data-field="beschreibung">
+          <label for="beschreibung">Beschreibung (Optional)</label>
+          <textarea id="beschreibung" name="beschreibung"
+            placeholder="Infos zur Fahrt (z.B. Musikgeschmack, Platz für Gepäck, Treffpunkt...)"></textarea>
+        </div>
+
+        <div class="form-group" data-field="bedingungen">
+          <label class="checkbox-card" for="bedingungen">
+            <input id="bedingungen" name="bedingungen" type="checkbox" required>
+            <span>Fahrt auf Spendenbasis / Spritgeld teilen<span class="required-star">*</span></span>
+            <button class="info-badge" type="button" aria-haspopup="dialog"
+              aria-controls="infoOverlay" aria-label="Mehr Infos">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="9" />
+                <line x1="12" y1="10" x2="12" y2="16" />
+                <circle cx="12" cy="7" r="1" />
+              </svg>
+            </button>
+          </label>
+          <div class="error-text">Bitte bestätigen.</div>
+        </div>
+
+        <button class="publish-btn" type="submit">Fahrt veröffentlichen</button>
+
+      </form>
+    </section>
+  </main>
+
+  <div class="overlay" id="infoOverlay" hidden>
+    <div class="overlay-card is-narrow" role="dialog" aria-modal="true" aria-labelledby="infoTitle">
+      <h2 id="infoTitle">Kostenbeteiligung</h2>
+      <p>Visibility ist für faire Community-Fahrten. Klärt im Chat, ob ihr euch die Spritkosten teilt oder ob die Fahrt komplett kostenlos ist. Keine kommerziellen Fahrdienste erlaubt!</p>
+      <button class="overlay-close is-solo" type="button" data-close-overlay>Verstanden</button>
+    </div>
+  </div>
+
+  <script>
+    // ── ZURÜCK-BUTTON DYNAMISCH MACHEN ──
+    const urlParams = new URLSearchParams(window.location.search);
+    const refEventId = urlParams.get('eventId');
+    
+    // Wenn wir von einem Event kommen, setze den Link auf das Event zurück
+    if (refEventId) {
+        document.getElementById('backBtn').href = `event-details.html?id=${refEventId}`;
+    }
+
+    // ── OVERLAY LOGIK ──
+    const infoBadge      = document.querySelector('.info-badge');
+    const infoOverlay    = document.getElementById('infoOverlay');
+    const closeOverlayBtn = document.querySelector('[data-close-overlay]');
+
+    infoBadge.addEventListener('click', e => {
+      e.preventDefault();
+      e.stopPropagation();
+      infoOverlay.hidden = false;
+    });
+    closeOverlayBtn.addEventListener('click', () => infoOverlay.hidden = true);
+    infoOverlay.addEventListener('click', e => {
+      if (e.target === infoOverlay) infoOverlay.hidden = true;
+    });
+
+    // ── FORMULAR VALIDIERUNG & SUBMIT ──
+    const form = document.getElementById('rideshareForm');
+    const requiredFields = ['start', 'ziel', 'datum', 'uhrzeit', 'plaetze', 'bedingungen'];
+
+    function validateField(fieldName) {
+      const field   = form.querySelector(`[name="${fieldName}"]`);
+      const wrapper = form.querySelector(`[data-field="${fieldName}"]`);
+      if (!field || !wrapper) return true;
+      const valid = field.type === 'checkbox' ? field.checked : field.value.trim() !== '';
+      wrapper.classList.toggle('is-invalid', !valid);
+      return valid;
+    }
+
+    requiredFields.forEach(name => {
+      const field = form.querySelector(`[name="${name}"]`);
+      if (!field) return;
+      const evt = field.type === 'checkbox' || field.tagName === 'SELECT' ? 'change' : 'input';
+      field.addEventListener(evt, () => validateField(name));
+    });
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      
+      const isValid = requiredFields.map(validateField).every(Boolean);
+      
+      if (isValid) {
+        // Datenpaket schnüren
+        const neuesEvent = {
+          id: 'ride_' + Date.now(),
+          title: `🚗 Fahrt: ${document.getElementById('start').value} ➔ ${document.getElementById('ziel').value}`,
+          dateText: document.getElementById('datum').value,
+          time: document.getElementById('uhrzeit').value,
+          location: document.getElementById('start').value,
+          category: 'Community', 
+          emoji: '🚗'
+        };
+
+        // In die Eigene-Events-Liste speichern
+        let meineEvents = JSON.parse(localStorage.getItem('visibility-my-events') || '[]');
+        meineEvents.unshift(neuesEvent);
+        localStorage.setItem('visibility-my-events', JSON.stringify(meineEvents));
+        
+        // Popup für nachfolgende Seite triggern
+        localStorage.setItem('showSuccessPopup', 'true');
+        
+        // Zurück zur korrekten Seite navigieren
+        if (refEventId) {
+            window.location.href = `event-details.html?id=${refEventId}`;
+        } else {
+            window.location.href = 'home.html';
+        }
+      }
+    });
+  </script>
+
+  <script src="app.js"></script>
+</body>
+</html>

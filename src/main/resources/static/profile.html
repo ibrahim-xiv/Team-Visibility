@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Visibility – Profil</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .profile-card { text-align:center; padding:24px 0 16px; }
+    .profile-avatar-big { width:80px;height:80px;border-radius:50%;background:var(--hover-bg);border:2px solid var(--border);display:grid;place-items:center;margin:0 auto 12px;font-size:2.5rem;line-height:1; }
+    .profile-avatar-big svg { width:48px;height:48px;color:var(--muted); }
+    .profile-name-big { font-size:1.4rem;font-weight:800;margin:0 0 4px; }
+    .profile-username-small { color:var(--muted);font-size:0.85rem;margin:0 0 4px; }
+    .profile-email-small { color:var(--muted);font-size:0.82rem; }
+    .profile-interests { display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:12px; }
+    .interest-chip { background:var(--hover-bg);border:1px solid var(--border);border-radius:20px;padding:4px 10px;font-size:0.8rem;font-weight:700; }
+    .section-label { font-size:1rem;font-weight:800;margin:20px 0 10px; }
+    .my-events-list { display:flex;gap:10px;overflow-x:auto;padding-bottom:8px;scrollbar-width:none; }
+    .my-events-list::-webkit-scrollbar { display:none; }
+    .my-event-mini { flex-shrink:0;width:140px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:10px;text-decoration:none;color:var(--text); }
+    .my-event-mini h4 { font-size:0.85rem;font-weight:800;margin:0 0 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+    .my-event-mini p { font-size:0.75rem;color:var(--muted);margin:0; }
+  </style>
+</head>
+<body>
+  <script>
+    if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');
+    if (!JSON.parse(localStorage.getItem('tv-user') || 'null')) window.location.href = 'login.html';
+  </script>
+  <main class="phone">
+    <header class="header">
+      <div class="brand"><span>Profil</span></div>
+      <a href="settings.html" class="header-icon-btn" aria-label="Einstellungen">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" width="22" height="22">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+      </a>
+    </header>
+    <div class="scroll-area">
+      <section class="content">
+        <div class="profile-card">
+          <div class="profile-avatar-big" id="profileAvatar">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-4.4 0-8 2.2-8 5v2h16v-2c0-2.8-3.6-5-8-5z"/></svg>
+          </div>
+          <h2 class="profile-name-big" id="profileName">Wird geladen…</h2>
+          <p class="profile-username-small" id="profileUsername"></p>
+          <p class="profile-email-small" id="profileEmail"></p>
+          <div class="profile-interests" id="profileInterests"></div>
+          <p id="profileBio" style="margin-top:12px;font-size:0.88rem;color:var(--muted);text-align:center;"></p>
+        </div>
+
+        <div class="section-label">Freunde</div>
+        <div id="friendsSection">
+          <p style="color:var(--muted);font-size:0.85rem;" id="friendsPlaceholder">Noch keine Freunde hinzugefügt.</p>
+          <div class="my-events-list" id="friendsList" style="display:none;"></div>
+        </div>
+
+        <div class="section-label">Meine Events</div>
+        <div class="my-events-list" id="myEvents">
+          <p style="color:var(--muted);font-size:0.85rem;">Wird geladen…</p>
+        </div>
+
+        <div style="margin-top:24px;display:flex;flex-direction:column;gap:10px;">
+          <a href="profile-edit.html" class="submit-btn" style="text-align:center;text-decoration:none;display:block;">Profil bearbeiten</a>
+          <button onclick="logout()" class="submit-btn" style="background:var(--hover-bg);color:var(--text);border:1px solid var(--border);">Abmelden</button>
+        </div>
+      </section>
+    </div>
+    <nav class="bottom-nav">
+      <a class="nav-btn" href="home.html"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3l9 8h-3v9h-5v-6H11v6H6v-9H3l9-8z"></path></svg></a>
+      <a class="nav-btn" href="chat.html"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 5h16a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H9l-5 4v-4H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"></path></svg></a>
+      <a class="nav-btn is-primary" href="meeting-form.html">+</a>
+      <a class="nav-btn" href="saved.html"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 16H5V10h14v10zM5 8V6h14v2H5z"/></svg></a>
+      <a class="nav-btn is-active" href="profile.html"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-4.4 0-8 2.2-8 5v2h16v-2c0-2.8-3.6-5-8-5z"></path></svg></a>
+    </nav>
+  </main>
+  <script src="app.js"></script>
+  <script>
+    async function loadFriends() {
+      try {
+        const res = await fetch('/api/chat/conversations');
+        if (!res.ok) return;
+        const convs = await res.json();
+        // Show DM conversations (not group) as "friends"
+        const friends = convs.filter(c => c.recipientId);
+        const placeholder = document.getElementById('friendsPlaceholder');
+        const list = document.getElementById('friendsList');
+        if (!friends.length) { placeholder.style.display='block'; list.style.display='none'; return; }
+        placeholder.style.display='none';
+        list.style.display='flex';
+        list.innerHTML = friends.map(f => `
+          <a class="my-event-mini" href="profile-view.html?id=${f.recipientId}" style="text-align:center;">
+            <div style="font-size:1.6rem;margin-bottom:4px;">👤</div>
+            <h4 style="font-size:0.8rem;">${f.recipientName||'Nutzer'}</h4>
+          </a>`).join('');
+      } catch(e) {}
+    }
+
+    async function loadProfile() {
+      try {
+        const res = await fetch('/api/auth/me');
+        if (res.status === 401) { window.location.href = 'login.html'; return; }
+        const u = await res.json();
+        localStorage.setItem('tv-user', JSON.stringify(u));
+
+        const extra = JSON.parse(localStorage.getItem('visibility-profile') || '{}');
+        const avatar = extra.avatar || '';
+        const avatarEl = document.getElementById('profileAvatar');
+        if (avatar) { avatarEl.textContent = avatar; avatarEl.style.fontSize = '2.5rem'; }
+
+        document.getElementById('profileName').textContent = u.firstName + ' ' + u.lastName;
+        document.getElementById('profileUsername').textContent = '@' + u.username;
+        document.getElementById('profileEmail').textContent = u.email;
+
+        if (extra.bio) document.getElementById('profileBio').textContent = extra.bio;
+        if (extra.interests && extra.interests.length) {
+          document.getElementById('profileInterests').innerHTML = extra.interests.map(i => `<span class="interest-chip">${i}</span>`).join('');
+        }
+      } catch(e) {}
+    }
+
+    async function loadMyEvents() {
+      try {
+        const user = JSON.parse(localStorage.getItem('tv-user') || 'null');
+        const res = await fetch('/api/meetings');
+        const all = await res.json();
+        const mine = all.filter(e => e.creatorId === user?.id);
+        const el = document.getElementById('myEvents');
+        if (!mine.length) { el.innerHTML = '<p style="color:var(--muted);font-size:0.85rem;">Noch keine Events erstellt.</p>'; return; }
+        el.innerHTML = mine.map(e => `
+          <a class="my-event-mini" href="event-details.html?id=${e.id}">
+            <h4>${e.title}</h4>
+            <p>${e.locationName || 'Kein Ort'}</p>
+            <p>${e.dateTime ? new Date(e.dateTime).toLocaleDateString('de-DE') : ''}</p>
+          </a>`).join('');
+      } catch(e) {}
+    }
+
+    async function logout() {
+      await fetch('/api/auth/logout', { method: 'POST' }).catch(()=>{});
+      localStorage.removeItem('tv-user');
+      window.location.href = 'login.html';
+    }
+
+    loadProfile();
+    loadMyEvents();
+    loadFriends();
+  </script>
+</body>
+</html>

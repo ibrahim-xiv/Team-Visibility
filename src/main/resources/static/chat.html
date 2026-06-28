@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Visibility – Chat</title>
+  <link rel="stylesheet" href="style.css"/>
+  <style>
+    .chat-tabs{display:flex;border-bottom:2px solid var(--border);background:var(--surface);}
+    .chat-tab{flex:1;padding:12px;text-align:center;font-weight:800;font-size:0.9rem;cursor:pointer;color:var(--muted);border:none;background:none;border-bottom:3px solid transparent;margin-bottom:-2px;}
+    .chat-tab.active{color:var(--primary);border-bottom-color:var(--primary);}
+    .conversation-list{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px;}
+    .conversation-item{display:flex;align-items:center;gap:12px;padding:12px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);cursor:pointer;text-decoration:none;color:var(--text);}
+    .conversation-item:hover{background:var(--hover-bg);}
+    .conv-avatar{width:40px;height:40px;border-radius:50%;background:var(--hover-bg);border:1px solid var(--border);display:grid;place-items:center;flex-shrink:0;font-size:1.2rem;}
+    .conv-info{flex:1;min-width:0;}
+    .conv-name{font-weight:800;font-size:1rem;}
+    .conv-last{font-size:0.82rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .conv-type-badge{font-size:0.7rem;padding:2px 6px;border-radius:10px;font-weight:700;margin-left:6px;}
+    .conv-type-group{background:#e0f2fe;color:#0369a1;}
+    .conv-type-dm{background:#f0fdf4;color:#166534;}
+    .chat-partner-info{display:flex;align-items:center;gap:12px;flex:1;}
+    .chat-partner-avatar{width:36px;height:36px;border-radius:50%;border:1px solid var(--border);background:var(--hover-bg);display:grid;place-items:center;font-size:1.1rem;}
+    .chat-partner-name{font-weight:800;font-size:1.05rem;}
+    .chat-messages-area{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:14px;background:var(--surface);overscroll-behavior:contain;scrollbar-width:none;}
+    .chat-messages-area::-webkit-scrollbar{display:none;}
+    .message-bubble{max-width:75%;padding:12px 16px;border-radius:var(--radius-md);font-size:0.95rem;line-height:1.4;font-weight:700;word-wrap:break-word;}
+    .message-bubble.incoming{background:var(--hover-bg);color:var(--text);align-self:flex-start;border-bottom-left-radius:4px;border:1px solid var(--border);}
+    .message-bubble.outgoing{background:var(--primary);color:#fff;align-self:flex-end;border-bottom-right-radius:4px;}
+    .message-time{font-size:0.72rem;margin-top:4px;display:block;font-weight:400;opacity:0.75;}
+    .message-bubble.incoming .message-time{color:var(--hint);text-align:left;}
+    .message-bubble.outgoing .message-time{color:rgba(255,255,255,0.9);text-align:right;}
+    .chat-input-wrap{padding:12px 16px;border-top:1px solid var(--border);background:var(--surface);}
+    .chat-input-form{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;}
+    .chat-input-field{width:100%;min-height:48px;padding:12px 16px;border:1px solid var(--border);border-radius:24px;background:var(--bg);color:var(--text);outline:none;font-size:0.95rem;}
+    .chat-input-field:focus{border-color:var(--primary);}
+    .chat-send-btn{width:48px;height:48px;border-radius:50%;border:none;background:var(--primary);color:#fff;display:grid;place-items:center;cursor:pointer;}
+    .chat-send-btn svg{width:20px;height:20px;margin-left:2px;}
+    #chatView{display:none;flex-direction:column;height:100%;}
+    #listView{display:flex;flex-direction:column;height:100%;}
+    .empty-conv{text-align:center;padding:40px 20px;color:var(--muted);font-size:0.95rem;}
+    .sender-label{font-size:0.75rem;font-weight:800;margin-bottom:4px;opacity:0.7;}
+    .profile-link{font-size:0.78rem;color:var(--primary);text-decoration:none;margin-left:8px;}
+    .dark-mode .conv-type-group{background:#0c3a5e;color:#7dd3fc;}
+    .dark-mode .conv-type-dm{background:#052e16;color:#86efac;}
+  </style>
+</head>
+<body>
+<script>
+  if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');
+  const user=JSON.parse(localStorage.getItem('tv-user')||'null');
+  if(!user)window.location.href='login.html';
+</script>
+<main class="phone">
+  <div id="listView">
+    <div class="header-wrap"><header class="header"><div class="brand"><span>Chats</span></div></header></div>
+    <div class="chat-tabs">
+      <button class="chat-tab active" id="tabDM" onclick="switchTab('dm')">💬 Direktnachrichten</button>
+      <button class="chat-tab" id="tabGroup" onclick="switchTab('group')">👥 Gruppen</button>
+    </div>
+    <div class="conversation-list" id="convList"><p style="color:var(--muted);text-align:center;padding:20px;">Wird geladen…</p></div>
+    <nav class="bottom-nav">
+      <a class="nav-btn" href="home.html"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3l9 8h-3v9h-5v-6H11v6H6v-9H3l9-8z"></path></svg></a>
+      <a class="nav-btn is-active" href="chat.html"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 5h16a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H9l-5 4v-4H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"></path></svg></a>
+      <a class="nav-btn is-primary" href="meeting-form.html">+</a>
+      <a class="nav-btn" href="saved.html"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 16H5V10h14v10zM5 8V6h14v2H5z"/></svg></a>
+      <a class="nav-btn" href="profile.html"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-4.4 0-8 2.2-8 5v2h16v-2c0-2.8-3.6-5-8-5z"></path></svg></a>
+    </nav>
+  </div>
+  <div id="chatView">
+    <div class="header-wrap">
+      <header class="header has-back" style="display:flex;justify-content:flex-start;align-items:center;gap:12px;">
+        <button class="back-btn" onclick="showList()" style="background:none;border:none;font-size:1.8rem;cursor:pointer;color:var(--text);">&#8249;</button>
+        <div class="chat-partner-info">
+          <div class="chat-partner-avatar" id="chatAvatarEl">💬</div>
+          <div>
+            <span class="chat-partner-name" id="chatPartnerName"></span>
+            <a class="profile-link" id="chatProfileLink" href="#" style="display:none;">Profil ansehen</a>
+          </div>
+        </div>
+      </header>
+    </div>
+    <div class="chat-messages-area" id="chatMessages"></div>
+    <div class="chat-input-wrap">
+      <form id="chatInputForm" class="chat-input-form" novalidate>
+        <input type="text" id="messageInputField" class="chat-input-field" placeholder="Nachricht schreiben…" autocomplete="off" required>
+        <button type="submit" class="chat-send-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg></button>
+      </form>
+    </div>
+  </div>
+</main>
+<script src="app.js"></script>
+<script>
+let currentRecipientId=null,currentGroupId=null,pollTimer=null,allConvs=[],currentTab='dm';
+
+function switchTab(tab){
+  currentTab=tab;
+  document.getElementById('tabDM').classList.toggle('active',tab==='dm');
+  document.getElementById('tabGroup').classList.toggle('active',tab==='group');
+  renderConvList();
+}
+
+function renderConvList(){
+  const el=document.getElementById('convList');
+  const filtered=allConvs.filter(c=>currentTab==='group'?!!c.groupEventId:!!c.recipientId);
+  if(!filtered.length){
+    const msg=currentTab==='group'
+      ?"Noch keine Gruppen-Chats.<br>Trete einem Event bei!"
+      :"Noch keine Direktnachrichten.<br>Schreibe jemandem über ein Event!";
+    el.innerHTML=`<div class="empty-conv">${msg}</div>`;return;
+  }
+  el.innerHTML=filtered.map(c=>{
+    const isGroup=!!c.groupEventId;
+    const avatar=isGroup?'👥':'💬';
+    const name=c.recipientName||c.groupName||'Chat';
+    const badge=isGroup?'<span class="conv-type-badge conv-type-group">Gruppe</span>':'<span class="conv-type-badge conv-type-dm">Direkt</span>';
+    return`<div class="conversation-item" onclick="showChat(${c.recipientId||'null'},'${(name).replace(/'/g,"\\'")}','${c.groupEventId||''}','${(c.groupName||'').replace(/'/g,"\\'")}')">
+      <div class="conv-avatar">${avatar}</div>
+      <div class="conv-info">
+        <div class="conv-name">${name}${badge}</div>
+        <div class="conv-last">${c.lastMessage||''}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function showList(){
+  document.getElementById('listView').style.display='flex';
+  document.getElementById('chatView').style.display='none';
+  clearInterval(pollTimer);loadConversations();
+}
+function showChat(recipientId,recipientName,groupId,groupName){
+  document.getElementById('listView').style.display='none';
+  document.getElementById('chatView').style.display='flex';
+  currentRecipientId=recipientId||null;currentGroupId=groupId||null;
+  const isGroup=!!groupId;
+  document.getElementById('chatPartnerName').textContent=recipientName||groupName||'Chat';
+  document.getElementById('chatAvatarEl').textContent=isGroup?'👥':'💬';
+  const plink=document.getElementById('chatProfileLink');
+  if(recipientId&&!isGroup){plink.href='profile-view.html?id='+recipientId;plink.style.display='inline';}
+  else{plink.style.display='none';}
+  loadMessages();pollTimer=setInterval(loadMessages,3000);
+}
+
+async function loadConversations(){
+  try{const r=await fetch('/api/chat/conversations');
+    if(r.status===401){window.location.href='login.html';return;}
+    allConvs=await r.json();renderConvList();
+  }catch(e){document.getElementById('convList').innerHTML='<p style="color:var(--muted);text-align:center;padding:20px;">Fehler.</p>';}
+}
+
+async function loadMessages(){
+  try{let url='/api/chat/messages?';
+    if(currentRecipientId)url+='recipientId='+currentRecipientId;
+    else if(currentGroupId)url+='groupEventId='+currentGroupId;
+    const r=await fetch(url);const msgs=await r.json();const el=document.getElementById('chatMessages');
+    el.innerHTML=msgs.map(m=>`<div class="message-bubble ${m.mine?'outgoing':'incoming'}">
+      ${(!m.mine&&currentGroupId)?`<div class="sender-label">${m.senderName}</div>`:''}
+      ${m.content}
+      <span class="message-time">${new Date(m.createdAt).toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})}</span>
+    </div>`).join('');
+    el.scrollTop=el.scrollHeight;
+  }catch(e){}
+}
+
+document.getElementById('chatInputForm').addEventListener('submit',async e=>{
+  e.preventDefault();const input=document.getElementById('messageInputField');
+  const content=input.value.trim();if(!content)return;input.value='';
+  const body={content};
+  if(currentRecipientId)body.recipientId=currentRecipientId;
+  if(currentGroupId)body.groupEventId=currentGroupId;
+  await fetch('/api/chat/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  loadMessages();
+});
+
+// Auto-open chat from event-details
+const autoRecipient=localStorage.getItem('chat-open-recipient');
+const autoGroup=localStorage.getItem('chat-open-group');
+const autoGroupName=localStorage.getItem('chat-open-group-name');
+if(autoRecipient){
+  localStorage.removeItem('chat-open-recipient');
+  fetch('/api/users/'+autoRecipient).then(r=>r.json()).then(u=>{
+    showChat(Number(autoRecipient),u.firstName+' '+u.lastName,null,null);
+  }).catch(()=>showList());
+} else if(autoGroup){
+  localStorage.removeItem('chat-open-group');
+  localStorage.removeItem('chat-open-group-name');
+  showChat(null,null,autoGroup,autoGroupName||'Gruppen-Chat');
+  currentTab='group';
+  document.getElementById('tabDM').classList.remove('active');
+  document.getElementById('tabGroup').classList.add('active');
+} else { showList(); }
+</script>
+</body></html>

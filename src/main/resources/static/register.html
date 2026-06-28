@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Visibility – Registrierung</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <script>if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');</script>
+  <main class="phone">
+    <header class="header">
+      <div class="brand" aria-label="Visibility">
+        <span class="brand-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 12s3.8-6 10-6 10 6 10 6-3.8 6-10 6-10-6-10-6z"></path>
+            <circle cx="12" cy="12" r="3.2"></circle>
+          </svg>
+        </span>
+        <span>Visibility</span>
+      </div>
+    </header>
+    <section class="content form-content">
+      <h2 style="margin:0 0 20px;font-size:1.6rem;font-weight:800;text-align:center;">Registrieren</h2>
+      <div id="errorMsg" style="display:none;color:#ef4444;background:#fef2f2;border:1px solid #fca5a5;border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:0.9rem;"></div>
+      <div id="successMsg" style="display:none;color:#16a34a;background:#f0fdf4;border:1px solid #86efac;border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:0.9rem;"></div>
+
+      <!-- Step 1: Registration form -->
+      <form id="registerForm" class="register-form" novalidate>
+        <div class="form-group">
+          <label for="firstName">Vorname</label>
+          <input class="input" id="firstName" type="text" placeholder="Max" required>
+        </div>
+        <div class="form-group">
+          <label for="lastName">Nachname</label>
+          <input class="input" id="lastName" type="text" placeholder="Mustermann" required>
+        </div>
+        <div class="form-group">
+          <label for="email">E-Mail</label>
+          <input class="input" id="email" type="email" placeholder="name@email.de" required>
+        </div>
+        <div class="form-group">
+          <label for="password">Passwort</label>
+          <input class="input" id="password" type="password" placeholder="Mind. 1 Großbuchstabe + 1 Zahl" required>
+          <div class="hint-text">Mindestens 1 Großbuchstabe und 1 Zahl.</div>
+        </div>
+        <button class="submit-btn" type="submit" id="registerBtn">Code senden</button>
+        <a class="login-link" href="login.html">Bereits registriert? Anmelden &gt;</a>
+      </form>
+
+      <!-- Step 2: Verification -->
+      <form id="verifyForm" class="register-form" style="display:none;" novalidate>
+        <p style="text-align:center;color:var(--muted);margin-bottom:20px;font-size:0.9rem;">
+          Wir haben einen Code an <strong id="emailDisplay"></strong> gesendet.
+        </p>
+        <div class="form-group" data-field="code">
+          <label>Verifizierungs-Code</label>
+          <div class="code-wrap">
+            <div class="code-inputs">
+              <input class="code-input" type="text" maxlength="1" inputmode="numeric">
+              <input class="code-input" type="text" maxlength="1" inputmode="numeric">
+              <input class="code-input" type="text" maxlength="1" inputmode="numeric">
+              <input class="code-input" type="text" maxlength="1" inputmode="numeric">
+              <input class="code-input" type="text" maxlength="1" inputmode="numeric">
+            </div>
+          </div>
+          <div class="resend-row">
+            <button class="resend-btn" type="button" id="resendBtn">Code erneut senden</button>
+            <div class="countdown-text" id="countdownText"></div>
+          </div>
+        </div>
+        <button class="submit-btn" type="submit" id="verifyBtn">Verifizieren</button>
+      </form>
+    </section>
+  </main>
+  <script src="app.js"></script>
+  <script>
+    let registeredEmail = '';
+    let countdown = 0;
+    let timer = null;
+
+    function showError(msg) {
+      const el = document.getElementById('errorMsg');
+      el.textContent = msg; el.style.display = 'block';
+      document.getElementById('successMsg').style.display = 'none';
+    }
+    function showSuccess(msg) {
+      const el = document.getElementById('successMsg');
+      el.textContent = msg; el.style.display = 'block';
+      document.getElementById('errorMsg').style.display = 'none';
+    }
+
+    function startCountdown() {
+      countdown = 60;
+      document.getElementById('resendBtn').disabled = true;
+      const ct = document.getElementById('countdownText');
+      ct.classList.add('is-visible');
+      timer = setInterval(() => {
+        countdown--;
+        ct.textContent = `Erneut senden in ${String(Math.floor(countdown/60)).padStart(2,'0')}:${String(countdown%60).padStart(2,'0')}`;
+        if (countdown <= 0) { clearInterval(timer); document.getElementById('resendBtn').disabled = false; ct.textContent = ''; }
+      }, 1000);
+    }
+
+    document.getElementById('registerForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const btn = document.getElementById('registerBtn');
+      btn.disabled = true; btn.textContent = 'Wird gesendet…';
+      document.getElementById('errorMsg').style.display = 'none';
+      try {
+        const res = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            firstName: document.getElementById('firstName').value.trim(),
+            lastName: document.getElementById('lastName').value.trim(),
+            email: document.getElementById('email').value.trim(),
+            password: document.getElementById('password').value
+          })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'Registrierung fehlgeschlagen');
+        registeredEmail = document.getElementById('email').value.trim();
+        document.getElementById('emailDisplay').textContent = registeredEmail;
+        document.getElementById('registerForm').style.display = 'none';
+        document.getElementById('verifyForm').style.display = 'block';
+        showSuccess('Code wurde gesendet!');
+        startCountdown();
+      } catch(err) {
+        showError(err.message);
+        btn.disabled = false; btn.textContent = 'Code senden';
+      }
+    });
+
+    document.getElementById('resendBtn').addEventListener('click', async () => {
+      try {
+        await fetch('/api/auth/resend-verification-code', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: registeredEmail })
+        });
+        showSuccess('Neuer Code gesendet!');
+        startCountdown();
+      } catch(e) { showError('Fehler beim Senden.'); }
+    });
+
+    const codeInputs = [...document.querySelectorAll('.code-input')];
+    codeInputs.forEach((input, i) => {
+      input.addEventListener('input', () => {
+        input.value = input.value.replace(/[^0-9]/g,'').slice(0,1);
+        if (input.value && i < codeInputs.length-1) codeInputs[i+1].focus();
+      });
+      input.addEventListener('keydown', e => { if (e.key==='Backspace' && !input.value && i>0) codeInputs[i-1].focus(); });
+    });
+
+    document.getElementById('verifyForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const code = codeInputs.map(i => i.value).join('');
+      if (code.length !== 5) { showError('Bitte vollständigen 5-stelligen Code eingeben.'); return; }
+      const btn = document.getElementById('verifyBtn');
+      btn.disabled = true; btn.textContent = 'Wird verifiziert…';
+      try {
+        const res = await fetch('/api/auth/verify-registration', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: registeredEmail, verificationCode: code })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'Falscher Code');
+        // Login after verify
+        const loginRes = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: registeredEmail, password: document.getElementById('password') ? document.getElementById('password').value : '' })
+        });
+        if (loginRes.ok) {
+          const user = await loginRes.json();
+          localStorage.setItem('tv-user', JSON.stringify(user));
+        }
+        window.location.href = 'home.html';
+      } catch(err) {
+        showError(err.message);
+        btn.disabled = false; btn.textContent = 'Verifizieren';
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Visibility – Home</title>
+  <link rel="stylesheet" href="style.css"/>
+  <style>
+    .notif-badge{position:absolute;top:-4px;right:-4px;background:#ef4444;color:#fff;font-size:0.6rem;font-weight:800;width:16px;height:16px;border-radius:50%;display:grid;place-items:center;line-height:1;}
+    .notif-bell{position:relative;cursor:pointer;background:none;border:none;padding:4px;}
+    .notif-bell svg{width:22px;height:22px;color:var(--text);}
+    .notif-panel{display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:500;background:rgba(0,0,0,0.4);}
+    .notif-panel.open{display:flex;justify-content:center;align-items:flex-start;padding-top:60px;}
+    .notif-card{background:var(--surface);border-radius:var(--radius-md);width:90%;max-width:360px;max-height:60vh;overflow-y:auto;padding:16px;box-shadow:0 8px 32px rgba(0,0,0,0.2);}
+    .notif-item{padding:10px 0;border-bottom:1px solid var(--border);font-size:0.88rem;cursor:pointer;}
+    .notif-item:last-child{border-bottom:none;}
+    .notif-item.unread{font-weight:800;}
+    .notif-time{font-size:0.72rem;color:var(--muted);margin-top:2px;}
+    .notif-empty{text-align:center;color:var(--muted);padding:20px;font-size:0.9rem;}
+  </style>
+</head>
+<body>
+<script>
+  if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');
+  if(!JSON.parse(localStorage.getItem('tv-user')||'null'))window.location.href='login.html';
+</script>
+<main class="phone is-feed">
+  <div class="header-wrap" id="top">
+    <header class="header">
+      <div class="brand" aria-label="Visibility">
+        <span class="brand-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.8-6 10-6 10 6 10 6-3.8 6-10 6-10-6-10-6z"></path><circle cx="12" cy="12" r="3.2"></circle></svg></span>
+        <span>Visibility</span>
+      </div>
+      <button class="notif-bell" id="notifBell" aria-label="Benachrichtigungen">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+        <span class="notif-badge" id="notifBadge" style="display:none;">0</span>
+      </button>
+    </header>
+    <div class="toolbar-wrap">
+      <div class="toolbar">
+        <input id="searchInput" class="search-input" type="text" placeholder="Suchen" aria-label="Event suchen">
+        <select id="sortSelect"><option value="date">Datum</option><option value="title">Titel A–Z</option></select>
+        <select id="filterSelect">
+          <option value="all">Alle</option><option value="upcoming">Kommende</option><option value="past">Vergangene</option>
+          <option>Freizeit</option><option>Sport</option><option>Spieleabend</option><option>Kultur</option><option>Community</option><option>Anderes…</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="scroll-area" id="scrollArea">
+    <section class="content">
+      <a class="map-cta" href="map.html"><span>Zur Kartenansicht</span>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s6-5.2 6-11a6 6 0 1 0-12 0c0 5.8 6 11 6 11z"></path><circle cx="12" cy="10" r="2.2"></circle></svg>
+      </a>
+      <div class="section-head"><h2 id="sectionTitle">Events:</h2><span class="results-count" id="resultsCount"></span></div>
+      <div class="event-list" id="eventList"><p style="color:var(--muted);font-size:0.9rem;padding:12px 0;">Events werden geladen…</p></div>
+      <div class="empty-state" id="emptyState" style="display:none;">Keine Events gefunden. Erstelle das erste!</div>
+    </section>
+  </div>
+
+  <!-- Notification Panel -->
+  <div class="notif-panel" id="notifPanel">
+    <div class="notif-card">
+      <h3 style="margin:0 0 12px;font-size:1.05rem;font-weight:800;">Benachrichtigungen</h3>
+      <div id="notifList"><div class="notif-empty">Keine Benachrichtigungen.</div></div>
+    </div>
+  </div>
+
+  <nav class="bottom-nav">
+    <a class="nav-btn home-btn is-active" href="#top"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3l9 8h-3v9h-5v-6H11v6H6v-9H3l9-8z"></path></svg></a>
+    <a class="nav-btn" href="chat.html"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 5h16a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H9l-5 4v-4H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"></path></svg></a>
+    <a class="nav-btn is-primary" href="meeting-form.html">+</a>
+    <a class="nav-btn" href="saved.html"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 16H5V10h14v10zM5 8V6h14v2H5z"/></svg></a>
+    <a class="nav-btn" href="profile.html"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-4.4 0-8 2.2-8 5v2h16v-2c0-2.8-3.6-5-8-5z"></path></svg></a>
+  </nav>
+</main>
+<script src="app.js"></script>
+<script>
+const TODAY=new Date();TODAY.setHours(0,0,0,0);
+const SAVED_KEY='visibility-saved';
+const user=JSON.parse(localStorage.getItem('tv-user')||'null');
+let allEvents=[],savedIds=JSON.parse(localStorage.getItem(SAVED_KEY)||'[]');
+const categoryEmoji={'Sport':'🏃','Spieleabend':'🎲','Kultur':'🎭','Freizeit':'🎉','Community':'👥','Anderes…':'✨'};
+
+async function loadEvents(){
+  try{const r=await fetch('/api/meetings');allEvents=await r.json();renderFiltered();}
+  catch(e){document.getElementById('eventList').innerHTML='<p style="color:var(--muted)">Fehler beim Laden.</p>';}
+}
+function formatDate(dt){if(!dt)return'';return new Date(dt).toLocaleDateString('de-DE',{weekday:'long',day:'2-digit',month:'2-digit',year:'numeric'});}
+function isPast(dt){if(!dt)return false;return new Date(dt)<TODAY;}
+
+function renderFiltered(){
+  const search=document.getElementById('searchInput').value.toLowerCase();
+  const sort=document.getElementById('sortSelect').value;
+  const filter=document.getElementById('filterSelect').value;
+  let list=[...allEvents];
+  if(search)list=list.filter(e=>(e.title||'').toLowerCase().includes(search)||(e.locationName||'').toLowerCase().includes(search));
+  if(filter==='upcoming')list=list.filter(e=>!isPast(e.dateTime));
+  else if(filter==='past')list=list.filter(e=>isPast(e.dateTime));
+  else if(filter!=='all')list=list.filter(e=>e.category===filter);
+  if(sort==='date')list.sort((a,b)=>new Date(a.dateTime)-new Date(b.dateTime));
+  else if(sort==='title')list.sort((a,b)=>(a.title||'').localeCompare(b.title||''));
+
+  const el=document.getElementById('eventList'),empty=document.getElementById('emptyState');
+  document.getElementById('resultsCount').textContent=list.length+' Treffer';
+  if(!list.length){el.innerHTML='';empty.style.display='block';return;}
+  empty.style.display='none';
+
+  el.innerHTML=list.map(e=>{
+    const past=isPast(e.dateTime),saved=savedIds.includes(e.id),isOwn=user&&e.creatorId===user.id;
+    const emoji=categoryEmoji[e.category]||'✨';
+    return`<article class="event-row">
+      <a class="event-card ${isOwn?'is-own-event':''} ${past?'is-past':''}" href="event-details.html?id=${e.id}">
+        <div class="event-badge"><span>${emoji}</span><span>${e.category||'Event'}</span></div>
+        <h3 class="event-title">${e.title||'Unbenannt'}</h3>
+        <p class="event-meta">${formatDate(e.dateTime)}</p>
+        <p class="event-location">${e.locationName||''}</p>
+      </a>
+      <div class="event-side">
+        <button class="icon-btn save-btn ${saved?'is-active':''}" type="button" data-id="${e.id}">
+          <svg viewBox="0 0 24 24" fill="${saved?'currentColor':'none'}" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"></path></svg>
+        </button>
+      </div>
+    </article>`;
+  }).join('');
+
+  document.querySelectorAll('.save-btn').forEach(btn=>{
+    btn.onclick=ev=>{ev.preventDefault();const id=Number(btn.getAttribute('data-id'));
+      const active=btn.classList.toggle('is-active');
+      btn.querySelector('svg').setAttribute('fill',active?'currentColor':'none');
+      if(active){if(!savedIds.includes(id))savedIds.push(id);}else{savedIds=savedIds.filter(s=>s!==id);}
+      localStorage.setItem(SAVED_KEY,JSON.stringify(savedIds));};
+  });
+}
+
+// Notifications
+async function loadNotifCount(){
+  try{const r=await fetch('/api/notifications/unread-count');const d=await r.json();
+    const badge=document.getElementById('notifBadge');
+    if(d.count>0){badge.textContent=d.count;badge.style.display='grid';}else{badge.style.display='none';}
+  }catch(e){}
+}
+async function loadNotifs(){
+  try{const r=await fetch('/api/notifications');const list=await r.json();
+    const el=document.getElementById('notifList');
+    if(!list.length){el.innerHTML='<div class="notif-empty">Keine Benachrichtigungen.</div>';return;}
+    el.innerHTML=list.map(n=>`<div class="notif-item ${n.read?'':'unread'}" onclick="if(${n.meetingId})window.location.href='event-details.html?id=${n.meetingId}'">
+      ${n.message}<div class="notif-time">${new Date(n.createdAt).toLocaleString('de-DE')}</div></div>`).join('');
+    await fetch('/api/notifications/mark-read',{method:'POST'});
+    document.getElementById('notifBadge').style.display='none';
+  }catch(e){}
+}
+document.getElementById('notifBell').addEventListener('click',()=>{
+  const panel=document.getElementById('notifPanel');
+  panel.classList.toggle('open');
+  if(panel.classList.contains('open'))loadNotifs();
+});
+document.getElementById('notifPanel').addEventListener('click',e=>{if(e.target.id==='notifPanel')e.target.classList.remove('open');});
+
+document.getElementById('searchInput').addEventListener('input',renderFiltered);
+document.getElementById('sortSelect').addEventListener('change',renderFiltered);
+document.getElementById('filterSelect').addEventListener('change',renderFiltered);
+
+loadEvents();
+loadNotifCount();
+</script>
+</body></html>
