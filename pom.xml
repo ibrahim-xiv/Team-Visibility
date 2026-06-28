@@ -44,6 +44,12 @@
                     <scope>runtime</scope>
                 </dependency>
 
+		<!-- Jakarta Mail (Gmail SMTP) -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-mail</artifactId>
+		</dependency>
+
 		<!-- Bean validation (jakarta.validation) -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
