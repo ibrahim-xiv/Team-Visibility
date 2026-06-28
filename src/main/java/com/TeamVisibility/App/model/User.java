@@ -43,7 +43,7 @@ public class User {
     private String verificationCode;
 
     @Column(name = "high_contrast")
-    private boolean highContrast = false;
+    private Boolean highContrast = false;
 
     @Column(name = "notif_radius")
     private Integer notifRadius;
@@ -120,11 +120,11 @@ public class User {
         this.verificationCode = verificationCode;
     }
 
-    public boolean isHighContrast() {
+    public Boolean isHighContrast() {
         return highContrast;
     }
 
-    public void setHighContrast(boolean highContrast) {
+    public void setHighContrast(Boolean highContrast) {
         this.highContrast = highContrast;
     }
 
