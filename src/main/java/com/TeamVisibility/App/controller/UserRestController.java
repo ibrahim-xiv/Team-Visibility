@@ -26,6 +26,36 @@ public class UserRestController {
         this.userService = userService;
     }
 
+    /**
+     * Registriert den User (unverified) UND sendet den Code in einem Schritt.
+     * Wird beim Klick auf "Code senden" aufgerufen.
+     */
+    @PostMapping("/register-and-send-code")
+    public ResponseEntity<?> registerAndSendCode(@RequestBody Map<String, String> body) {
+        try {
+            String email = body.get("email");
+
+            // User anlegen falls noch nicht vorhanden
+            if (!userService.existsByEmail(email)) {
+                User u = new User();
+                u.setUsername(body.getOrDefault("username", email));
+                u.setFirstName(body.getOrDefault("firstName", body.getOrDefault("firstname", "")));
+                u.setLastName(body.getOrDefault("lastName", body.getOrDefault("lastname", "")));
+                u.setEmail(email);
+                u.setPasswordHash(body.get("password"));
+                userService.register(u);
+            }
+
+            userService.sendVerificationCode(email);
+            return ResponseEntity.ok(Map.of("message", "Code gesendet"));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", "E-Mail konnte nicht gesendet werden: " + e.getMessage()));
+        }
+    }
+
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody Map<String, String> body) {
         try {

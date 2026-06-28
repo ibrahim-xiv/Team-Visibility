@@ -20,6 +20,10 @@ public class UserService {
         this.emailService = emailService;
     }
 
+    public boolean existsByEmail(String email) {
+        return userRepository.findByEmail(email).isPresent();
+    }
+
     public User registerUser(User user) {
         if (user.getEmail() != null && userRepository.findByEmail(user.getEmail()).isPresent()) {
             throw new IllegalArgumentException("Email bereits vergeben");
