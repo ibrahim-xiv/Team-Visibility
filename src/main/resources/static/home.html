@@ -68,9 +68,13 @@
           <span class="results-count" id="resultsCount"></span>
         </div>
 
-        <div class="event-list" id="eventList"></div>
+        <div class="event-list" id="eventList">
+          <p class="loading-hint" id="loadingHint" style="color: var(--muted); font-size: 0.9rem; padding: 12px 0;">
+            Events werden geladen…
+          </p>
+        </div>
 
-        <div class="empty-state" id="emptyState">Keine passenden Events gefunden.</div>
+        <div class="empty-state" id="emptyState" style="display:none;">Keine passenden Events gefunden.</div>
 
       </section>
     </div>
@@ -124,6 +128,11 @@
   </div>
 
   <script>
+    // ─────────────────────────────────────────────────────────────────────────
+    // KONFIGURATION – API-URL hier anpassen, sobald das Backend steht
+    // ─────────────────────────────────────────────────────────────────────────
+    const API_EVENTS_URL = '/api/events'; // TODO: echte URL eintragen
+
     const STORAGE_KEY = 'visibility-saved-events';
     const TODAY = new Date();
     TODAY.setHours(0, 0, 0, 0);
@@ -135,39 +144,8 @@
       return d < TODAY;
     }
 
-    const events = [
-      { id: "ev_1",  title: "Brettspielabend",      category: "Spieleabend", emoji: "🎲", location: "Jugendherberge",    distance: 1.2, date: "2026-04-18", dateText: "Samstag 18.04.2026" },
-      { id: "ev_2",  title: "Morgenjogger",          category: "Sport",       emoji: "🏃", location: "Stadtpark",         distance: 0.5, date: "2026-03-20", dateText: "Montag 20.03.2026" },
-      { id: "ev_3",  title: "Hundespaziergang",      category: "Community",   emoji: "👥", location: "Nordseepassage",    distance: 2.4, date: "2026-03-31", dateText: "Dienstag 31.03.2026" },
-      { id: "ev_4",  title: "Poker Abend",           category: "Anderes…",    emoji: "✨", location: "Grenzstraße",       distance: 0.1, date: "2026-04-18", dateText: "Samstag 18.04.2026" },
-      { id: "ev_5",  title: "Filmabend im Hof",      category: "Freizeit",    emoji: "🎉", location: "Innenhof",          distance: 0.8, date: "2026-04-25", dateText: "Freitag 25.04.2026" },
-      { id: "ev_6",  title: "Yoga im Park",          category: "Sport",       emoji: "🏃", location: "Rosengarten",       distance: 1.8, date: "2026-04-27", dateText: "Sonntag 27.04.2026" },
-      { id: "ev_7",  title: "Lesekreis",             category: "Kultur",      emoji: "🎭", location: "Bibliothek",        distance: 1.0, date: "2026-05-05", dateText: "Dienstag 05.05.2026" },
-      { id: "ev_8",  title: "Café-Stammtisch",       category: "Community",   emoji: "👥", location: "Altstadt-Café",     distance: 0.9, date: "2026-05-14", dateText: "Donnerstag 14.05.2026" },
-      { id: "ev_9",  title: "Beachvolleyball",       category: "Sport",       emoji: "🏐", location: "Südstrand",         distance: 3.1, date: "2026-05-20", dateText: "Mittwoch 20.05.2026", organizer: "Niklas O." },
-      { id: "ev_10", title: "Kicker-Turnier",        category: "Spieleabend", emoji: "⚽", location: "Campus Bar",         distance: 1.5, date: "2026-05-22", dateText: "Freitag 22.05.2026", organizer: "Lukas B." },
-      { id: "ev_11", title: "Fotowalk am Hafen",     category: "Kultur",      emoji: "📸", location: "Großer Hafen",      distance: 2.2, date: "2026-05-24", dateText: "Sonntag 24.05.2026", organizer: "Marie J." },
-      { id: "ev_12", title: "Flohmarkt-Bummel",      category: "Freizeit",    emoji: "🛍️", location: "Börsenplatz",       distance: 0.7, date: "2026-05-30", dateText: "Samstag 30.05.2026", organizer: "Laura S." },
-      { id: "ev_13", title: "Inliner-Runde",         category: "Sport",       emoji: "🛼", location: "Deichpromenade",    distance: 2.8, date: "2026-06-02", dateText: "Dienstag 02.06.2026", organizer: "Felix T." },
-      { id: "ev_14", title: "Billard & Dart",        category: "Spieleabend", emoji: "🎱", location: "Pub Underground",   distance: 0.4, date: "2026-06-05", dateText: "Freitag 05.06.2026", organizer: "Kevin N." },
-      { id: "ev_15", title: "Sprachcafé Englisch",   category: "Community",   emoji: "🗣️", location: "Hochschul-Foyer",   distance: 1.3, date: "2026-06-08", dateText: "Montag 08.06.2026", organizer: "Prof. Meyer" },
-      { id: "ev_16", title: "Grillen & Chill",       category: "Freizeit",    emoji: "🥩", location: "Stadtparkwiese",    distance: 0.6, date: "2026-06-13", dateText: "Samstag 13.06.2026", organizer: "Dennis R." },
-      { id: "ev_17", title: "Museumsbesuch",         category: "Kultur",      emoji: "🏛️", location: "Marinemuseum",      distance: 3.5, date: "2026-06-14", dateText: "Sonntag 14.06.2026", organizer: "Clara M." },
-      { id: "ev_18", title: "Bouldern in Oldenburg", category: "Sport",       emoji: "🧗", location: "Hbf (Treffpunkt)", distance: 0.2, date: "2026-06-20", dateText: "Samstag 20.06.2026", organizer: "Simon P." },
-      { id: "ev_19", title: "Mario Kart Cup",        category: "Spieleabend", emoji: "🎮", location: "WG Rheinstraße",    distance: 0.9, date: "2026-06-23", dateText: "Dienstag 23.06.2026", organizer: "Tim K." },
-      { id: "ev_20", title: "Repair Café",           category: "Community",   emoji: "🛠️", location: "Gemeindehaus",      distance: 1.1, date: "2026-06-27", dateText: "Samstag 27.06.2026", organizer: "Wilfried H." },
-      { id: "ev_21", title: "Fahrradtour Dangast",   category: "Sport",       emoji: "🚴", location: "Valoisplatz",       distance: 0.3, date: "2026-07-05", dateText: "Sonntag 05.07.2026", organizer: "Jonas V." },
-      { id: "ev_22", title: "Pub Quiz Night",        category: "Spieleabend", emoji: "🧠", location: "The Irish Pub",     distance: 0.5, date: "2026-07-09", dateText: "Donnerstag 09.07.2026", organizer: "Julia G." },
-      { id: "ev_23", title: "Open Mic Abend",        category: "Kultur",      emoji: "🎤", location: "Kulturzentrum",     distance: 1.7, date: "2026-07-11", dateText: "Samstag 11.07.2026", organizer: "Stephan E." },
-      { id: "ev_24", title: "Paddeln auf Kanälen",   category: "Sport",       emoji: "🛶", location: "Bootsverleih",      distance: 1.9, date: "2026-07-15", dateText: "Mittwoch 15.07.2026", organizer: "Svenja W." },
-      { id: "ev_25", title: "Pflanzentausch",        category: "Community",   emoji: "🌱", location: "Botanischer Garten", distance: 2.1, date: "2026-07-18", dateText: "Samstag 18.07.2026", organizer: "Nadine B." },
-      { id: "ev_26", title: "Astronomie-Nacht",      category: "Anderes…",    emoji: "🌌", location: "Südstrand-Damm",    distance: 3.2, date: "2026-07-24", dateText: "Freitag 24.07.2026", organizer: "Christian F." },
-      { id: "ev_27", title: "Spiele-Prototypen",     category: "Spieleabend", emoji: "📦", location: "Jade HS Raum 12",  distance: 1.4, date: "2026-07-28", dateText: "Dienstag 28.07.2026", organizer: "Alex R." },
-      { id: "ev_28", title: "Kinoabend: Blockbuster",category: "Freizeit",    emoji: "🍿", location: "UCI Kinowelt",      distance: 1.6, date: "2026-08-01", dateText: "Samstag 01.08.2026", organizer: "Michael D." }
-    ];
-
+    let events = [];
     let savedList = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-    events.forEach(e => { e.saved = savedList.some(s => s.id === e.id); });
 
     const $ = s => document.querySelector(s);
     const $$ = s => [...document.querySelectorAll(s)];
@@ -184,22 +162,50 @@
     const reportToast   = $('#reportToast');
     const scrollArea    = $('#scrollArea');
     const reportError   = $('#reportError');
+    const loadingHint   = $('#loadingHint');
 
     let currentReportButton = null;
     let toastTimer = null;
 
     const distanceText = d => d < 1 ? `${Math.round(d * 1000)} m` : `${d.toFixed(1)} km`;
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // DATEN LADEN – fetch() gegen die API
+    // ─────────────────────────────────────────────────────────────────────────
+    async function loadEvents() {
+      try {
+        const res = await fetch(API_EVENTS_URL);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        // API soll ein Array von Event-Objekten zurückgeben
+        events = data;
+      } catch (err) {
+        console.warn('Events konnten nicht geladen werden:', err);
+        events = [];
+      }
+
+      // Eigene (lokal erstellte) Events einmischen
+      mergeMyEvents();
+
+      // Saved-Status setzen
+      events.forEach(e => { e.saved = savedList.some(s => s.id === e.id); });
+
+      if (loadingHint) loadingHint.remove();
+      filterAndSort();
+    }
+
     function mergeMyEvents() {
       const myEvents = JSON.parse(localStorage.getItem('visibility-my-events') || '[]');
       myEvents.forEach(me => {
         if (!events.find(e => e.id === me.id)) {
-          events.unshift({ ...me, isOwn: true, distance: me.distance || 0, emoji: me.emoji || '⭐', desc: me.description || '' });
+          events.unshift({ ...me, isOwn: true, distance: me.distance || 0, emoji: me.emoji || '⭐' });
         }
       });
     }
-    mergeMyEvents();
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // RENDERING
+    // ─────────────────────────────────────────────────────────────────────────
     function render(list) {
       eventList.innerHTML = list.map(e => {
         const past = isPast(e.date);
@@ -281,31 +287,26 @@
       const s = sortSelect.value;
 
       let list = events.filter(e => {
-        const matchSearch = !q || [e.title, e.location, e.category].some(v => v.toLowerCase().includes(q));
-        
+        const matchSearch = !q || [e.title, e.location, e.category].some(v => v && v.toLowerCase().includes(q));
+
         let matchFilter = true;
-        
         if (f === 'past') {
-          // Zeige NUR vergangene Events
           matchFilter = isPast(e.date);
         } else if (f === 'upcoming') {
-          // Zeige NUR kommende Events
           matchFilter = !isPast(e.date);
         } else if (f !== 'all') {
-          // Zeige gewählte Kategorie, aber schließe vergangene Events aus
           matchFilter = (e.category === f) && !isPast(e.date);
         } else {
-          // Standardansicht ('all'): Vergangene Events standardmäßig ausblenden
           matchFilter = !isPast(e.date);
         }
-        
+
         return matchSearch && matchFilter;
       });
 
       list.sort((a, b) =>
         s === 'title' ? a.title.localeCompare(b.title, 'de') :
-          s === 'date' ? a.date.localeCompare(b.date) :
-            a.distance - b.distance
+          s === 'date' ? (a.date || '').localeCompare(b.date || '') :
+            (a.distance || 0) - (b.distance || 0)
       );
 
       sectionTitle.textContent =
@@ -357,10 +358,11 @@
       }
     });
 
-    filterAndSort();
+    // Starten
+    loadEvents();
   </script>
 
-    <script src="app.js"></script>
+  <script src="app.js"></script>
 </body>
 
 </html>
