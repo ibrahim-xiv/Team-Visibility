@@ -105,16 +105,17 @@
 
           <!-- Dropdown für Chat-Optionen (falls benötigt) -->
           <div class="btn-dropdown" id="rideDropdown">
-            <!-- Platzhalter, falls noch andere Optionen in dieses Menü sollen -->
+            <!-- Platzhalter -->
           </div>
 
-          <!-- NEU: Mitfahrgelegenheiten (Sichtbar nach Zusage) -->
+          <!-- MITFAHRGELEGENHEITEN (Sichtbar nach Zusage) -->
           <div id="ridesharePanel" style="display: none; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px; background: var(--hover-bg); margin-bottom: 20px;">
             <h3 style="margin: 0 0 6px; font-size: 1.1rem; font-weight: 800;">🚗 Anreise & Mitfahrgelegenheiten</h3>
             <p style="margin: 0 0 14px; font-size: 0.9rem; color: var(--text);">Du nimmst teil! Hast du noch Platz im Auto oder suchst du einen Lift?</p>
             
             <div class="action-row">
-              <a href="rideshare-form.html" class="btn-secondary" style="text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 6px;">
+              <!-- ID HINZUGEFÜGT für JavaScript -->
+              <a id="offerRideLink" href="rideshare-form.html" class="btn-secondary" style="text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 6px;">
                 ➕ Anbieten
               </a>
               <button id="searchRideBtn" class="btn-secondary" style="display: flex; align-items: center; justify-content: center; gap: 6px;">
@@ -272,6 +273,12 @@
       orgName.textContent = myProfile?.name || 'Ich';
     }
 
+    // NEU: Hänge die Event-ID dynamisch an den Fahrt-Anbieten Button an
+    const offerRideLink = document.getElementById('offerRideLink');
+    if (offerRideLink && currentEvent) {
+      offerRideLink.href = `rideshare-form.html?eventId=${currentEvent.id}`;
+    }
+
     const saveBtn = document.getElementById('saveBtn');
     let savedList = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
     let isSaved   = savedList.some(e => e.id === currentEvent.id);
@@ -297,7 +304,7 @@
 
     const joinBtn = document.getElementById('joinBtn');
     const groupChatWrap = document.getElementById('groupChatWrap');
-    const ridesharePanel = document.getElementById('ridesharePanel'); // NEU
+    const ridesharePanel = document.getElementById('ridesharePanel');
     const JOINED_KEY = 'visibility-joined-events';
 
     // Prüfen ob man schon teilnimmt
@@ -316,7 +323,7 @@
           ridesharePanel.style.display = 'block';
       } else {
           ridesharePanel.style.display = 'none';
-          document.getElementById('ridesList').style.display = 'none'; // Liste auch wieder einklappen
+          document.getElementById('ridesList').style.display = 'none'; 
           document.getElementById('searchRideBtn').innerHTML = '🔍 Suchen (1)';
       }
     }
@@ -354,7 +361,6 @@
     const ridesList = document.getElementById('ridesList');
 
     searchRideBtn.addEventListener('click', () => {
-      // Toggle Sichtbarkeit der Liste
       if(ridesList.style.display === 'none') {
         ridesList.style.display = 'flex';
         searchRideBtn.innerHTML = 'Kürzer fassen ▴';
