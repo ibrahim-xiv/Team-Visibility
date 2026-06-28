@@ -9,10 +9,12 @@
     .ride-item{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);font-size:0.88rem;}
     .ride-item:last-child{border-bottom:none;}
     .ride-btn{padding:6px 12px;border-radius:20px;border:none;font-size:0.8rem;font-weight:700;cursor:pointer;}
-    .ride-offer{background:#22c55e;color:#fff;}
-    .ride-request{background:var(--primary);color:#fff;}
-    .edit-form{margin-top:16px;}
-    .edit-form .form-group{margin-bottom:12px;}
+    .ride-offer{background:#22c55e;color:#fff;}.ride-request{background:var(--primary);color:#fff;}
+    .ride-form{margin-top:12px;padding:12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);display:none;}
+    .ride-form label{font-weight:700;font-size:0.82rem;display:block;margin:8px 0 4px;}
+    .ride-form input,.ride-form textarea{width:100%;padding:8px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);font-size:0.88rem;box-sizing:border-box;}
+    .ride-form-actions{display:flex;gap:8px;margin-top:12px;}
+    .edit-form{margin-top:16px;}.edit-form .form-group{margin-bottom:12px;}
     .edit-form label{font-weight:700;font-size:0.85rem;display:block;margin-bottom:4px;}
     .edit-form input,.edit-form textarea,.edit-form select{width:100%;padding:10px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);font-size:0.9rem;box-sizing:border-box;}
   </style>
@@ -20,37 +22,26 @@
 <body>
 <script>if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');</script>
 <main class="phone">
-  <header class="header has-back">
-    <a class="back-btn" href="home.html">&#8249;</a>
-    <div class="brand"><span id="eventTitleHeader">Event</span></div>
-  </header>
-  <div class="scroll-area">
-    <section class="content" id="eventContent"><p style="color:var(--muted);">Wird geladen…</p></section>
-  </div>
+  <header class="header has-back"><a class="back-btn" href="home.html">&#8249;</a><div class="brand"><span id="eventTitleHeader">Event</span></div></header>
+  <div class="scroll-area"><section class="content" id="eventContent"><p style="color:var(--muted);">Wird geladen…</p></section></div>
 </main>
 <script src="app.js"></script>
 <script>
-const params=new URLSearchParams(window.location.search);
-const id=params.get('id');
+const params=new URLSearchParams(window.location.search),id=params.get('id');
 const user=JSON.parse(localStorage.getItem('tv-user')||'null');
 let eventData=null,editing=false;
 
 async function loadEvent(){
   if(!id){document.getElementById('eventContent').innerHTML='<p>Event nicht gefunden.</p>';return;}
-  try{
-    const r=await fetch('/api/meetings/'+id);
-    if(!r.ok){document.getElementById('eventContent').innerHTML='<p>Event nicht gefunden.</p>';return;}
-    eventData=await r.json();
-    document.getElementById('eventTitleHeader').textContent=eventData.title||'Event';
-    renderEvent();
-    loadRides();
-  }catch(e){document.getElementById('eventContent').innerHTML='<p>Fehler beim Laden.</p>';}
+  try{const r=await fetch('/api/meetings/'+id);if(!r.ok){document.getElementById('eventContent').innerHTML='<p>Event nicht gefunden.</p>';return;}
+    eventData=await r.json();document.getElementById('eventTitleHeader').textContent=eventData.title||'Event';renderEvent();loadRides();
+  }catch(e){document.getElementById('eventContent').innerHTML='<p>Fehler.</p>';}
 }
 
 function renderEvent(){
   const e=eventData,isOwn=user&&e.creatorId===user.id;
   const dateStr=e.dateTime?new Date(e.dateTime).toLocaleDateString('de-DE',{weekday:'long',day:'2-digit',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'}):'Kein Datum';
-  let html=`<div style="margin-bottom:20px;">
+  let h=`<div style="margin-bottom:20px;">
     <h2 style="font-size:1.5rem;font-weight:800;margin-bottom:8px;">${e.title}</h2>
     <p style="color:var(--muted);font-size:0.9rem;margin-bottom:4px;">📅 ${dateStr}</p>
     <p style="color:var(--muted);font-size:0.9rem;margin-bottom:4px;">📍 ${e.locationName||'Kein Ort'}</p>
@@ -58,171 +49,101 @@ function renderEvent(){
     ${e.description?`<p style="line-height:1.6;">${e.description}</p>`:''}
   </div>`;
 
+  // Action buttons
   if(isOwn){
-    html+=`<div style="display:flex;gap:10px;margin-bottom:16px;">
+    h+=`<div style="display:flex;gap:10px;margin-bottom:16px;">
       <button onclick="toggleEdit()" class="submit-btn" style="flex:1;background:var(--hover-bg);color:var(--text);border:1px solid var(--border);">✏️ Bearbeiten</button>
       <button onclick="deleteEvent()" style="flex:1;padding:12px;background:#ef4444;color:#fff;border:none;border-radius:var(--radius-md);font-weight:800;cursor:pointer;">🗑️ Löschen</button>
-    </div>
-    <button onclick="openGroupChat()" class="submit-btn" style="width:100%;margin-bottom:16px;background:#7c3aed;color:#fff;border:none;">👥 Gruppen-Chat öffnen</button>
-    <div id="editSection"></div>`;
+    </div><div id="editSection"></div>`;
   } else {
-    html+=`<div style="display:flex;gap:10px;margin-bottom:16px;">
-      <button onclick="startChat(${e.creatorId})" class="submit-btn" style="flex:1;">💬 Veranstalter anschreiben</button>
-      <a href="profile-view.html?id=${e.creatorId}" class="submit-btn" style="flex:1;text-align:center;text-decoration:none;background:var(--hover-bg);color:var(--text);border:1px solid var(--border);">👤 Profil ansehen</a>
-    </div>
-    <button onclick="openGroupChat()" class="submit-btn" style="width:100%;margin-bottom:16px;background:#7c3aed;color:#fff;border:none;">👥 Event Gruppen-Chat</button>`;
+    h+=`<div style="display:flex;gap:10px;margin-bottom:16px;">
+      <button onclick="startPrivateChat(${e.creatorId})" class="submit-btn" style="flex:1;">💬 Veranstalter</button>
+      <a href="profile-view.html?id=${e.creatorId}" class="submit-btn" style="flex:1;text-align:center;text-decoration:none;background:var(--hover-bg);color:var(--text);border:1px solid var(--border);">👤 Profil</a>
+    </div>`;
   }
 
-  html+=`<div class="ride-section">
+  // Group chat button
+  h+=`<button onclick="openGroupChat()" class="submit-btn" style="width:100%;margin-bottom:16px;background:var(--hover-bg);color:var(--text);border:1px solid var(--border);">💬 Gruppen-Chat zu diesem Event</button>`;
+
+  // Rides section
+  h+=`<div class="ride-section">
     <h3 style="margin:0 0 12px;font-size:1rem;font-weight:800;">🚗 Mitfahrgelegenheiten</h3>
     <div id="rideList"><p style="color:var(--muted);font-size:0.85rem;">Wird geladen…</p></div>
     <div style="display:flex;gap:8px;margin-top:12px;">
-      <button onclick="showOfferModal()" class="ride-btn ride-offer">🚗 Fahrt anbieten</button>
-      <button onclick="showRequestModal()" class="ride-btn ride-request">🙋 Mitfahrt anfragen</button>
+      <button onclick="showRideForm('OFFER')" class="ride-btn ride-offer">🚗 Fahrt anbieten</button>
+      <button onclick="showRideForm('REQUEST')" class="ride-btn ride-request">🙋 Mitfahrt anfragen</button>
     </div>
-  </div>
-  <!-- Offer Ride Modal -->
-  <div id="offerModal" style="display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,0.5);display:none;align-items:flex-end;justify-content:center;">
-    <div style="background:var(--surface);border-radius:16px 16px 0 0;padding:24px;width:100%;max-width:480px;box-sizing:border-box;">
-      <h3 style="margin:0 0 16px;font-size:1.1rem;font-weight:800;">🚗 Fahrt anbieten</h3>
-      <div class="form-group" style="margin-bottom:12px;">
-        <label style="font-weight:700;font-size:0.85rem;display:block;margin-bottom:4px;">Treffpunkt / Abholort <span style="color:#ef4444;">*</span></label>
-        <input id="offerPickup" class="input" type="text" placeholder="z.B. Hauptbahnhof Hannover">
-      </div>
-      <div class="form-group" style="margin-bottom:12px;">
-        <label style="font-weight:700;font-size:0.85rem;display:block;margin-bottom:4px;">Abfahrtzeit <span style="color:#ef4444;">*</span></label>
-        <input id="offerTime" class="input" type="time">
-      </div>
-      <div class="form-group" style="margin-bottom:16px;">
-        <label style="font-weight:700;font-size:0.85rem;display:block;margin-bottom:4px;">Freie Plätze <span style="color:#ef4444;">*</span></label>
-        <select id="offerSeats" class="input">
-          <option value="1">1 Platz</option>
-          <option value="2" selected>2 Plätze</option>
-          <option value="3">3 Plätze</option>
-          <option value="4">4 Plätze</option>
-        </select>
-      </div>
-      <div style="display:flex;gap:10px;">
-        <button onclick="closeModals()" style="flex:1;padding:12px;background:var(--hover-bg);border:1px solid var(--border);border-radius:var(--radius-md);font-weight:700;cursor:pointer;color:var(--text);">Abbrechen</button>
-        <button onclick="submitOffer()" style="flex:1;padding:12px;background:#22c55e;color:#fff;border:none;border-radius:var(--radius-md);font-weight:700;cursor:pointer;">Anbieten</button>
-      </div>
-    </div>
-  </div>
-  <!-- Request Ride Modal -->
-  <div id="requestModal" style="display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,0.5);display:none;align-items:flex-end;justify-content:center;">
-    <div style="background:var(--surface);border-radius:16px 16px 0 0;padding:24px;width:100%;max-width:480px;box-sizing:border-box;">
-      <h3 style="margin:0 0 16px;font-size:1.1rem;font-weight:800;">🙋 Mitfahrt anfragen</h3>
-      <div class="form-group" style="margin-bottom:12px;">
-        <label style="font-weight:700;font-size:0.85rem;display:block;margin-bottom:4px;">Einstiegspunkt (optional)</label>
-        <input id="reqPickup" class="input" type="text" placeholder="z.B. Stadtmitte, Haltestelle X">
-      </div>
-      <div class="form-group" style="margin-bottom:16px;">
-        <label style="font-weight:700;font-size:0.85rem;display:block;margin-bottom:4px;">Nachricht (optional)</label>
-        <textarea id="reqNote" class="input" rows="3" placeholder="Kurze Info für den Fahrer…" style="resize:vertical;"></textarea>
-      </div>
-      <div style="display:flex;gap:10px;">
-        <button onclick="closeModals()" style="flex:1;padding:12px;background:var(--hover-bg);border:1px solid var(--border);border-radius:var(--radius-md);font-weight:700;cursor:pointer;color:var(--text);">Abbrechen</button>
-        <button onclick="submitRequest()" style="flex:1;padding:12px;background:var(--primary);color:#fff;border:none;border-radius:var(--radius-md);font-weight:700;cursor:pointer;">Anfragen</button>
+    <div class="ride-form" id="rideForm">
+      <input type="hidden" id="rideType">
+      <h4 id="rideFormTitle" style="margin:0 0 8px;font-size:0.95rem;font-weight:800;"></h4>
+      <label>Treffpunkt / Abholort</label><input id="ridePickup" placeholder="z.B. Bahnhof Wilhelmshaven">
+      <label>Freie Plätze</label><input id="rideSeats" type="number" min="1" max="8" value="2">
+      <label>Uhrzeit</label><input id="rideTime" type="time">
+      <label>Nachricht (optional)</label><textarea id="rideNote" rows="2" placeholder="Weitere Infos…"></textarea>
+      <div class="ride-form-actions">
+        <button onclick="submitRide()" class="submit-btn" style="flex:1;">Absenden</button>
+        <button onclick="document.getElementById('rideForm').style.display='none'" style="flex:1;padding:10px;background:var(--hover-bg);color:var(--text);border:1px solid var(--border);border-radius:var(--radius-md);cursor:pointer;font-weight:700;">Abbrechen</button>
       </div>
     </div>
   </div>`;
 
-  document.getElementById('eventContent').innerHTML=html;
+  document.getElementById('eventContent').innerHTML=h;
+}
+
+function showRideForm(type){
+  document.getElementById('rideType').value=type;
+  document.getElementById('rideFormTitle').textContent=type==='OFFER'?'🚗 Fahrt anbieten':'🙋 Mitfahrt anfragen';
+  document.getElementById('rideForm').style.display='block';
+  document.getElementById('ridePickup').value='';
+  document.getElementById('rideSeats').value='2';
+  document.getElementById('rideTime').value='';
+  document.getElementById('rideNote').value='';
+}
+
+async function submitRide(){
+  const type=document.getElementById('rideType').value;
+  const pickup=document.getElementById('ridePickup').value.trim();
+  if(!pickup){alert('Bitte Treffpunkt angeben.');return;}
+  const time=document.getElementById('rideTime').value;
+  const body={meetingId:Number(id),type,pickup:pickup+(time?' um '+time:''),seats:Number(document.getElementById('rideSeats').value)||2,note:document.getElementById('rideNote').value.trim()};
+  await fetch('/api/rides',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  document.getElementById('rideForm').style.display='none';
+  loadRides();
 }
 
 function toggleEdit(){
-  const sec=document.getElementById('editSection');
-  if(editing){sec.innerHTML='';editing=false;return;}
-  editing=true;
+  const sec=document.getElementById('editSection');if(editing){sec.innerHTML='';editing=false;return;}editing=true;
   const e=eventData;
   sec.innerHTML=`<div class="edit-form">
     <div class="form-group"><label>Titel</label><input id="editTitle" value="${e.title||''}"></div>
     <div class="form-group"><label>Ort</label><input id="editLocation" value="${e.locationName||''}"></div>
     <div class="form-group"><label>Datum</label><input id="editDate" type="datetime-local" value="${e.dateTime?e.dateTime.slice(0,16):''}"></div>
-    <div class="form-group"><label>Kategorie</label><select id="editCategory">
-      ${['Freizeit','Sport','Spieleabend','Kultur','Community','Anderes…'].map(c=>`<option ${c===e.category?'selected':''}>${c}</option>`).join('')}
-    </select></div>
+    <div class="form-group"><label>Kategorie</label><select id="editCategory">${['Freizeit','Sport','Spieleabend','Kultur','Community','Anderes…'].map(c=>'<option'+(c===e.category?' selected':'')+'>'+c+'</option>').join('')}</select></div>
     <div class="form-group"><label>Beschreibung</label><textarea id="editDesc" rows="3">${e.description||''}</textarea></div>
-    <button onclick="saveEdit()" class="submit-btn">Speichern</button>
-  </div>`;
+    <button onclick="saveEdit()" class="submit-btn">Speichern</button></div>`;
 }
 
 async function saveEdit(){
-  try{
-    const r=await fetch('/api/meetings/'+id,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({
-      title:document.getElementById('editTitle').value.trim(),
-      locationName:document.getElementById('editLocation').value.trim(),
-      dateTime:document.getElementById('editDate').value||null,
-      category:document.getElementById('editCategory').value,
-      description:document.getElementById('editDesc').value.trim()
-    })});
-    if(!r.ok){const d=await r.json();alert(d.error||'Fehler');return;}
-    eventData=await r.json();editing=false;renderEvent();loadRides();
-  }catch(e){alert('Fehler beim Speichern.');}
+  const r=await fetch('/api/meetings/'+id,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({title:document.getElementById('editTitle').value.trim(),locationName:document.getElementById('editLocation').value.trim(),dateTime:document.getElementById('editDate').value||null,category:document.getElementById('editCategory').value,description:document.getElementById('editDesc').value.trim()})});
+  if(!r.ok){const d=await r.json();alert(d.error||'Fehler');return;}eventData=await r.json();editing=false;renderEvent();loadRides();
 }
 
-async function deleteEvent(){
-  if(!confirm('Event wirklich löschen?'))return;
-  await fetch('/api/meetings/'+id,{method:'DELETE'});
-  window.location.href='home.html';
-}
+async function deleteEvent(){if(!confirm('Event wirklich löschen?'))return;await fetch('/api/meetings/'+id,{method:'DELETE'});window.location.href='home.html';}
 
 async function loadRides(){
-  try{
-    const r=await fetch('/api/rides/'+id);const rides=await r.json();
-    const el=document.getElementById('rideList');
+  try{const r=await fetch('/api/rides/'+id);const rides=await r.json();const el=document.getElementById('rideList');
     if(!rides.length){el.innerHTML='<p style="color:var(--muted);font-size:0.85rem;">Noch keine Mitfahrten.</p>';return;}
     el.innerHTML=rides.map(rd=>{
-      const isOffer=rd.type==='OFFER';
-      const canMatch=rd.status==='OPEN'&&((isOffer&&rd.offererId!==user?.id)||(!isOffer&&rd.requesterId!==user?.id));
-      return`<div class="ride-item">
-        <span>${isOffer?'🚗 Bietet Fahrt an':'🙋 Sucht Mitfahrt'}${rd.pickup?' – '+rd.pickup:''}${rd.seats?' ('+rd.seats+' Plätze)':''} <span style="color:var(--muted);font-size:0.75rem;">[${rd.status}]</span></span>
-        ${canMatch?`<button onclick="matchRide(${rd.id})" class="ride-btn ${isOffer?'ride-request':'ride-offer'}">${isOffer?'Mitfahren':'Anbieten'}</button>`:''}
-      </div>`;
+      const isOffer=rd.type==='OFFER',canMatch=rd.status==='OPEN'&&((isOffer&&rd.offererId!==user?.id)||(!isOffer&&rd.requesterId!==user?.id));
+      return`<div class="ride-item"><span>${isOffer?'🚗 Bietet Fahrt':'🙋 Sucht Mitfahrt'}${rd.pickup?' – '+rd.pickup:''}${rd.seats?' ('+rd.seats+' Plätze)':''} <span style="color:var(--muted);font-size:0.75rem;">[${rd.status}]</span></span>
+        ${canMatch?`<button onclick="matchRide(${rd.id})" class="ride-btn ${isOffer?'ride-request':'ride-offer'}">${isOffer?'Mitfahren':'Anbieten'}</button>`:''}</div>`;
     }).join('');
   }catch(e){}
 }
 
-function closeModals(){
-  document.getElementById('offerModal').style.display='none';
-  document.getElementById('requestModal').style.display='none';
-}
-function showOfferModal(){
-  document.getElementById('offerModal').style.display='flex';
-}
-function showRequestModal(){
-  document.getElementById('requestModal').style.display='flex';
-}
-async function submitOffer(){
-  const pickup=document.getElementById('offerPickup').value.trim();
-  const time=document.getElementById('offerTime').value;
-  const seats=Number(document.getElementById('offerSeats').value);
-  if(!pickup){alert('Bitte Treffpunkt eingeben.');return;}
-  if(!time){alert('Bitte Abfahrtszeit eingeben.');return;}
-  await fetch('/api/rides',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({meetingId:Number(id),type:'OFFER',pickup:pickup+(time?' um '+time:''),seats})});
-  closeModals();loadRides();
-}
-async function submitRequest(){
-  const pickup=document.getElementById('reqPickup').value.trim();
-  const note=document.getElementById('reqNote').value.trim();
-  await fetch('/api/rides',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({meetingId:Number(id),type:'REQUEST',pickup:pickup||'',note:note||''})});
-  closeModals();loadRides();
-}
-async function offerRide(){ showOfferModal(); }
-async function requestRide(){ showRequestModal(); }
-async function matchRide(rideId){
-  await fetch('/api/rides/'+rideId+'/match',{method:'PUT'});
-  loadRides();
-}
-function startChat(creatorId){
-  localStorage.setItem('chat-open-recipient',creatorId);
-  window.location.href='chat.html';
-}
-function openGroupChat(){
-  localStorage.setItem('chat-open-group', id);
-  localStorage.setItem('chat-open-group-name', eventData?.title||'Event Chat');
-  window.location.href='chat.html';
-}
+async function matchRide(rideId){await fetch('/api/rides/'+rideId+'/match',{method:'PUT'});loadRides();}
+function startPrivateChat(uid){localStorage.setItem('chat-open-recipient',uid);window.location.href='chat.html';}
+function openGroupChat(){localStorage.setItem('chat-open-group',JSON.stringify({id:'event-'+id,name:eventData.title}));window.location.href='chat.html';}
 
 loadEvent();
 </script>

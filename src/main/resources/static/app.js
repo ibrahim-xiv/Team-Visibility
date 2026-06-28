@@ -1,13 +1,11 @@
 /**
  * app.js – Visibility gemeinsames Skript
- * 1. Darkmode
- * 2. Auth-Guard (kein Zugang zu geschützten Seiten ohne Login)
+ * 1. Darkmode-Initialisierung
+ * 2. Auth-Guard (redirect wenn nicht eingeloggt)
  * 3. Settings-Toggle Sync
  */
-
 (function () {
-
-  /* ── 1. DARKMODE INIT ─────────────────────────────────────────────────── */
+  // Darkmode
   function applyTheme(isDark) {
     if (isDark) document.body.classList.add('dark-mode');
     else document.body.classList.remove('dark-mode');
@@ -16,29 +14,23 @@
   }
   applyTheme(localStorage.getItem('theme') === 'dark');
 
-  /* ── 2. AUTH-GUARD ─────────────────────────────────────────────────────── */
-  // Pages that don't require login
-  const PUBLIC_PAGES = ['login.html', 'register.html', 'index.html', ''];
-  document.addEventListener('DOMContentLoaded', function () {
-    const path = window.location.pathname.split('/').pop() || '';
-    const isPublic = PUBLIC_PAGES.some(p => path === p || path === '');
-    if (!isPublic) {
-      const user = JSON.parse(localStorage.getItem('tv-user') || 'null');
-      if (!user) {
-        window.location.href = 'login.html';
-        return;
-      }
-    }
+  // Auth guard - pages that DON'T require login
+  const publicPages = ['login.html', 'register.html'];
+  const currentPage = window.location.pathname.split('/').pop() || 'login.html';
+  if (!publicPages.includes(currentPage)) {
+    const user = JSON.parse(localStorage.getItem('tv-user') || 'null');
+    if (!user) { window.location.href = 'login.html'; return; }
+  }
 
-    /* ── 3. SETTINGS-TOGGLE SYNC ──────────────────────────────────────────── */
+  document.addEventListener('DOMContentLoaded', function () {
+    // Settings toggle sync
     const settingsToggle = document.getElementById('darkModeToggle');
     if (settingsToggle) {
-      settingsToggle.checked = localStorage.getItem('theme') === 'dark';
       settingsToggle.addEventListener('change', () => {
-        applyTheme(settingsToggle.checked);
-        localStorage.setItem('theme', settingsToggle.checked ? 'dark' : 'light');
+        const isDark = settingsToggle.checked;
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        applyTheme(isDark);
       });
     }
   });
-
 })();

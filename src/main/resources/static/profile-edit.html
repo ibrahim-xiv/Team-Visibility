@@ -1,255 +1,112 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Visibility – Profil bearbeiten</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css"/>
   <style>
-    .autocomplete-wrap { position:relative; }
-    .autocomplete-list { display:none;position:absolute;top:calc(100% + 3px);left:0;right:0;background:var(--surface);border:2px solid var(--border);border-radius:var(--radius-sm);z-index:200;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,0.10); }
-    .autocomplete-item { display:flex;align-items:flex-start;gap:10px;padding:11px 13px;cursor:pointer;border-bottom:1px solid var(--border); }
-    .autocomplete-item:last-child { border-bottom:none; }
-    .autocomplete-item:hover,.autocomplete-item.is-focused { background:var(--hover-bg); }
-    .autocomplete-item-main { font-size:0.9rem;font-weight:700;line-height:1.3;color:var(--text); }
-    .autocomplete-item-sub { font-size:0.78rem;color:var(--muted);margin-top:1px; }
-    .autocomplete-status { padding:11px 13px;font-size:0.82rem;color:var(--muted); }
-    .avatar-picker { display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:12px 0; }
-    .avatar-option { width:44px;height:44px;border-radius:50%;border:2px solid var(--border);background:var(--hover-bg);display:grid;place-items:center;font-size:1.4rem;cursor:pointer;transition:border-color 0.15s; }
-    .avatar-option.is-selected { border-color:var(--primary);box-shadow:0 0 0 2px var(--primary); }
-    .avatar-preview { width:72px;height:72px;border-radius:50%;background:var(--hover-bg);border:2px solid var(--border);display:grid;place-items:center;margin:0 auto 8px;font-size:2rem;line-height:1; }
-    .avatar-preview svg { width:40px;height:40px;color:var(--muted); }
+    .autocomplete-wrap{position:relative;}.autocomplete-list{display:none;position:absolute;top:calc(100% + 3px);left:0;right:0;background:var(--surface);border:2px solid var(--border);border-radius:var(--radius-sm);z-index:200;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,0.10);}
+    .autocomplete-item{display:flex;align-items:flex-start;gap:10px;padding:11px 13px;cursor:pointer;border-bottom:1px solid var(--border);}.autocomplete-item:last-child{border-bottom:none;}.autocomplete-item:hover,.autocomplete-item.is-focused{background:var(--hover-bg);}
+    .autocomplete-item-main{font-size:0.9rem;font-weight:700;color:var(--text);}.autocomplete-item-sub{font-size:0.78rem;color:var(--muted);}.autocomplete-status{padding:11px 13px;font-size:0.82rem;color:var(--muted);}
+    .avatar-picker{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:12px 0;}
+    .avatar-option{width:48px;height:48px;border-radius:50%;border:2px solid var(--border);background:var(--surface);display:grid;place-items:center;font-size:1.6rem;cursor:pointer;transition:border-color 0.15s,transform 0.15s;line-height:1;}
+    .avatar-option:hover{transform:scale(1.1);}.avatar-option.is-selected{border-color:var(--primary);box-shadow:0 0 0 3px rgba(59,130,246,0.3);transform:scale(1.15);}
+    .avatar-preview{width:80px;height:80px;border-radius:50%;background:var(--hover-bg);border:2px solid var(--border);display:grid;place-items:center;margin:0 auto 8px;font-size:2.8rem;line-height:1;}
+    .avatar-preview svg{width:44px;height:44px;color:var(--muted);}
   </style>
 </head>
 <body>
-  <script>if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');</script>
-  <main class="phone">
-    <header class="header has-back">
-      <a class="back-btn" href="profile.html" aria-label="Zurück">&#8249;</a>
-      <h1>Bearbeiten</h1>
-    </header>
-    <section class="content form-content">
-      <form id="editForm" novalidate>
-
-        <!-- Avatar -->
-        <div style="text-align:center;margin-bottom:16px;">
-          <div class="avatar-preview" id="avatarPreview">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-4.4 0-8 2.2-8 5v2h16v-2c0-2.8-3.6-5-8-5z"/></svg>
-          </div>
-          <p style="font-size:0.82rem;color:var(--muted);margin-bottom:8px;">Profilbild wählen</p>
-          <div class="avatar-picker" id="avatarPicker">
-            <div class="avatar-option" data-avatar="😊">😊</div>
-            <div class="avatar-option" data-avatar="😎">😎</div>
-            <div class="avatar-option" data-avatar="🤩">🤩</div>
-            <div class="avatar-option" data-avatar="🥳">🥳</div>
-            <div class="avatar-option" data-avatar="😇">😇</div>
-            <div class="avatar-option" data-avatar="🤠">🤠</div>
-            <div class="avatar-option" data-avatar="🤓">🤓</div>
-            <div class="avatar-option" data-avatar="🧐">🧐</div>
-            <div class="avatar-option" data-avatar="😏">😏</div>
-            <div class="avatar-option" data-avatar="😄">😄</div>
-            <div class="avatar-option" data-avatar="🦊">🦊</div>
-            <div class="avatar-option" data-avatar="🐼">🐼</div>
-            <div class="avatar-option" data-avatar="🐨">🐨</div>
-            <div class="avatar-option" data-avatar="🐯">🐯</div>
-            <div class="avatar-option" data-avatar="🦁">🦁</div>
-            <div class="avatar-option" data-avatar="🐸">🐸</div>
-          </div>
+<script>if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');</script>
+<main class="phone">
+  <header class="header has-back"><a class="back-btn" href="profile.html">&#8249;</a><h1>Bearbeiten</h1></header>
+  <section class="content form-content">
+    <form id="editForm" novalidate>
+      <div style="text-align:center;margin-bottom:16px;">
+        <div class="avatar-preview" id="avatarPreview">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-4.4 0-8 2.2-8 5v2h16v-2c0-2.8-3.6-5-8-5z"/></svg>
         </div>
-
-        <hr class="section-divider">
-
-        <div class="form-group" data-field="firstname">
-          <label for="firstname">Vorname<span class="required-star">*</span></label>
-          <input class="input" id="firstname" type="text" placeholder="Max" required>
-          <div class="error-text">Bitte Vornamen eingeben.</div>
-        </div>
-        <div class="form-group" data-field="lastname">
-          <label for="lastname">Nachname<span class="required-star">*</span></label>
-          <input class="input" id="lastname" type="text" placeholder="Mustermann" required>
-          <div class="error-text">Bitte Nachnamen eingeben.</div>
-        </div>
-        <div class="form-group">
-          <label for="location">Standort</label>
-          <div class="autocomplete-wrap">
-            <input class="input" id="location" type="text" placeholder="z.B. Wilhelmshaven" autocomplete="off">
-            <div class="autocomplete-list" id="locationList"></div>
-          </div>
-        </div>
-        <div class="form-group">
-          <label for="bio">Beschreibung</label>
-          <textarea class="input" id="bio" placeholder="Erzähl anderen etwas über dich…" style="min-height:100px;resize:vertical;"></textarea>
-        </div>
-
-        <hr class="section-divider">
-
-        <div class="form-group">
-          <label>Interessen</label>
-          <p class="hint-text" style="margin-bottom:12px;">Wähle was dir gefällt</p>
-          <div class="tags-wrap" id="tagsWrap">
-            <button type="button" class="tag-chip" data-tag="🎲 Spieleabend">🎲 Spieleabend</button>
-            <button type="button" class="tag-chip" data-tag="🏃 Sport">🏃 Sport</button>
-            <button type="button" class="tag-chip" data-tag="👥 Community">👥 Community</button>
-            <button type="button" class="tag-chip" data-tag="🎭 Kultur">🎭 Kultur</button>
-            <button type="button" class="tag-chip" data-tag="🎉 Freizeit">🎉 Freizeit</button>
-            <button type="button" class="tag-chip" data-tag="🌿 Natur">🌿 Natur</button>
-            <button type="button" class="tag-chip" data-tag="🎵 Musik">🎵 Musik</button>
-            <button type="button" class="tag-chip" data-tag="🎬 Kino">🎬 Kino</button>
-          </div>
-        </div>
-
-        <hr class="section-divider">
-
-        <div class="form-group">
-          <label>E-Mail</label>
-          <input class="input" id="emailDisplay" type="email" disabled style="opacity:.6;cursor:not-allowed;">
-          <p class="hint-text">E-Mail kann nicht geändert werden.</p>
-        </div>
-
-        <button class="submit-btn" type="submit" style="margin-top:8px;">Änderungen speichern</button>
-
-        <hr class="section-divider" style="margin-top:20px;">
-        <div class="danger-zone">
-          <p class="danger-zone-title">⚠️ Gefahrenbereich</p>
-          <button class="danger-btn" type="button" id="deleteAccountBtn">Konto löschen</button>
-        </div>
-      </form>
-    </section>
-  </main>
-
-  <div class="overlay" id="deleteOverlay" hidden>
-    <div class="overlay-card is-narrow" role="dialog">
-      <h2>Konto wirklich löschen?</h2>
-      <p>Alle deine Daten werden permanent gelöscht.</p>
-      <div class="overlay-actions">
-        <button class="overlay-close" type="button" id="cancelDelete">Abbrechen</button>
-        <button class="overlay-submit" type="button" id="confirmDelete">Löschen</button>
+        <p style="font-size:0.82rem;color:var(--muted);margin-bottom:8px;">Profilbild wählen</p>
+        <div class="avatar-picker" id="avatarPicker"></div>
       </div>
-    </div>
-  </div>
+      <hr class="section-divider">
+      <div class="form-group" data-field="firstname"><label for="firstname">Vorname*</label><input class="input" id="firstname" type="text" placeholder="Max" required><div class="error-text">Pflichtfeld.</div></div>
+      <div class="form-group" data-field="lastname"><label for="lastname">Nachname*</label><input class="input" id="lastname" type="text" placeholder="Mustermann" required><div class="error-text">Pflichtfeld.</div></div>
+      <div class="form-group"><label for="location">Standort</label><div class="autocomplete-wrap"><input class="input" id="location" type="text" placeholder="z.B. Wilhelmshaven" autocomplete="off"><div class="autocomplete-list" id="locationList"></div></div></div>
+      <div class="form-group"><label for="bio">Beschreibung</label><textarea class="input" id="bio" placeholder="Erzähl etwas über dich…" style="min-height:100px;resize:vertical;"></textarea></div>
+      <hr class="section-divider">
+      <div class="form-group"><label>Interessen</label>
+        <div class="tags-wrap" id="tagsWrap">
+          <button type="button" class="tag-chip" data-tag="Spieleabend">🎲 Spieleabend</button>
+          <button type="button" class="tag-chip" data-tag="Sport">🏃 Sport</button>
+          <button type="button" class="tag-chip" data-tag="Community">👥 Community</button>
+          <button type="button" class="tag-chip" data-tag="Kultur">🎭 Kultur</button>
+          <button type="button" class="tag-chip" data-tag="Freizeit">🎉 Freizeit</button>
+          <button type="button" class="tag-chip" data-tag="Natur">🌿 Natur</button>
+          <button type="button" class="tag-chip" data-tag="Musik">🎵 Musik</button>
+        </div>
+      </div>
+      <hr class="section-divider">
+      <div class="form-group"><label>E-Mail</label><input class="input" id="emailDisplay" type="email" disabled style="opacity:.6;cursor:not-allowed;"></div>
+      <button class="submit-btn" type="submit">Änderungen speichern</button>
+      <hr class="section-divider" style="margin-top:20px;">
+      <div class="danger-zone"><p class="danger-zone-title">⚠️ Gefahrenbereich</p><button class="danger-btn" type="button" onclick="if(confirm('Konto wirklich löschen?')){fetch('/api/auth/logout',{method:'POST'}).catch(()=>{});localStorage.clear();window.location.href='login.html';}">Konto löschen</button></div>
+    </form>
+  </section>
+</main>
+<script src="app.js"></script>
+<script>
+const user=JSON.parse(localStorage.getItem('tv-user')||'null');
+const extra=JSON.parse(localStorage.getItem('visibility-profile')||'{}');
+let selectedAvatar=extra.avatar||'';
 
-  <script src="app.js"></script>
-  <script>
-    const user = JSON.parse(localStorage.getItem('tv-user') || 'null');
-    const extra = JSON.parse(localStorage.getItem('visibility-profile') || '{}');
-    let selectedAvatar = extra.avatar || '';
+// Avatar options as simple strings
+const AVATARS=['😊','😎','🧑','👨','👩','🧔','👴','👵','🤓','🤠','😺','🦊'];
+const picker=document.getElementById('avatarPicker');
+picker.innerHTML=AVATARS.map(a=>`<div class="avatar-option${a===selectedAvatar?' is-selected':''}" data-avatar="${a}">${a}</div>`).join('');
+const preview=document.getElementById('avatarPreview');
+if(selectedAvatar)preview.textContent=selectedAvatar;
 
-    // Load user data
-    if (user) {
-      document.getElementById('firstname').value = user.firstName || '';
-      document.getElementById('lastname').value = user.lastName || '';
-      document.getElementById('emailDisplay').value = user.email || '';
-    }
-    if (extra.location) document.getElementById('location').value = extra.location;
-    if (extra.bio) document.getElementById('bio').value = extra.bio;
-    if (extra.interests) {
-      document.querySelectorAll('.tag-chip').forEach(chip => {
-        chip.classList.toggle('is-selected', extra.interests.includes(chip.dataset.tag));
-      });
-    }
+picker.addEventListener('click',e=>{
+  const opt=e.target.closest('.avatar-option');if(!opt)return;
+  picker.querySelectorAll('.avatar-option').forEach(o=>o.classList.remove('is-selected'));
+  opt.classList.add('is-selected');
+  selectedAvatar=opt.dataset.avatar;
+  preview.textContent=selectedAvatar;
+});
 
-    // Avatar picker
-    const preview = document.getElementById('avatarPreview');
-    if (selectedAvatar) { preview.textContent = selectedAvatar; }
+if(user){document.getElementById('firstname').value=user.firstName||'';document.getElementById('lastname').value=user.lastName||'';document.getElementById('emailDisplay').value=user.email||'';}
+if(extra.location)document.getElementById('location').value=extra.location;
+if(extra.bio)document.getElementById('bio').value=extra.bio;
+if(extra.interests)document.querySelectorAll('.tag-chip').forEach(c=>c.classList.toggle('is-selected',extra.interests.includes(c.dataset.tag)));
 
-    document.getElementById('avatarPicker').addEventListener('click', e => {
-      const opt = e.target.closest('.avatar-option');
-      if (!opt) return;
-      document.querySelectorAll('.avatar-option').forEach(o => o.classList.remove('is-selected'));
-      opt.classList.add('is-selected');
-      selectedAvatar = opt.dataset.avatar;
-      preview.textContent = selectedAvatar;
-    });
+document.getElementById('tagsWrap').addEventListener('click',e=>{const c=e.target.closest('.tag-chip');if(c)c.classList.toggle('is-selected');});
 
-    // Mark current avatar
-    if (selectedAvatar) {
-      document.querySelectorAll('.avatar-option').forEach(o => {
-        if (o.dataset.avatar === selectedAvatar) o.classList.add('is-selected');
-      });
-    }
+document.getElementById('editForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  const fn=document.getElementById('firstname').value.trim(),ln=document.getElementById('lastname').value.trim();
+  if(!fn){document.querySelector('[data-field="firstname"]').classList.add('is-invalid');return;}
+  if(!ln){document.querySelector('[data-field="lastname"]').classList.add('is-invalid');return;}
+  const interests=[...document.querySelectorAll('.tag-chip.is-selected')].map(c=>c.dataset.tag);
+  localStorage.setItem('visibility-profile',JSON.stringify({avatar:selectedAvatar,location:document.getElementById('location').value.trim(),bio:document.getElementById('bio').value.trim(),interests}));
+  if(user){user.firstName=fn;user.lastName=ln;localStorage.setItem('tv-user',JSON.stringify(user));}
+  window.location.href='profile.html';
+});
 
-    // Tags
-    document.getElementById('tagsWrap').addEventListener('click', e => {
-      const chip = e.target.closest('.tag-chip');
-      if (chip) chip.classList.toggle('is-selected');
-    });
-
-    // Submit
-    document.getElementById('editForm').addEventListener('submit', e => {
-      e.preventDefault();
-      const fn = document.getElementById('firstname').value.trim();
-      const ln = document.getElementById('lastname').value.trim();
-      if (!fn) { document.querySelector('[data-field="firstname"]').classList.add('is-invalid'); return; }
-      if (!ln) { document.querySelector('[data-field="lastname"]').classList.add('is-invalid'); return; }
-
-      const interests = [...document.querySelectorAll('.tag-chip.is-selected')].map(c => c.dataset.tag);
-      const profileData = {
-        avatar: selectedAvatar,
-        location: document.getElementById('location').value.trim(),
-        bio: document.getElementById('bio').value.trim(),
-        interests
-      };
-      localStorage.setItem('visibility-profile', JSON.stringify(profileData));
-
-      // Update name in localStorage
-      if (user) { user.firstName = fn; user.lastName = ln; localStorage.setItem('tv-user', JSON.stringify(user)); }
-      window.location.href = 'profile.html';
-    });
-
-    // Delete account
-    document.getElementById('deleteAccountBtn').addEventListener('click', () => document.getElementById('deleteOverlay').hidden = false);
-    document.getElementById('cancelDelete').addEventListener('click', () => document.getElementById('deleteOverlay').hidden = true);
-    document.getElementById('confirmDelete').addEventListener('click', async () => {
-      await fetch('/api/auth/logout', { method: 'POST' }).catch(()=>{});
-      localStorage.clear();
-      window.location.href = 'login.html';
-    });
-
-    // Autocomplete
-    function initAutocomplete(inputId, listId) {
-      const input = document.getElementById(inputId);
-      const list = document.getElementById(listId);
-      if (!input || !list) return;
-      let timer, results = [], focusIdx = -1;
-      const PIN = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" width="15" height="15"><path d="M12 21s6-5.2 6-11a6 6 0 1 0-12 0c0 5.8 6 11 6 11z"/><circle cx="12" cy="10" r="2.2"/></svg>`;
-      const hide = () => { list.style.display='none'; focusIdx=-1; };
-      const show = (msg) => { list.innerHTML=`<div class="autocomplete-status">${msg}</div>`; list.style.display='block'; };
-      const setFocus = (idx) => { list.querySelectorAll('.autocomplete-item').forEach((el,i) => el.classList.toggle('is-focused', i===idx)); focusIdx=idx; };
-      const select = (item) => { input.value = item.display_name.split(', ').slice(0,3).join(', '); hide(); };
-      const render = (data) => {
-        results = data;
-        if (!data.length) { show('Keine Ergebnisse.'); return; }
-        list.innerHTML = data.map((item,i) => {
-          const p = item.display_name.split(', ');
-          return `<div class="autocomplete-item" data-idx="${i}"><div style="flex-shrink:0;margin-top:2px;opacity:.45;">${PIN}</div><div><div class="autocomplete-item-main">${p.slice(0,2).join(', ')}</div>${p[2]?`<div class="autocomplete-item-sub">${p.slice(2,4).join(', ')}</div>`:''}</div></div>`;
-        }).join('');
-        list.style.display='block';
-        list.querySelectorAll('.autocomplete-item').forEach(el => {
-          el.addEventListener('mouseenter', () => setFocus(+el.dataset.idx));
-          el.addEventListener('mousedown', e => { e.preventDefault(); select(results[+el.dataset.idx]); });
-        });
-      };
-      input.addEventListener('input', () => {
-        clearTimeout(timer);
-        const q = input.value.trim();
-        if (q.length < 3) { hide(); return; }
-        timer = setTimeout(() => {
-          show('Suche…');
-          fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=5&accept-language=de`, {headers:{'User-Agent':'Visibility-App'}})
-            .then(r=>r.json()).then(render).catch(()=>show('Fehler beim Laden.'));
-        }, 350);
-      });
-      input.addEventListener('keydown', e => {
-        const items = list.querySelectorAll('.autocomplete-item');
-        if (!items.length || list.style.display==='none') return;
-        if (e.key==='ArrowDown') { e.preventDefault(); setFocus(Math.min(focusIdx+1,items.length-1)); }
-        if (e.key==='ArrowUp') { e.preventDefault(); setFocus(Math.max(focusIdx-1,0)); }
-        if (e.key==='Enter' && focusIdx>=0) { e.preventDefault(); select(results[focusIdx]); }
-        if (e.key==='Escape') hide();
-      });
-      input.addEventListener('blur', () => setTimeout(hide, 150));
-    }
-    initAutocomplete('location', 'locationList');
-  </script>
-</body>
-</html>
+// Autocomplete
+(function(){
+  const input=document.getElementById('location'),list=document.getElementById('locationList');
+  if(!input||!list)return;let timer,results=[],fi=-1;
+  const hide=()=>{list.style.display='none';fi=-1;};
+  input.addEventListener('input',()=>{clearTimeout(timer);const q=input.value.trim();if(q.length<3){hide();return;}
+    timer=setTimeout(()=>{list.innerHTML='<div class="autocomplete-status">Suche…</div>';list.style.display='block';
+      fetch('https://nominatim.openstreetmap.org/search?q='+encodeURIComponent(q)+'&format=json&limit=5&accept-language=de',{headers:{'User-Agent':'Visibility'}})
+      .then(r=>r.json()).then(data=>{results=data;if(!data.length){list.innerHTML='<div class="autocomplete-status">Keine Ergebnisse.</div>';return;}
+        list.innerHTML=data.map((item,i)=>{const p=item.display_name.split(', ');return'<div class="autocomplete-item" data-idx="'+i+'"><div><div class="autocomplete-item-main">'+p.slice(0,2).join(', ')+'</div>'+(p[2]?'<div class="autocomplete-item-sub">'+p.slice(2,4).join(', ')+'</div>':'')+'</div></div>';}).join('');
+        list.querySelectorAll('.autocomplete-item').forEach(el=>{el.addEventListener('mousedown',ev=>{ev.preventDefault();input.value=results[+el.dataset.idx].display_name.split(', ').slice(0,3).join(', ');hide();});});
+      }).catch(()=>{list.innerHTML='<div class="autocomplete-status">Fehler.</div>';});
+    },350);
+  });
+  input.addEventListener('blur',()=>setTimeout(hide,150));
+})();
+</script>
+</body></html>

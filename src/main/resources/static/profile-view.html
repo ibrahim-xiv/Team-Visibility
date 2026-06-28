@@ -6,11 +6,12 @@
   <link rel="stylesheet" href="style.css"/>
   <style>
     .pv-card{text-align:center;padding:24px 0 16px;}
-    .pv-avatar{width:80px;height:80px;border-radius:50%;background:var(--hover-bg);border:2px solid var(--border);display:grid;place-items:center;margin:0 auto 12px;}
+    .pv-avatar{width:80px;height:80px;border-radius:50%;background:var(--hover-bg);border:2px solid var(--border);display:grid;place-items:center;margin:0 auto 12px;font-size:2.8rem;line-height:1;}
     .pv-avatar svg{width:48px;height:48px;color:var(--muted);}
     .pv-name{font-size:1.4rem;font-weight:800;margin:0 0 4px;}
-    .pv-email{color:var(--muted);font-size:0.85rem;}
-    .pv-events{margin-top:20px;}
+    .pv-username{color:var(--muted);font-size:0.85rem;margin:0 0 12px;}
+    .pv-actions{display:flex;gap:10px;margin-bottom:16px;}
+    .pv-actions button,.pv-actions a{flex:1;text-align:center;}
     .pv-event{padding:10px;border:1px solid var(--border);border-radius:var(--radius-md);margin-bottom:8px;}
     .pv-event a{text-decoration:none;color:var(--text);font-weight:700;}
   </style>
@@ -22,15 +23,17 @@
   <div class="scroll-area">
     <section class="content">
       <div class="pv-card">
-        <div class="pv-avatar"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-4.4 0-8 2.2-8 5v2h16v-2c0-2.8-3.6-5-8-5z"/></svg></div>
+        <div class="pv-avatar" id="pvAvatar"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-4.4 0-8 2.2-8 5v2h16v-2c0-2.8-3.6-5-8-5z"/></svg></div>
         <h2 class="pv-name" id="pvName">Wird geladen…</h2>
-        <p class="pv-email" id="pvEmail"></p>
+        <p class="pv-username" id="pvUsername"></p>
+        <p id="pvBio" style="font-size:0.88rem;color:var(--muted);margin-bottom:12px;"></p>
       </div>
-      <div style="display:flex;gap:10px;margin-bottom:16px;">
-        <button onclick="openChat()" class="submit-btn" style="flex:1;">💬 Nachricht senden</button>
+      <div class="pv-actions">
+        <button onclick="openChat()" class="submit-btn">💬 Nachricht</button>
+        <button onclick="toggleFriend()" class="submit-btn" id="friendBtn" style="background:var(--hover-bg);color:var(--text);border:1px solid var(--border);">👤 Freund hinzufügen</button>
       </div>
-      <div class="pv-events">
-        <h3 style="font-size:1rem;font-weight:800;margin-bottom:10px;">Events von dieser Person</h3>
+      <div>
+        <h3 style="font-size:1rem;font-weight:800;margin-bottom:10px;">Events</h3>
         <div id="pvEvents"><p style="color:var(--muted);font-size:0.85rem;">Wird geladen…</p></div>
       </div>
     </section>
@@ -39,28 +42,38 @@
 <script src="app.js"></script>
 <script>
 const uid=new URLSearchParams(window.location.search).get('id');
-let profileUser=null;
+const FRIENDS_KEY='visibility-friends';
+let friends=JSON.parse(localStorage.getItem(FRIENDS_KEY)||'[]');
+
+function isFriend(){return friends.includes(Number(uid));}
+function updateFriendBtn(){
+  const btn=document.getElementById('friendBtn');
+  if(isFriend()){btn.textContent='❌ Entfreunden';btn.style.background='#fef2f2';btn.style.color='#ef4444';btn.style.borderColor='#fca5a5';}
+  else{btn.textContent='👤 Freund hinzufügen';btn.style.background='var(--hover-bg)';btn.style.color='var(--text)';btn.style.borderColor='var(--border)';}
+}
+
+function toggleFriend(){
+  const id=Number(uid);
+  if(isFriend()){friends=friends.filter(f=>f!==id);} else {friends.push(id);}
+  localStorage.setItem(FRIENDS_KEY,JSON.stringify(friends));
+  updateFriendBtn();
+}
 
 async function load(){
   if(!uid){document.getElementById('pvName').textContent='Nicht gefunden';return;}
   try{
-    const r=await fetch('/api/users/'+uid);profileUser=await r.json();
-    document.getElementById('pvName').textContent=profileUser.firstName+' '+profileUser.lastName;
-    document.getElementById('pvEmail').textContent='@'+profileUser.username;
+    const r=await fetch('/api/users/'+uid);const u=await r.json();
+    document.getElementById('pvName').textContent=u.firstName+' '+u.lastName;
+    document.getElementById('pvUsername').textContent='@'+u.username;
+    updateFriendBtn();
     const mr=await fetch('/api/meetings');const all=await mr.json();
-    const theirs=all.filter(e=>e.creatorId===Number(uid));
-    const el=document.getElementById('pvEvents');
+    const theirs=all.filter(e=>e.creatorId===Number(uid));const el=document.getElementById('pvEvents');
     if(!theirs.length){el.innerHTML='<p style="color:var(--muted);font-size:0.85rem;">Keine Events.</p>';return;}
     el.innerHTML=theirs.map(e=>`<div class="pv-event"><a href="event-details.html?id=${e.id}">${e.title}</a><br><span style="font-size:0.8rem;color:var(--muted);">${e.locationName||''}</span></div>`).join('');
   }catch(e){}
 }
 
-function openChat(){
-  if(!profileUser)return;
-  localStorage.setItem('chat-open-recipient',uid);
-  window.location.href='chat.html';
-}
-
+function openChat(){localStorage.setItem('chat-open-recipient',uid);window.location.href='chat.html';}
 load();
 </script>
 </body></html>
