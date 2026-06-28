@@ -46,6 +46,8 @@ public class Meeting {
     /** Branches enforced that meetings must be non-profit. Kept as a flag. */
     private Boolean nonProfit;
 
+    private String category;
+
     public Meeting() {
     }
 
@@ -79,5 +81,8 @@ public class Meeting {
     public void setDateTime(LocalDateTime dateTime) { this.dateTime = dateTime; }
 
     public Boolean getNonProfit() { return nonProfit; }
+
+    public String getCategory() { return category; }
+    public void setCategory(String category) { this.category = category; }
     public void setNonProfit(Boolean nonProfit) { this.nonProfit = nonProfit; }
 }

@@ -1,648 +1,70 @@
 <!DOCTYPE html>
 <html lang="de">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Visibility – Event Details</title>
   <link rel="stylesheet" href="style.css" />
 </head>
-
 <body>
-  <script>
-    if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');
-  </script>
-
-  <main class="phone is-feed">
-
-    <div class="header-wrap">
-      <header class="header has-back has-action-right" id="detailHeader">
-        <a class="back-btn" href="home.html" aria-label="Zurück">&#8249;</a>
-        <h1>Event Details</h1>
-        <a class="icon-btn is-header" id="editEventBtn" href="#" aria-label="Event bearbeiten" hidden>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"
-            stroke-linecap="round" stroke-linejoin="round">
-            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-            <path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-          </svg>
-        </a>
-      </header>
-    </div>
-
+  <script>if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');</script>
+  <main class="phone">
+    <header class="header has-back">
+      <a class="back-btn" href="home.html" aria-label="Zurück">&#8249;</a>
+      <div class="brand"><span id="eventTitleHeader">Event</span></div>
+    </header>
     <div class="scroll-area">
       <section class="content" id="eventContent">
-
-        <div class="event-top-actions">
-          <a class="btn-map-link" href="map.html" id="mapLink">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"
-              stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 21s6-5.2 6-11a6 6 0 1 0-12 0c0 5.8 6 11 6 11z"/>
-              <circle cx="12" cy="10" r="2.2"/>
-            </svg>
-            Zur Karte
-          </a>
-          <a class="organizer-card" href="profile-view.html" id="organizerCard">
-            <div class="organizer-avatar">
-              <svg viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-4.4 0-8 2.2-8 5v2h16v-2c0-2.8-3.6-5-8-5z"/>
-              </svg>
-            </div>
-            <p class="organizer-name" id="organizerName">–</p>
-            <p class="organizer-sub">Mitglied seit 2024</p>
-          </a>
-        </div>
-
-        <div class="event-header">
-          <h2 id="eventTitle">–</h2>
-          <span class="distance-badge" id="eventDistance"></span>
-        </div>
-
-        <div class="event-info-text" id="eventInfoText">
-          <p><strong id="eventDateText">–</strong> – <span id="eventTime"></span></p>
-          <p>📍 <span id="eventLocation">–</span></p>
-        </div>
-
-        <p class="event-description" id="eventDescription">Keine Beschreibung vorhanden.</p>
-
-        <div class="event-gallery" id="eventGallery">
-          <div class="gallery-img">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
-              <path d="M21 15l-5-5L5 21"/>
-            </svg>
-            Bild einfügen
-          </div>
-          <div class="gallery-img">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
-              <path d="M21 15l-5-5L5 21"/>
-            </svg>
-            Bild einfügen
-          </div>
-          <div class="gallery-img">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
-              <path d="M21 15l-5-5L5 21"/>
-            </svg>
-            Bild einfügen
-          </div>
-        </div>
-
-        <div class="action-stack">
-<<<<<<< HEAD
-          <button class="btn-join-main" id="joinBtn" type="button">Teilnehmen</button>
-
-=======
-          <!-- Teilnehmen / Absagen -->
-          <button class="btn-join-main" id="joinBtn" type="button">Teilnehmen</button>
-
-          <!-- Wird sichtbar, wenn man zugesagt hat -->
->>>>>>> origin/dto
-          <div class="btn-group-chat-wrap" id="groupChatWrap">
-            <button class="btn-group-chat" type="button" onclick="window.location.href='chat.html'">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M4 5h16a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H9l-5 4v-4H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"/>
-              </svg>
-              Gruppen-Chat
-            </button>
-            <button class="btn-group-chat-toggle" id="chatToggle" type="button" aria-label="Weitere Optionen">&#8964;</button>
-          </div>
-
-<<<<<<< HEAD
-          <div class="btn-dropdown" id="rideDropdown"></div>
-
-          <div id="ridesharePanel" style="display: none; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px; background: var(--hover-bg); margin-bottom: 20px;">
-            <h3 style="margin: 0 0 6px; font-size: 1.1rem; font-weight: 800;">🚗 Anreise & Mitfahrgelegenheiten</h3>
-            <p style="margin: 0 0 14px; font-size: 0.9rem; color: var(--text);">Du nimmst teil! Hast du noch Platz im Auto oder suchst du einen Lift?</p>
-            <div class="action-row">
-=======
-          <!-- Dropdown für Chat-Optionen (falls benötigt) -->
-          <div class="btn-dropdown" id="rideDropdown">
-            <!-- Platzhalter -->
-          </div>
-
-          <!-- MITFAHRGELEGENHEITEN (Sichtbar nach Zusage) -->
-          <div id="ridesharePanel" style="display: none; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px; background: var(--hover-bg); margin-bottom: 20px;">
-            <h3 style="margin: 0 0 6px; font-size: 1.1rem; font-weight: 800;">🚗 Anreise & Mitfahrgelegenheiten</h3>
-            <p style="margin: 0 0 14px; font-size: 0.9rem; color: var(--text);">Du nimmst teil! Hast du noch Platz im Auto oder suchst du einen Lift?</p>
-            
-            <div class="action-row">
-              <!-- ID HINZUGEFÜGT für JavaScript -->
->>>>>>> origin/dto
-              <a id="offerRideLink" href="rideshare-form.html" class="btn-secondary" style="text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 6px;">
-                ➕ Anbieten
-              </a>
-              <button id="searchRideBtn" class="btn-secondary" style="display: flex; align-items: center; justify-content: center; gap: 6px;">
-                🔍 Suchen (1)
-              </button>
-            </div>
-<<<<<<< HEAD
-=======
-
-            <!-- Liste der gefundenen Fahrten (Klappt beim Klick auf Suchen aus) -->
->>>>>>> origin/dto
-            <div id="ridesList" style="display: none; margin-top: 14px; flex-direction: column; gap: 8px;">
-              <div class="organizer-card" style="flex-direction: row; justify-content: space-between; text-align: left; padding: 10px;">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                  <div class="organizer-avatar">
-                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-4.4 0-8 2.2-8 5v2h16v-2c0-2.8-3.6-5-8-5z"></path></svg>
-                  </div>
-                  <div>
-                    <p class="organizer-name">Tim Gioh</p>
-                    <p class="organizer-sub">Ab Jade Hochschule • 2 Plätze</p>
-                  </div>
-                </div>
-                <button class="btn-secondary" style="width: auto; padding: 6px 12px; font-size: 0.85rem;" onclick="alert('Anfrage an Tim wurde im Chat gesendet!')">Anfragen</button>
-              </div>
-            </div>
-          </div>
-<<<<<<< HEAD
-=======
-          <!-- ENDE Mitfahrgelegenheiten -->
-
->>>>>>> origin/dto
-
-          <div class="action-row">
-            <button class="btn-save" id="saveBtn" type="button">🔖 Event speichern</button>
-            <button class="btn-report" id="reportBtn" type="button">⚑ Melden</button>
-          </div>
-        </div>
-
+        <p style="color:var(--muted);">Wird geladen…</p>
       </section>
     </div>
-
-    <nav class="bottom-nav" aria-label="Hauptnavigation">
-      <a class="nav-btn" href="home.html" aria-label="Home">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3l9 8h-3v9h-5v-6H11v6H6v-9H3l9-8z"/></svg>
-      </a>
-      <a class="nav-btn" href="chat.html" aria-label="Chat">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 5h16a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H9l-5 4v-4H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"/></svg>
-      </a>
-      <a class="nav-btn is-primary" href="meeting-form.html" aria-label="Treffen erstellen">+</a>
-      <a class="nav-btn" href="saved.html" aria-label="Gespeicherte Inhalte"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 16H5V10h14v10zM5 8V6h14v2H5z"/></svg></a>
-      <a class="nav-btn" href="profile.html" aria-label="Profil">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-4.4 0-8 2.2-8 5v2h16v-2c0-2.8-3.6-5-8-5z"/></svg>
-      </a>
-    </nav>
   </main>
-
-  <div class="overlay" id="reportOverlay" hidden>
-    <div class="overlay-card" role="dialog" aria-modal="true" aria-labelledby="reportTitle">
-      <h2 id="reportTitle">Event melden</h2>
-      <p>Warum möchtest du dieses Event melden?</p>
-      <form id="reportForm">
-        <div class="report-list">
-          <label class="report-option">
-            <input type="radio" name="reportReason" value="Unangemessen" required>
-            <span><strong>Unangemessen</strong><small>Beleidigend, sexuell oder diskriminierend.</small></span>
-          </label>
-          <label class="report-option">
-            <input type="radio" name="reportReason" value="Fake-Event">
-            <span><strong>Fake-Event</strong><small>Wirkt erfunden oder irreführend.</small></span>
-          </label>
-          <label class="report-option">
-            <input type="radio" name="reportReason" value="Gefährlich">
-            <span><strong>Gefährlich</strong><small>Unsicher oder ruft zu riskantem Verhalten auf.</small></span>
-          </label>
-          <label class="report-option">
-            <input type="radio" name="reportReason" value="Spam">
-            <span><strong>Spam</strong><small>Werbung oder mehrfach gepostet.</small></span>
-          </label>
-        </div>
-        <div class="overlay-actions">
-          <button class="overlay-close" type="button" id="closeReport">Abbrechen</button>
-          <button class="overlay-submit" type="submit">Meldung senden</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <div class="toast" id="detailToast" hidden></div>
-
-  <script>
-<<<<<<< HEAD
-    // ─────────────────────────────────────────────────────────────────────────
-    // KONFIGURATION – API-URL hier anpassen, sobald das Backend steht
-    // ─────────────────────────────────────────────────────────────────────────
-    const API_EVENT_URL = (id) => `/api/events/${id}`; // TODO: echte URL eintragen
-
-    const STORAGE_KEY   = 'visibility-saved-events';
-    const MY_EVENTS_KEY = 'visibility-my-events';
-    const JOINED_KEY    = 'visibility-joined-events';
-=======
-    const STATIC_EVENTS = [
-      { id: "ev_1",  title: "Brettspielabend",      category: "Spieleabend", emoji: "🎲", location: "Jugendherberge",    distance: 1.2, date: "2026-04-18", dateText: "Samstag 18.04.2026",    time: "19:00", organizer: "Max M.",       desc: "Ein gemütlicher Abend mit Brett- und Kartenspielen für alle. Anfänger und Profis herzlich willkommen!" },
-      { id: "ev_2",  title: "Morgenjogger",          category: "Sport",       emoji: "🏃", location: "Stadtpark",         distance: 0.5, date: "2026-03-20", dateText: "Montag 20.03.2026",     time: "07:00", organizer: "Sandra K.",    desc: "Gemeinsam den Tag starten! Wir laufen eine lockere Runde durch den Park. Alle Tempos willkommen." },
-      { id: "ev_3",  title: "Hundespaziergang",      category: "Community",   emoji: "👥", location: "Nordseepassage",    distance: 2.4, date: "2026-03-31", dateText: "Dienstag 31.03.2026",   time: "07:00", organizer: "Tina M.",      desc: "Wir gehen jeden Dienstag zusammen mit den Hunden spazieren. Bei Interesse gerne teilnehmen!" },
-      { id: "ev_4",  title: "Poker Abend",           category: "Anderes…",    emoji: "✨", location: "Grenzstraße",       distance: 0.1, date: "2026-04-18", dateText: "Samstag 18.04.2026",    time: "20:00", organizer: "Tom G.",       desc: "Texas Hold'em für Einsteiger und Fortgeschrittene. Eintritt frei, keine echten Einsätze!" },
-      { id: "ev_5",  title: "Filmabend im Hof",      category: "Freizeit",    emoji: "🎉", location: "Innenhof",          distance: 0.8, date: "2026-04-25", dateText: "Freitag 25.04.2026",    time: "21:00", organizer: "Lisa B.",      desc: "Open-Air-Kino auf der Leinwand. Decken und Knabbereien gerne mitbringen!" },
-      { id: "ev_6",  title: "Yoga im Park",          category: "Sport",       emoji: "🏃", location: "Rosengarten",       distance: 1.8, date: "2026-04-27", dateText: "Sonntag 27.04.2026",    time: "09:00", organizer: "Mia R.",       desc: "Entspannter Vinyasa-Flow im Freien. Matte mitbringen, alle Level willkommen." },
-      { id: "ev_7",  title: "Lesekreis",             category: "Kultur",      emoji: "🎭", location: "Bibliothek",        distance: 1.0, date: "2026-05-05", dateText: "Dienstag 05.05.2026",   time: "18:00", organizer: "Clara M.",     desc: "Aktuell lesen wir gemeinsam 'Alles Licht, das wir nicht sehen'. Alle Lesegeschwindigkeiten sind okay!" },
-      { id: "ev_8",  title: "Café-Stammtisch",       category: "Community",   emoji: "👥", location: "Altstadt-Café",     distance: 0.9, date: "2026-05-14", dateText: "Donnerstag 14.05.2026", time: "16:00", organizer: "Paul S.",      desc: "Einfach vorbeikommen und Leute kennenlernen. Kein Programm, nur nette Gespräche." },
-      { id: "ev_9",  title: "Beachvolleyball",       category: "Sport",       emoji: "🏐", location: "Südstrand",         distance: 3.1, date: "2026-05-20", dateText: "Mittwoch 20.05.2026",   time: "15:00", organizer: "Niklas O.",    desc: "Ein paar entspannte Runden Volleyball im Sand. Jeder Skill-Level ist willkommen!" },
-      { id: "ev_10", title: "Kicker-Turnier",        category: "Spieleabend", emoji: "⚽", location: "Campus Bar",         distance: 1.5, date: "2026-05-22", dateText: "Freitag 22.05.2026",    time: "18:00", organizer: "Lukas B.",     desc: "Spontanes Doppel-Kickerturnier. Partner kann auch vor Ort gefunden werden." },
-      { id: "ev_11", title: "Fotowalk am Hafen",     category: "Kultur",      emoji: "📸", location: "Großer Hafen",      distance: 2.2, date: "2026-05-24", dateText: "Sonntag 24.05.2026",    time: "17:30", organizer: "Marie J.",     desc: "Gemeinsam die goldene Stunde für coole Hafenmotive nutzen. Egal ob Smartphone oder Spiegelreflex." },
-      { id: "ev_12", title: "Flohmarkt-Bummel",      category: "Freizeit",    emoji: "🛍️", location: "Börsenplatz",       distance: 0.7, date: "2026-05-30", dateText: "Samstag 30.05.2026",    time: "10:00", organizer: "Laura S.",     desc: "Gemeinsam über den Flohmarkt stöbern und nach Schätzen jagen. Danach ein Eis?" },
-      { id: "ev_13", title: "Inliner-Runde",         category: "Sport",       emoji: "🛼", location: "Deichpromenade",    distance: 2.8, date: "2026-06-02", dateText: "Dienstag 02.06.2026",   time: "16:00", organizer: "Felix T.",     desc: "Wir skaten entspannt den Deich entlang. Bitte Schutzkleidung nicht vergessen." },
-      { id: "ev_14", title: "Billard & Dart",        category: "Spieleabend", emoji: "🎱", location: "Pub Underground",   distance: 0.4, date: "2026-06-05", dateText: "Freitag 05.06.2026",    time: "19:00", organizer: "Kevin N.",     desc: "Zwei Tische sind reserviert. Einfach vorbeikommen und mitspielen." },
-      { id: "ev_15", title: "Sprachcafé Englisch",   category: "Community",   emoji: "🗣️", location: "Hochschul-Foyer",   distance: 1.3, date: "2026-06-08", dateText: "Montag 08.06.2026",     time: "17:00", organizer: "Prof. Meyer",  desc: "Just talking in English! Keine Angst vor Fehlern, einfach locker quatschen." },
-      { id: "ev_16", title: "Grillen & Chill",       category: "Freizeit",    emoji: "🥩", location: "Stadtparkwiese",    distance: 0.6, date: "2026-06-13", dateText: "Samstag 13.06.2026",    time: "14:00", organizer: "Dennis R.",    desc: "Bringt euer eigenes Grillgut mit, Einweggrills und Kohle besorge ich." },
-      { id: "ev_17", title: "Museumsbesuch",         category: "Kultur",      emoji: "🏛️", location: "Marinemuseum",      distance: 3.5, date: "2026-06-14", dateText: "Sonntag 14.06.2026",    time: "11:00", organizer: "Clara M.",     desc: "Gemeinsam das Museum erkunden, aktuell gibt es eine interessante Sonderausstellung." },
-      { id: "ev_18", title: "Bouldern in Oldenburg", category: "Sport",       emoji: "🧗", location: "Hbf (Treffpunkt)", distance: 0.2, date: "2026-06-20", dateText: "Samstag 20.06.2026",    time: "09:30", organizer: "Simon P.",     desc: "Wir fahren gemeinsam mit dem Zug rüber zum Bouldern. Niedersachsenticket teilen!" },
-      { id: "ev_19", title: "Mario Kart Cup",        category: "Spieleabend", emoji: "🎮", location: "WG Rheinstraße",    distance: 0.9, date: "2026-06-23", dateText: "Dienstag 23.06.2026",   time: "19:00", organizer: "Tim K.",       desc: "Klassisches Switch-Turnier auf der Leinwand. Snacks werden gestellt." },
-      { id: "ev_20", title: "Repair Café",           category: "Community",   emoji: "🛠️", location: "Gemeindehaus",      distance: 1.1, date: "2026-06-27", dateText: "Samstag 27.06.2026",    time: "10:00", organizer: "Wilfried H.",  desc: "Toaster kaputt oder Fahrradkette hakt? Wir reparieren kaputte Dinge zusammen." },
-      { id: "ev_21", title: "Fahrradtour Dangast",   category: "Sport",       emoji: "🚴", location: "Valoisplatz",       distance: 0.3, date: "2026-07-05", dateText: "Sonntag 05.07.2026",    time: "08:00", organizer: "Jonas V.",     desc: "Tagestour nach Dangast für das legendäre Rhabarberkuchen-Stück. Ca. 40km insgesamt." },
-      { id: "ev_22", title: "Pub Quiz Night",        category: "Spieleabend", emoji: "🧠", location: "The Irish Pub",     distance: 0.5, date: "2026-07-09", dateText: "Donnerstag 09.07.2026", time: "20:00", organizer: "Julia G.",     desc: "Wir bilden ein Visibility-Team und holen uns den Gruppensieg beim Kneipenquiz!" },
-      { id: "ev_23", title: "Open Mic Abend",        category: "Kultur",      emoji: "🎤", location: "Kulturzentrum",     distance: 1.7, date: "2026-07-11", dateText: "Samstag 11.07.2026",    time: "19:30", organizer: "Stephan E.",   desc: "Lokale Talente, Comedy und Live-Musik. Eintritt ist frei, Spenden erwünscht." },
-      { id: "ev_24", title: "Paddeln auf Kanälen",   category: "Sport",       emoji: "🛶", location: "Bootsverleih",      distance: 1.9, date: "2026-07-15", dateText: "Mittwoch 15.07.2026",   time: "11:00", organizer: "Svenja W.",    desc: "Kanus ausleihen und entspannt über die Wilhelmshavener Kanäle schippern." },
-      { id: "ev_25", title: "Pflanzentausch",        category: "Community",   emoji: "🌱", location: "Botanischer Garten", distance: 2.1, date: "2026-07-18", dateText: "Samstag 18.07.2026",   time: "10:00", organizer: "Nadine B.",    desc: "Bringt Ableger oder überschüssige Pflanzen mit und tauscht sie gegen neue grüne Mitbewohner." },
-      { id: "ev_26", title: "Astronomie-Nacht",      category: "Anderes…",    emoji: "🌌", location: "Südstrand-Damm",    distance: 3.2, date: "2026-07-24", dateText: "Freitag 24.07.2026",    time: "22:00", organizer: "Christian F.", desc: "Sterne gucken bei klarem Himmel. Wer ein Teleskop oder Fernglas hat, gerne mitbringen." },
-      { id: "ev_27", title: "Spiele-Prototypen",     category: "Spieleabend", emoji: "📦", location: "Jade HS Raum 12",  distance: 1.4, date: "2026-07-28", dateText: "Dienstag 28.07.2026",   time: "17:00", organizer: "Alex R.",      desc: "Wir testen selbstgemachte Brettspiel-Entwürfe von Studierenden. Euer Feedback zählt!" },
-      { id: "ev_28", title: "Kinoabend: Blockbuster",category: "Freizeit",    emoji: "🍿", location: "UCI Kinowelt",      distance: 1.6, date: "2026-08-01", dateText: "Samstag 01.08.2026",    time: "19:30", organizer: "Michael D.",   desc: "Wir treffen uns im Foyer und schauen zusammen den neuen Sci-Fi-Film." }
-    ];
-
-    const STORAGE_KEY  = 'visibility-saved-events';
-    const MY_EVENTS_KEY = 'visibility-my-events';
->>>>>>> origin/dto
-
-    const params  = new URLSearchParams(window.location.search);
-    const eventId = params.get('id');
-
-    let currentEvent = null;
-    let isOwnEvent   = false;
-
-<<<<<<< HEAD
-    // ─────────────────────────────────────────────────────────────────────────
-    // EVENT LADEN – erst lokale eigene Events prüfen, dann API
-    // ─────────────────────────────────────────────────────────────────────────
-    async function loadEvent() {
-      if (!eventId) {
-        showError('Kein Event ausgewählt.');
-        return;
-      }
-
-      // 1. Eigene (lokal erstellte) Events prüfen
-      const myEvents = JSON.parse(localStorage.getItem(MY_EVENTS_KEY) || '[]');
-      const ownEvent = myEvents.find(e => e.id === eventId);
-      if (ownEvent) {
-        currentEvent = ownEvent;
-        isOwnEvent   = true;
-        renderEvent();
-        return;
-      }
-
-      // 2. API-Anfrage
-      try {
-        const res = await fetch(API_EVENT_URL(eventId));
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        currentEvent = await res.json();
-      } catch (err) {
-        console.warn('Event konnte nicht geladen werden:', err);
-        showError('Event konnte nicht geladen werden.');
-        return;
-      }
-
-      renderEvent();
-    }
-
-    function showError(msg) {
-      document.getElementById('eventTitle').textContent = msg;
-    }
-
-    function renderEvent() {
-      document.getElementById('eventTitle').textContent       = currentEvent.title || '–';
-      document.getElementById('eventDistance').textContent    = currentEvent.distance ? `${currentEvent.distance} km` : '';
-      document.getElementById('eventDateText').textContent    = currentEvent.dateText || 'Datum offen';
-      document.getElementById('eventTime').textContent        = currentEvent.time ? `${currentEvent.time} Uhr` : '';
-      document.getElementById('eventLocation').textContent    = currentEvent.location || '';
-      document.getElementById('eventDescription').textContent = currentEvent.desc || currentEvent.description || 'Keine Beschreibung vorhanden.';
-      document.getElementById('organizerName').textContent    = currentEvent.organizer || 'Unbekannt';
-
-      const orgCard = document.getElementById('organizerCard');
-      if (currentEvent.organizer) {
-        orgCard.href = `profile-view.html?name=${encodeURIComponent(currentEvent.organizer)}`;
-      }
-
-      if (isOwnEvent) {
-        const editBtn = document.getElementById('editEventBtn');
-        editBtn.hidden = false;
-        editBtn.href = `meeting-form.html?edit=${currentEvent.id}`;
-        orgCard.href = 'profile.html';
-        const myProfile = JSON.parse(localStorage.getItem('visibility-profile') || 'null');
-        document.getElementById('organizerName').textContent = myProfile?.name || 'Ich';
-      }
-
-      const offerRideLink = document.getElementById('offerRideLink');
-      if (offerRideLink && currentEvent) {
-        offerRideLink.href = `rideshare-form.html?eventId=${currentEvent.id}`;
-      }
-
-      initActions();
-    }
-
-    // ─────────────────────────────────────────────────────────────────────────
-    // INTERAKTIONEN (Speichern, Teilnehmen, Melden)
-    // ─────────────────────────────────────────────────────────────────────────
-    function initActions() {
-      // Speichern
-      const saveBtn = document.getElementById('saveBtn');
-      let savedList = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-      let isSaved   = savedList.some(e => e.id === currentEvent.id);
-      updateSaveBtn(isSaved);
-
-      function updateSaveBtn(saved) {
-        isSaved = saved;
-        saveBtn.textContent = saved ? '🔖 Gespeichert' : '🔖 Event speichern';
-        saveBtn.classList.toggle('is-saved', saved);
-      }
-
-      saveBtn.addEventListener('click', () => {
-        let list = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-        if (isSaved) {
-          list = list.filter(e => e.id !== currentEvent.id);
-          updateSaveBtn(false); showToast('Aus Favoriten entfernt');
-        } else {
-          list.push(currentEvent);
-          updateSaveBtn(true); showToast('In Favoriten gespeichert');
-        }
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
-      });
-
-      // Teilnehmen
-      const joinBtn       = document.getElementById('joinBtn');
-      const groupChatWrap = document.getElementById('groupChatWrap');
-      const ridesharePanel = document.getElementById('ridesharePanel');
-
-      let joinedList = JSON.parse(localStorage.getItem(JOINED_KEY) || '[]');
-      let joined     = joinedList.some(e => e.id === currentEvent.id);
-      updateJoinBtn(joined);
-
-      function updateJoinBtn(isJoined) {
-        joined = isJoined;
-        joinBtn.textContent = isJoined ? 'Teilnahme zurückziehen' : 'Teilnehmen';
-        joinBtn.classList.toggle('is-joined', isJoined);
-        groupChatWrap.classList.toggle('is-visible', isJoined);
-        ridesharePanel.style.display = isJoined ? 'block' : 'none';
-        if (!isJoined) {
-          document.getElementById('ridesList').style.display = 'none';
-          document.getElementById('searchRideBtn').innerHTML = '🔍 Suchen (1)';
-        }
-      }
-
-      joinBtn.addEventListener('click', () => {
-        let list = JSON.parse(localStorage.getItem(JOINED_KEY) || '[]');
-        if (joined) {
-          if (!confirm('Teilnahme wirklich zurückziehen?')) return;
-          list = list.filter(e => e.id !== currentEvent.id);
-          localStorage.setItem(JOINED_KEY, JSON.stringify(list));
-          updateJoinBtn(false);
-          showToast('Teilnahme zurückgezogen');
-        } else {
-          list.push({
-            id:       currentEvent.id,
-            title:    currentEvent.title,
-            category: currentEvent.category,
-            emoji:    currentEvent.emoji || '✅',
-            location: currentEvent.location,
-            date:     currentEvent.date,
-            dateText: currentEvent.dateText,
-            time:     currentEvent.time || '',
-            organizer: currentEvent.organizer || '',
-          });
-          localStorage.setItem(JOINED_KEY, JSON.stringify(list));
-          updateJoinBtn(true);
-          showToast('Du nimmst teil! 🎉');
-        }
-      });
-
-      // Fahrt suchen
-      const searchRideBtn = document.getElementById('searchRideBtn');
-      const ridesList     = document.getElementById('ridesList');
-      searchRideBtn.addEventListener('click', () => {
-        if (ridesList.style.display === 'none') {
-          ridesList.style.display = 'flex';
-          searchRideBtn.innerHTML = 'Kürzer fassen ▴';
-        } else {
-          ridesList.style.display = 'none';
-          searchRideBtn.innerHTML = '🔍 Suchen (1)';
-        }
-      });
-
-      // Chat-Toggle Dropdown
-      const chatToggle   = document.getElementById('chatToggle');
-      const rideDropdown = document.getElementById('rideDropdown');
-      chatToggle.addEventListener('click', () => {
-        const open = rideDropdown.classList.toggle('is-open');
-        chatToggle.classList.toggle('is-open', open);
-      });
-
-      // Melden
-      const reportOverlay = document.getElementById('reportOverlay');
-      const reportForm    = document.getElementById('reportForm');
-
-      document.getElementById('reportBtn').addEventListener('click', () => {
-        reportForm.reset();
-        document.querySelectorAll('.report-option').forEach(o => o.classList.remove('is-selected'));
-        reportOverlay.hidden = false;
-      });
-      document.getElementById('closeReport').addEventListener('click', () => reportOverlay.hidden = true);
-      reportOverlay.addEventListener('click', e => { if (e.target === reportOverlay) reportOverlay.hidden = true; });
-      reportForm.addEventListener('change', () => {
-        document.querySelectorAll('.report-option').forEach(o =>
-          o.classList.toggle('is-selected', o.querySelector('input').checked)
-        );
-      });
-      reportForm.addEventListener('submit', e => {
-        e.preventDefault();
-        const sel = reportForm.querySelector('input[name="reportReason"]:checked');
-        if (!sel) return;
-        reportOverlay.hidden = true;
-        showToast(`Meldung gesendet: ${sel.value}`);
-      });
-    }
-
-=======
-    if (eventId) {
-      const myEvents = JSON.parse(localStorage.getItem(MY_EVENTS_KEY) || '[]');
-      const ownEvent = myEvents.find(e => e.id === eventId);
-      if (ownEvent) { currentEvent = ownEvent; isOwnEvent = true; }
-      else currentEvent = STATIC_EVENTS.find(e => e.id === eventId) || null;
-    }
-    if (!currentEvent) currentEvent = STATIC_EVENTS[2];
-
-    document.getElementById('eventTitle').textContent       = currentEvent.title;
-    document.getElementById('eventDistance').textContent    = currentEvent.distance ? `${currentEvent.distance} km` : '';
-    document.getElementById('eventDateText').textContent    = currentEvent.dateText || 'Datum offen';
-    document.getElementById('eventTime').textContent        = currentEvent.time ? `${currentEvent.time} Uhr` : '';
-    document.getElementById('eventLocation').textContent    = currentEvent.location || '';
-    document.getElementById('eventDescription').textContent = currentEvent.desc || currentEvent.description || 'Keine Beschreibung vorhanden.';
-    document.getElementById('organizerName').textContent    = currentEvent.organizer || 'Unbekannt';
-
-    // Organizer-Link mit Profil-Daten bestücken
-    const orgCard = document.getElementById('organizerCard');
-    if (currentEvent.organizer) {
-      orgCard.href = `profile-view.html?name=${encodeURIComponent(currentEvent.organizer)}`;
-    }
-
-    if (isOwnEvent) {
-      const editBtn = document.getElementById('editEventBtn');
-      editBtn.hidden = false;
-      editBtn.href = `meeting-form.html?edit=${currentEvent.id}`;
-      // Eigenes Profil verlinken statt fremdes
-      orgCard.href = 'profile.html';
-      const orgName = document.getElementById('organizerName');
-      const myProfile = JSON.parse(localStorage.getItem('visibility-profile') || 'null');
-      orgName.textContent = myProfile?.name || 'Ich';
-    }
-
-    // NEU: Hänge die Event-ID dynamisch an den Fahrt-Anbieten Button an
-    const offerRideLink = document.getElementById('offerRideLink');
-    if (offerRideLink && currentEvent) {
-      offerRideLink.href = `rideshare-form.html?eventId=${currentEvent.id}`;
-    }
-
-    const saveBtn = document.getElementById('saveBtn');
-    let savedList = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-    let isSaved   = savedList.some(e => e.id === currentEvent.id);
-    updateSaveBtn(isSaved);
-
-    function updateSaveBtn(saved) {
-      isSaved = saved;
-      saveBtn.textContent = saved ? '🔖 Gespeichert' : '🔖 Event speichern';
-      saveBtn.classList.toggle('is-saved', saved);
-    }
-
-    saveBtn.addEventListener('click', () => {
-      let list = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-      if (isSaved) {
-        list = list.filter(e => e.id !== currentEvent.id);
-        updateSaveBtn(false); showToast('Aus Favoriten entfernt');
-      } else {
-        list.push(currentEvent);
-        updateSaveBtn(true); showToast('In Favoriten gespeichert');
-      }
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
-    });
-
-    const joinBtn = document.getElementById('joinBtn');
-    const groupChatWrap = document.getElementById('groupChatWrap');
-    const ridesharePanel = document.getElementById('ridesharePanel');
-    const JOINED_KEY = 'visibility-joined-events';
-
-    // Prüfen ob man schon teilnimmt
-    let joinedList = JSON.parse(localStorage.getItem(JOINED_KEY) || '[]');
-    let joined = joinedList.some(e => e.id === currentEvent.id);
-    updateJoinBtn(joined);
-
-    function updateJoinBtn(isJoined) {
-      joined = isJoined;
-      joinBtn.textContent = isJoined ? 'Teilnahme zurückziehen' : 'Teilnehmen';
-      joinBtn.classList.toggle('is-joined', isJoined);
-      groupChatWrap.classList.toggle('is-visible', isJoined);
-      
-      // Mitfahr-Panel anzeigen/verstecken
-      if(isJoined) {
-          ridesharePanel.style.display = 'block';
-      } else {
-          ridesharePanel.style.display = 'none';
-          document.getElementById('ridesList').style.display = 'none'; 
-          document.getElementById('searchRideBtn').innerHTML = '🔍 Suchen (1)';
-      }
-    }
-
-    joinBtn.addEventListener('click', () => {
-      let list = JSON.parse(localStorage.getItem(JOINED_KEY) || '[]');
-      if (joined) {
-        if(!confirm('Teilnahme wirklich zurückziehen?')) return;
-        // Teilnahme zurückziehen
-        list = list.filter(e => e.id !== currentEvent.id);
-        localStorage.setItem(JOINED_KEY, JSON.stringify(list));
-        updateJoinBtn(false);
-        showToast('Teilnahme zurückgezogen');
-      } else {
-        // Teilnehmen – Event-Daten speichern
-        list.push({
-          id:       currentEvent.id,
-          title:    currentEvent.title,
-          category: currentEvent.category,
-          emoji:    currentEvent.emoji || '✅',
-          location: currentEvent.location,
-          date:     currentEvent.date,
-          dateText: currentEvent.dateText,
-          time:     currentEvent.time || '',
-          organizer: currentEvent.organizer || '',
-        });
-        localStorage.setItem(JOINED_KEY, JSON.stringify(list));
-        updateJoinBtn(true);
-        showToast('Du nimmst teil! 🎉');
-      }
-    });
-
-    // --- FAHRT SUCHEN LOGIK ---
-    const searchRideBtn = document.getElementById('searchRideBtn');
-    const ridesList = document.getElementById('ridesList');
-
-    searchRideBtn.addEventListener('click', () => {
-      if(ridesList.style.display === 'none') {
-        ridesList.style.display = 'flex';
-        searchRideBtn.innerHTML = 'Kürzer fassen ▴';
-      } else {
-        ridesList.style.display = 'none';
-        searchRideBtn.innerHTML = '🔍 Suchen (1)';
-      }
-    });
-
-    const chatToggle  = document.getElementById('chatToggle');
-    const rideDropdown = document.getElementById('rideDropdown');
-    chatToggle.addEventListener('click', () => {
-      const open = rideDropdown.classList.toggle('is-open');
-      chatToggle.classList.toggle('is-open', open);
-    });
-
-    const reportOverlay = document.getElementById('reportOverlay');
-    const reportForm    = document.getElementById('reportForm');
-
-    document.getElementById('reportBtn').addEventListener('click', () => {
-      reportForm.reset();
-      document.querySelectorAll('.report-option').forEach(o => o.classList.remove('is-selected'));
-      reportOverlay.hidden = false;
-    });
-    document.getElementById('closeReport').addEventListener('click', () => reportOverlay.hidden = true);
-    reportOverlay.addEventListener('click', e => { if (e.target === reportOverlay) reportOverlay.hidden = true; });
-    reportForm.addEventListener('change', () => {
-      document.querySelectorAll('.report-option').forEach(o =>
-        o.classList.toggle('is-selected', o.querySelector('input').checked)
-      );
-    });
-    reportForm.addEventListener('submit', e => {
-      e.preventDefault();
-      const sel = reportForm.querySelector('input[name="reportReason"]:checked');
-      if (!sel) return;
-      reportOverlay.hidden = true;
-      showToast(`Meldung gesendet: ${sel.value}`);
-    });
-
->>>>>>> origin/dto
-    let toastTimer;
-    function showToast(msg) {
-      const toast = document.getElementById('detailToast');
-      toast.textContent = msg;
-      toast.hidden = false;
-      clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => toast.hidden = true, 2500);
-    }
-<<<<<<< HEAD
-
-    // Starten
-    loadEvent();
-=======
->>>>>>> origin/dto
-  </script>
-
   <script src="app.js"></script>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id');
+    const user = JSON.parse(localStorage.getItem('tv-user') || 'null');
+
+    async function loadEvent() {
+      if (!id) { document.getElementById('eventContent').innerHTML = '<p>Event nicht gefunden.</p>'; return; }
+      try {
+        const res = await fetch(`/api/meetings/${id}`);
+        if (!res.ok) { document.getElementById('eventContent').innerHTML = '<p>Event nicht gefunden.</p>'; return; }
+        const e = await res.json();
+        document.getElementById('eventTitleHeader').textContent = e.title || 'Event';
+        const isOwn = user && e.creatorId === user.id;
+        const dateStr = e.dateTime ? new Date(e.dateTime).toLocaleDateString('de-DE', {weekday:'long',day:'2-digit',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'}) : 'Kein Datum';
+        document.getElementById('eventContent').innerHTML = `
+          <div style="margin-bottom:20px;">
+            <h2 style="font-size:1.5rem;font-weight:800;margin-bottom:8px;">${e.title}</h2>
+            <p style="color:var(--muted);font-size:0.9rem;margin-bottom:4px;">📅 ${dateStr}</p>
+            <p style="color:var(--muted);font-size:0.9rem;margin-bottom:16px;">📍 ${e.locationName || 'Kein Ort angegeben'}</p>
+            ${e.description ? `<p style="line-height:1.6;">${e.description}</p>` : ''}
+          </div>
+          ${isOwn ? `
+          <div style="display:flex;gap:10px;margin-top:20px;">
+            <button onclick="deleteEvent()" style="flex:1;padding:12px;background:#ef4444;color:#fff;border:none;border-radius:var(--radius-md);font-weight:800;cursor:pointer;">Event löschen</button>
+          </div>` : `
+          <div style="margin-top:20px;">
+            <button onclick="startChat(${e.creatorId})" class="submit-btn">Veranstalter anschreiben</button>
+          </div>`}`;
+      } catch(e) {
+        document.getElementById('eventContent').innerHTML = '<p>Fehler beim Laden.</p>';
+      }
+    }
+
+    async function deleteEvent() {
+      if (!confirm('Event wirklich löschen?')) return;
+      await fetch(`/api/meetings/${id}`, { method: 'DELETE' });
+      window.location.href = 'home.html';
+    }
+
+    function startChat(creatorId) {
+      localStorage.setItem('chat-open-recipient', creatorId);
+      window.location.href = 'chat.html';
+    }
+
+    loadEvent();
+  </script>
 </body>
-<<<<<<< HEAD
 </html>
-=======
-</html>
->>>>>>> origin/dto
