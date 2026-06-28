@@ -2,7 +2,10 @@ package com.TeamVisibility.App.service;
 
 import java.security.SecureRandom;
 import java.util.Locale;
+<<<<<<< HEAD
 import java.util.Optional;
+=======
+>>>>>>> origin/dto
 import java.util.regex.Pattern;
 
 import org.springframework.stereotype.Service;
@@ -24,6 +27,7 @@ public class UserService {
     private static final Pattern VERIFICATION_CODE_PATTERN = Pattern.compile("^\\d{5}$");
 
     private final SecureRandom secureRandom = new SecureRandom();
+<<<<<<< HEAD
     private final UserRepository userRepository;
     private final PasswordService passwordService;
     private final EmailService emailService;
@@ -32,6 +36,21 @@ public class UserService {
         this.userRepository = userRepository;
         this.passwordService = passwordService;
         this.emailService = emailService;
+=======
+
+    private final UserRepository userRepository;
+    private final PasswordService passwordService;
+    private final VerificationEmailService verificationEmailService;
+
+    public UserService(
+        UserRepository userRepository,
+        PasswordService passwordService,
+        VerificationEmailService verificationEmailService
+    ) {
+        this.userRepository = userRepository;
+        this.passwordService = passwordService;
+        this.verificationEmailService = verificationEmailService;
+>>>>>>> origin/dto
     }
 
     @Transactional
@@ -41,12 +60,24 @@ public class UserService {
         String email = normalizeEmail(request.email());
         String password = requireText(request.password(), "Passwort ist erforderlich.");
 
+<<<<<<< HEAD
         if (!EMAIL_PATTERN.matcher(email).matches())
             throw new IllegalArgumentException("Bitte eine gültige Email eingeben.");
         if (!PASSWORD_PATTERN.matcher(password).matches())
             throw new IllegalArgumentException("Passwort muss mindestens 1 Großbuchstaben und 1 Zahl enthalten.");
         if (userRepository.existsByEmailIgnoreCase(email))
             throw new IllegalArgumentException("Diese Email ist bereits registriert.");
+=======
+        if (!EMAIL_PATTERN.matcher(email).matches()) {
+            throw new IllegalArgumentException("Bitte eine gültige Email eingeben.");
+        }
+        if (!PASSWORD_PATTERN.matcher(password).matches()) {
+            throw new IllegalArgumentException("Passwort muss mindestens 1 Großbuchstaben und 1 Zahl enthalten.");
+        }
+        if (userRepository.existsByEmailIgnoreCase(email)) {
+            throw new IllegalArgumentException("Diese Email ist bereits registriert.");
+        }
+>>>>>>> origin/dto
 
         User user = new User();
         user.setFirstName(firstName);
@@ -57,10 +88,18 @@ public class UserService {
         user.setRole(UserRole.USER);
         user.setVerified(false);
         user.setVerificationCode(generateVerificationCode());
+<<<<<<< HEAD
 
         User saved = userRepository.save(user);
         emailService.sendVerificationCode(saved.getEmail(), saved.getVerificationCode());
         return saved;
+=======
+        user.setHighContrast(false);
+
+        User savedUser = userRepository.save(user);
+        verificationEmailService.sendVerificationCode(savedUser);
+        return savedUser;
+>>>>>>> origin/dto
     }
 
     @Transactional
@@ -68,17 +107,30 @@ public class UserService {
         String email = normalizeEmail(request.email());
         User user = userRepository.findByEmailIgnoreCase(email)
             .orElseThrow(() -> new IllegalArgumentException("Benutzer wurde nicht gefunden."));
+<<<<<<< HEAD
         if (user.isVerified())
             throw new IllegalArgumentException("Dieser Account ist bereits aktiviert.");
         user.setVerificationCode(generateVerificationCode());
         User saved = userRepository.save(user);
         emailService.sendVerificationCode(saved.getEmail(), saved.getVerificationCode());
         return saved;
+=======
+
+        if (user.isVerified()) {
+            throw new IllegalArgumentException("Dieser Account ist bereits aktiviert.");
+        }
+
+        user.setVerificationCode(generateVerificationCode());
+        User savedUser = userRepository.save(user);
+        verificationEmailService.sendVerificationCode(savedUser);
+        return savedUser;
+>>>>>>> origin/dto
     }
 
     @Transactional
     public User verifyRegistration(VerifyRegistrationRequest request) {
         String email = normalizeEmail(request.email());
+<<<<<<< HEAD
         String code = requireText(request.verificationCode(), "Verifizierungscode ist erforderlich.");
         if (!VERIFICATION_CODE_PATTERN.matcher(code).matches())
             throw new IllegalArgumentException("Der Verifizierungscode muss aus 5 Zahlen bestehen.");
@@ -87,6 +139,25 @@ public class UserService {
         if (user.isVerified()) return user;
         if (!code.equals(user.getVerificationCode()))
             throw new IllegalArgumentException("Der Verifizierungscode ist falsch.");
+=======
+        String verificationCode = requireText(request.verificationCode(), "Verifizierungscode ist erforderlich.");
+
+        if (!VERIFICATION_CODE_PATTERN.matcher(verificationCode).matches()) {
+            throw new IllegalArgumentException("Der Verifizierungscode muss aus 5 Zahlen bestehen.");
+        }
+
+        User user = userRepository.findByEmailIgnoreCase(email)
+            .orElseThrow(() -> new IllegalArgumentException("Benutzer wurde nicht gefunden."));
+
+        if (user.isVerified()) {
+            return user;
+        }
+
+        if (!verificationCode.equals(user.getVerificationCode())) {
+            throw new IllegalArgumentException("Der Verifizierungscode ist falsch.");
+        }
+
+>>>>>>> origin/dto
         user.setVerified(true);
         return userRepository.save(user);
     }
@@ -95,6 +166,7 @@ public class UserService {
     public User login(LoginRequest request) {
         String email = normalizeEmail(request.email());
         String password = requireText(request.password(), "Passwort ist erforderlich.");
+<<<<<<< HEAD
         User user = userRepository.findByEmailIgnoreCase(email)
             .orElseThrow(() -> new IllegalArgumentException("Email oder Passwort ist falsch."));
         if (!passwordService.matches(password, user.getPasswordHash()))
@@ -109,6 +181,20 @@ public class UserService {
         Optional<User> userOpt = userRepository.findByUsername(usernameOrEmail);
         if (userOpt.isEmpty()) userOpt = userRepository.findByEmail(usernameOrEmail);
         return userOpt.filter(u -> passwordService.matches(password, u.getPasswordHash()));
+=======
+
+        User user = userRepository.findByEmailIgnoreCase(email)
+            .orElseThrow(() -> new IllegalArgumentException("Email oder Passwort ist falsch."));
+
+        if (!passwordService.matches(password, user.getPasswordHash())) {
+            throw new IllegalArgumentException("Email oder Passwort ist falsch.");
+        }
+        if (!user.isVerified()) {
+            throw new IllegalArgumentException("Dein Account ist noch nicht aktiviert. Bitte gib zuerst den Verifizierungscode ein.");
+        }
+
+        return user;
+>>>>>>> origin/dto
     }
 
     @Transactional(readOnly = true)
@@ -117,12 +203,19 @@ public class UserService {
             .orElseThrow(() -> new IllegalArgumentException("Benutzer wurde nicht gefunden."));
     }
 
+<<<<<<< HEAD
     public boolean existsByEmail(String email) {
         return userRepository.existsByEmailIgnoreCase(email);
     }
 
     private String requireText(String value, String message) {
         if (value == null || value.trim().isEmpty()) throw new IllegalArgumentException(message);
+=======
+    private String requireText(String value, String message) {
+        if (value == null || value.trim().isEmpty()) {
+            throw new IllegalArgumentException(message);
+        }
+>>>>>>> origin/dto
         return value.trim();
     }
 
@@ -135,8 +228,22 @@ public class UserService {
     }
 
     private String generateUsername(String firstName, String lastName, String email) {
+<<<<<<< HEAD
         String base = (firstName + "." + lastName).toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9._-]", "");
         if (base.length() >= 3) return base;
         return email.substring(0, email.indexOf('@')).replaceAll("[^a-zA-Z0-9._-]", "");
     }
 }
+=======
+        String base = (firstName + "." + lastName)
+            .toLowerCase(Locale.ROOT)
+            .replaceAll("[^a-z0-9._-]", "");
+
+        if (base.length() >= 3) {
+            return base;
+        }
+
+        return email.substring(0, email.indexOf('@')).replaceAll("[^a-zA-Z0-9._-]", "");
+    }
+}
+>>>>>>> origin/dto

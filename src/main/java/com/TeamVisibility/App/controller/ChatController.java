@@ -69,4 +69,8 @@ public class ChatController {
         Object userId = session.getAttribute(SESSION_USER_ID);
         return userId instanceof Long id ? id : null;
     }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> origin/dto
