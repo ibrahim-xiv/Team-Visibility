@@ -1,5 +1,7 @@
 package com.TeamVisibility.App.controller;
 
+import jakarta.servlet.http.HttpSession;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -17,8 +19,6 @@ import com.TeamVisibility.App.dto.UserProfileResponse;
 import com.TeamVisibility.App.dto.VerifyRegistrationRequest;
 import com.TeamVisibility.App.model.User;
 import com.TeamVisibility.App.service.UserService;
-
-import jakarta.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -86,7 +86,6 @@ public class AuthController {
             com.TeamVisibility.App.model.User user = userService.findByEmail(email);
             user.setPasswordHash(new com.TeamVisibility.App.service.PasswordService().hash(newPassword));
             user.setVerified(true);
-            user.setVerificationCode(null);
             userService.saveUser(user);
             return ResponseEntity.ok(java.util.Map.of("message", "Passwort zurückgesetzt"));
         } catch (Exception e) {
@@ -122,7 +121,6 @@ public class AuthController {
             user.setPasswordHash(new com.TeamVisibility.App.service.PasswordService().hash(newPassword));
             user.setVerificationCode(null);
             user.setVerified(true);
-            user.setVerificationCode(null);
             userService.saveUser(user);
             return ResponseEntity.ok(java.util.Map.of("message", "Passwort erfolgreich zurückgesetzt"));
         } catch (Exception e) {

@@ -78,22 +78,46 @@ picker.addEventListener('click',e=>{
   preview.textContent=selectedAvatar;
 });
 
-if(user){document.getElementById('firstname').value=user.firstName||'';document.getElementById('lastname').value=user.lastName||'';document.getElementById('emailDisplay').value=user.email||'';}
-if(extra.location)document.getElementById('location').value=extra.location;
-if(extra.bio)document.getElementById('bio').value=extra.bio;
-if(extra.interests)document.querySelectorAll('.tag-chip').forEach(c=>c.classList.toggle('is-selected',extra.interests.includes(c.dataset.tag)));
+async function loadProfileData(){
+  try{
+    const r=await fetch('/api/auth/me');
+    if(r.ok){user=await r.json();localStorage.setItem('tv-user',JSON.stringify(user));}
+  }catch(e){}
+  if(user){
+    document.getElementById('firstname').value=user.firstName||'';
+    document.getElementById('lastname').value=user.lastName||'';
+    document.getElementById('emailDisplay').value=user.email||'';
+    if(user.locationName)document.getElementById('location').value=user.locationName;
+    if(user.bio)document.getElementById('bio').value=user.bio;
+    selectedAvatar=user.avatar||'';
+    if(selectedAvatar){preview.textContent=selectedAvatar;picker.querySelectorAll('.avatar-option').forEach(o=>o.classList.toggle('is-selected',o.dataset.avatar===selectedAvatar));}
+    if(user.interests){const ints=user.interests.split(',');document.querySelectorAll('.tag-chip').forEach(c=>c.classList.toggle('is-selected',ints.includes(c.dataset.tag)));}
+  }
+}
+loadProfileData();
 
 document.getElementById('tagsWrap').addEventListener('click',e=>{const c=e.target.closest('.tag-chip');if(c)c.classList.toggle('is-selected');});
 
-document.getElementById('editForm').addEventListener('submit',e=>{
+document.getElementById('editForm').addEventListener('submit',async e=>{
   e.preventDefault();
   const fn=document.getElementById('firstname').value.trim(),ln=document.getElementById('lastname').value.trim();
   if(!fn){document.querySelector('[data-field="firstname"]').classList.add('is-invalid');return;}
   if(!ln){document.querySelector('[data-field="lastname"]').classList.add('is-invalid');return;}
   const interests=[...document.querySelectorAll('.tag-chip.is-selected')].map(c=>c.dataset.tag);
-  localStorage.setItem('visibility-profile',JSON.stringify({avatar:selectedAvatar,location:document.getElementById('location').value.trim(),bio:document.getElementById('bio').value.trim(),interests}));
-  if(user){user.firstName=fn;user.lastName=ln;localStorage.setItem('tv-user',JSON.stringify(user));}
-  window.location.href='profile.html';
+  const profileData={
+    firstName:fn, lastName:ln,
+    avatar:selectedAvatar,
+    locationName:document.getElementById('location').value.trim(),
+    bio:document.getElementById('bio').value.trim(),
+    interests:interests.join(',')
+  };
+  try{
+    const r=await fetch('/api/users/me',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(profileData)});
+    if(!r.ok)throw new Error('Fehler beim Speichern');
+    const updated=await r.json();
+    localStorage.setItem('tv-user',JSON.stringify(updated));
+    window.location.href='profile.html';
+  }catch(err){alert('Fehler beim Speichern: '+err.message);}
 });
 
 // Autocomplete

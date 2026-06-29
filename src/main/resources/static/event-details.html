@@ -133,11 +133,24 @@ async function deleteEvent(){if(!confirm('Event wirklich löschen?'))return;awai
 async function loadRides(){
   try{const r=await fetch('/api/rides/'+id);const rides=await r.json();const el=document.getElementById('rideList');
     if(!rides.length){el.innerHTML='<p style="color:var(--muted);font-size:0.85rem;">Noch keine Mitfahrten.</p>';return;}
-    el.innerHTML=rides.map(rd=>{
-      const isOffer=rd.type==='OFFER',canMatch=rd.status==='OPEN'&&((isOffer&&rd.offererId!==user?.id)||(!isOffer&&rd.requesterId!==user?.id));
-      return`<div class="ride-item"><span>${isOffer?'🚗 Bietet Fahrt':'🙋 Sucht Mitfahrt'}${rd.pickup?' – '+rd.pickup:''}${rd.seats?' ('+rd.seats+' Plätze)':''} <span style="color:var(--muted);font-size:0.75rem;">[${rd.status}]</span></span>
+    const html=await Promise.all(rides.map(async rd=>{
+      const isOffer=rd.type==='OFFER';
+      const canMatch=rd.status==='OPEN'&&((isOffer&&rd.offererId!==user?.id)||(!isOffer&&rd.requesterId!==user?.id));
+      let statusText='';
+      if(rd.status==='MATCHED'){
+        // Show who is involved
+        let partnerId=isOffer?rd.requesterId:rd.offererId;
+        let partnerName='Jemand';
+        if(partnerId){try{const pr=await fetch('/api/users/'+partnerId);const pu=await pr.json();partnerName=pu.firstName+' '+pu.lastName;}catch(e){}}
+        const isMine=rd.offererId===user?.id||rd.requesterId===user?.id;
+        statusText=isMine?`<span style="color:#16a34a;font-size:0.78rem;font-weight:700;">✓ mit ${partnerName}</span>`:'<span style="color:var(--muted);font-size:0.75rem;">[Vergeben]</span>';
+      }else{
+        statusText='<span style="color:var(--muted);font-size:0.75rem;">[Offen]</span>';
+      }
+      return`<div class="ride-item"><span>${isOffer?'🚗 Bietet Fahrt':'🙋 Sucht Mitfahrt'}${rd.pickup?' – '+rd.pickup:''}${rd.seats?' ('+rd.seats+' Plätze)':''} ${statusText}</span>
         ${canMatch?`<button onclick="matchRide(${rd.id})" class="ride-btn ${isOffer?'ride-request':'ride-offer'}">${isOffer?'Mitfahren':'Anbieten'}</button>`:''}</div>`;
-    }).join('');
+    }));
+    el.innerHTML=html.join('');
   }catch(e){}
 }
 

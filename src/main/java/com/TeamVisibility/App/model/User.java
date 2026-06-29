@@ -48,6 +48,21 @@ public class User {
     @Column(name = "notif_radius")
     private Integer notifRadius;
 
+    @Column(name = "avatar", length = 20)
+    private String avatar;
+
+    @Column(name = "bio", length = 500)
+    private String bio;
+
+    @Column(name = "location_name")
+    private String locationName;
+
+    @Column(name = "interests", length = 500)
+    private String interests;
+
+    @Column(name = "followers", length = 2000)
+    private String followers;
+
     public Long getId() {
         return id;
     }
@@ -135,4 +150,15 @@ public class User {
     public void setNotifRadius(Integer notifRadius) {
         this.notifRadius = notifRadius;
     }
+
+    public String getAvatar() { return avatar; }
+    public void setAvatar(String avatar) { this.avatar = avatar; }
+    public String getBio() { return bio; }
+    public void setBio(String bio) { this.bio = bio; }
+    public String getLocationName() { return locationName; }
+    public void setLocationName(String locationName) { this.locationName = locationName; }
+    public String getInterests() { return interests; }
+    public void setInterests(String interests) { this.interests = interests; }
+    public String getFollowers() { return followers; }
+    public void setFollowers(String followers) { this.followers = followers; }
 }

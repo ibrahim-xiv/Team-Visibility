@@ -6,12 +6,17 @@
   <link rel="stylesheet" href="style.css"/>
   <style>
     .pv-card{text-align:center;padding:24px 0 16px;}
-    .pv-avatar{width:80px;height:80px;border-radius:50%;background:var(--hover-bg);border:2px solid var(--border);display:grid;place-items:center;margin:0 auto 12px;font-size:2.8rem;line-height:1;}
-    .pv-avatar svg{width:48px;height:48px;color:var(--muted);}
+    .pv-avatar{width:84px;height:84px;border-radius:50%;background:var(--hover-bg);border:2px solid var(--border);display:grid;place-items:center;margin:0 auto 12px;font-size:3rem;line-height:1;}
+    .pv-avatar svg{width:50px;height:50px;color:var(--muted);}
     .pv-name{font-size:1.4rem;font-weight:800;margin:0 0 4px;}
-    .pv-username{color:var(--muted);font-size:0.85rem;margin:0 0 12px;}
+    .pv-username{color:var(--muted);font-size:0.85rem;margin:0 0 8px;}
+    .pv-followers{display:inline-block;background:var(--hover-bg);border-radius:20px;padding:4px 14px;font-size:0.85rem;font-weight:700;margin-bottom:12px;}
+    .pv-bio{font-size:0.9rem;color:var(--text);margin:0 0 12px;line-height:1.5;}
+    .pv-interests{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:8px;}
+    .interest-chip{background:var(--hover-bg);border:1px solid var(--border);border-radius:20px;padding:4px 10px;font-size:0.8rem;font-weight:700;}
+    .pv-location{font-size:0.85rem;color:var(--muted);margin-bottom:8px;}
     .pv-actions{display:flex;gap:10px;margin-bottom:16px;}
-    .pv-actions button,.pv-actions a{flex:1;text-align:center;}
+    .pv-actions button{flex:1;}
     .pv-event{padding:10px;border:1px solid var(--border);border-radius:var(--radius-md);margin-bottom:8px;}
     .pv-event a{text-decoration:none;color:var(--text);font-weight:700;}
   </style>
@@ -26,11 +31,14 @@
         <div class="pv-avatar" id="pvAvatar"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-4.4 0-8 2.2-8 5v2h16v-2c0-2.8-3.6-5-8-5z"/></svg></div>
         <h2 class="pv-name" id="pvName">Wird geladen…</h2>
         <p class="pv-username" id="pvUsername"></p>
-        <p id="pvBio" style="font-size:0.88rem;color:var(--muted);margin-bottom:12px;"></p>
+        <p class="pv-followers"><span id="pvFollowerCount">0</span> Follower</p>
+        <p class="pv-bio" id="pvBio"></p>
+        <p class="pv-location" id="pvLocation"></p>
+        <div class="pv-interests" id="pvInterests"></div>
       </div>
       <div class="pv-actions">
         <button onclick="openChat()" class="submit-btn">💬 Nachricht</button>
-        <button onclick="toggleFriend()" class="submit-btn" id="friendBtn" style="background:var(--hover-bg);color:var(--text);border:1px solid var(--border);">👤 Freund hinzufügen</button>
+        <button onclick="toggleFollow()" class="submit-btn" id="followBtn" style="background:var(--hover-bg);color:var(--text);border:1px solid var(--border);">+ Folgen</button>
       </div>
       <div>
         <h3 style="font-size:1rem;font-weight:800;margin-bottom:10px;">Events</h3>
@@ -42,22 +50,7 @@
 <script src="app.js"></script>
 <script>
 const uid=new URLSearchParams(window.location.search).get('id');
-const FRIENDS_KEY='visibility-friends';
-let friends=JSON.parse(localStorage.getItem(FRIENDS_KEY)||'[]');
-
-function isFriend(){return friends.includes(Number(uid));}
-function updateFriendBtn(){
-  const btn=document.getElementById('friendBtn');
-  if(isFriend()){btn.textContent='❌ Entfreunden';btn.style.background='#fef2f2';btn.style.color='#ef4444';btn.style.borderColor='#fca5a5';}
-  else{btn.textContent='👤 Freund hinzufügen';btn.style.background='var(--hover-bg)';btn.style.color='var(--text)';btn.style.borderColor='var(--border)';}
-}
-
-function toggleFriend(){
-  const id=Number(uid);
-  if(isFriend()){friends=friends.filter(f=>f!==id);} else {friends.push(id);}
-  localStorage.setItem(FRIENDS_KEY,JSON.stringify(friends));
-  updateFriendBtn();
-}
+let following=false;
 
 async function load(){
   if(!uid){document.getElementById('pvName').textContent='Nicht gefunden';return;}
@@ -65,12 +58,38 @@ async function load(){
     const r=await fetch('/api/users/'+uid);const u=await r.json();
     document.getElementById('pvName').textContent=u.firstName+' '+u.lastName;
     document.getElementById('pvUsername').textContent='@'+u.username;
-    updateFriendBtn();
+    document.getElementById('pvFollowerCount').textContent=u.followerCount||0;
+    if(u.avatar)document.getElementById('pvAvatar').textContent=u.avatar;
+    if(u.bio)document.getElementById('pvBio').textContent=u.bio;
+    if(u.locationName)document.getElementById('pvLocation').textContent='📍 '+u.locationName;
+    if(u.interests)document.getElementById('pvInterests').innerHTML=u.interests.split(',').filter(i=>i).map(i=>'<span class="interest-chip">'+i+'</span>').join('');
+
+    // Check follow status
+    const fr=await fetch('/api/users/'+uid+'/is-following');const fd=await fr.json();
+    following=fd.following;updateFollowBtn();
+
+    // Events
     const mr=await fetch('/api/meetings');const all=await mr.json();
     const theirs=all.filter(e=>e.creatorId===Number(uid));const el=document.getElementById('pvEvents');
     if(!theirs.length){el.innerHTML='<p style="color:var(--muted);font-size:0.85rem;">Keine Events.</p>';return;}
     el.innerHTML=theirs.map(e=>`<div class="pv-event"><a href="event-details.html?id=${e.id}">${e.title}</a><br><span style="font-size:0.8rem;color:var(--muted);">${e.locationName||''}</span></div>`).join('');
   }catch(e){}
+}
+
+function updateFollowBtn(){
+  const btn=document.getElementById('followBtn');
+  if(following){btn.textContent='✓ Folge ich';btn.style.background='var(--primary)';btn.style.color='#fff';btn.style.borderColor='var(--primary)';}
+  else{btn.textContent='+ Folgen';btn.style.background='var(--hover-bg)';btn.style.color='var(--text)';btn.style.borderColor='var(--border)';}
+}
+
+async function toggleFollow(){
+  const action=following?'unfollow':'follow';
+  try{
+    const r=await fetch('/api/users/'+uid+'/'+action,{method:'POST'});
+    const d=await r.json();
+    if(r.ok){following=d.following;document.getElementById('pvFollowerCount').textContent=d.followerCount;updateFollowBtn();}
+    else alert(d.error||'Fehler');
+  }catch(e){alert('Fehler');}
 }
 
 function openChat(){localStorage.setItem('chat-open-recipient',uid);window.location.href='chat.html';}

@@ -167,4 +167,8 @@ public class UserService {
         if (base.length() >= 3) return base;
         return email.substring(0, email.indexOf('@')).replaceAll("[^a-zA-Z0-9._-]", "");
     }
+
+    public java.util.List<User> findAll() {
+        return userRepository.findAll();
+    }
 }

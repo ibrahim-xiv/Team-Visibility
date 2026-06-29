@@ -45,8 +45,8 @@
         <div class="profile-interests" id="profileInterests"></div>
       </div>
 
-      <div class="section-label">Freunde</div>
-      <div class="friends-list" id="friendsList"><p style="color:var(--muted);font-size:0.85rem;">Noch keine Kontakte.</p></div>
+      <div class="section-label">Folge ich</div>
+      <div class="friends-list" id="friendsList"><p style="color:var(--muted);font-size:0.85rem;">Du folgst noch niemandem.</p></div>
 
       <div class="section-label">Meine Events</div>
       <div class="my-events-list" id="myEvents"><p style="color:var(--muted);font-size:0.85rem;">Wird geladen…</p></div>
@@ -70,14 +70,13 @@
 async function loadProfile(){
   try{const r=await fetch('/api/auth/me');if(r.status===401){window.location.href='login.html';return;}
     const u=await r.json();localStorage.setItem('tv-user',JSON.stringify(u));
-    const extra=JSON.parse(localStorage.getItem('visibility-profile')||'{}');
     const av=document.getElementById('profileAvatar');
-    if(extra.avatar){av.textContent=extra.avatar;}
+    if(u.avatar){av.textContent=u.avatar;}
     document.getElementById('profileName').textContent=u.firstName+' '+u.lastName;
     document.getElementById('profileUsername').textContent='@'+u.username;
     document.getElementById('profileEmail').textContent=u.email;
-    if(extra.bio)document.getElementById('profileBio').textContent=extra.bio;
-    if(extra.interests&&extra.interests.length)document.getElementById('profileInterests').innerHTML=extra.interests.map(i=>'<span class="interest-chip">'+i+'</span>').join('');
+    if(u.bio)document.getElementById('profileBio').textContent=u.bio;
+    if(u.interests)document.getElementById('profileInterests').innerHTML=u.interests.split(',').filter(i=>i).map(i=>'<span class="interest-chip">'+i+'</span>').join('');
   }catch(e){}
 }
 
