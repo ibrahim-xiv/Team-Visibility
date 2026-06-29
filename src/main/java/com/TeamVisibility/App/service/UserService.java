@@ -161,4 +161,13 @@ public class UserService {
 
         return email.substring(0, email.indexOf('@')).replaceAll("[^a-zA-Z0-9._-]", "");
     }
+
+    public User findByEmail(String email) {
+        return userRepository.findByEmailIgnoreCase(email)
+        .orElseThrow(() -> new IllegalArgumentException("Nicht gefunden"));
+    }
+
+    public User saveUser(User user) {
+        return userRepository.save(user);
+    }
 }
