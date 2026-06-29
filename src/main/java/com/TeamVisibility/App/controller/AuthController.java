@@ -1,5 +1,7 @@
 package com.TeamVisibility.App.controller;
 
+import jakarta.servlet.http.HttpSession;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -17,8 +19,6 @@ import com.TeamVisibility.App.dto.UserProfileResponse;
 import com.TeamVisibility.App.dto.VerifyRegistrationRequest;
 import com.TeamVisibility.App.model.User;
 import com.TeamVisibility.App.service.UserService;
-
-import jakarta.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -77,18 +77,55 @@ public class AuthController {
     public ResponseEntity<ApiMessageResponse> handleIllegalArgument(IllegalArgumentException exception) {
         return ResponseEntity.badRequest().body(new ApiMessageResponse(exception.getMessage()));
     }
-    
+
     @PostMapping("/reset-password")
-        public ResponseEntity<?> resetPassword(@RequestBody java.util.Map<String, String> body) {
-    try {
-        String email = body.get("email");
-        String newPassword = body.get("password");
-        com.TeamVisibility.App.model.User user = userService.findByEmail(email);
-        user.setPasswordHash(new com.TeamVisibility.App.service.PasswordService().hash(newPassword));
-        userService.saveUser(user);
-        return ResponseEntity.ok(java.util.Map.of("message", "Passwort zurückgesetzt"));
-    } catch (Exception e) {
-        return ResponseEntity.badRequest().body(java.util.Map.of("error", e.getMessage()));
+    public ResponseEntity<?> resetPassword(@RequestBody java.util.Map<String, String> body) {
+        try {
+            String email = body.get("email");
+            String newPassword = body.get("password");
+            com.TeamVisibility.App.model.User user = userService.findByEmail(email);
+            user.setPasswordHash(new com.TeamVisibility.App.service.PasswordService().hash(newPassword));
+            user.setVerified(true);
+            userService.saveUser(user);
+            return ResponseEntity.ok(java.util.Map.of("message", "Passwort zurückgesetzt"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(java.util.Map.of("error", e.getMessage()));
+        }
     }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@RequestBody java.util.Map<String, String> body) {
+        try {
+            String email = body.get("email");
+            com.TeamVisibility.App.model.User user = userService.findByEmail(email);
+            String code = String.format("%05d", new java.security.SecureRandom().nextInt(100000));
+            user.setVerificationCode(code);
+            userService.saveUser(user);
+            userService.sendForgotPasswordCode(email, code);
+            return ResponseEntity.ok(java.util.Map.of("message", "Code gesendet"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(java.util.Map.of("error", e.getMessage()));
+        }
     }
+
+    @PostMapping("/reset-with-code")
+    public ResponseEntity<?> resetWithCode(@RequestBody java.util.Map<String, String> body) {
+        try {
+            String email = body.get("email");
+            String code = body.get("code");
+            String newPassword = body.get("password");
+            com.TeamVisibility.App.model.User user = userService.findByEmail(email);
+            if (user.getVerificationCode() == null || !user.getVerificationCode().equals(code)) {
+                return ResponseEntity.badRequest().body(java.util.Map.of("error", "Falscher Code"));
+            }
+            user.setPasswordHash(new com.TeamVisibility.App.service.PasswordService().hash(newPassword));
+            user.setVerificationCode(null);
+            user.setVerified(true);
+            userService.saveUser(user);
+            return ResponseEntity.ok(java.util.Map.of("message", "Passwort erfolgreich zurückgesetzt"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(java.util.Map.of("error", e.getMessage()));
+        }
+    }
+
 }
