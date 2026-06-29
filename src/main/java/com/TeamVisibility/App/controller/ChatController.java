@@ -57,6 +57,7 @@ public class ChatController {
             conv.put("type", "private");
             conv.put("recipientId", pid);
             conv.put("recipientName", partner != null ? partner.getFirstName() + " " + partner.getLastName() : "User");
+            conv.put("recipientAvatar", partner != null ? partner.getAvatar() : null);
             conv.put("lastMessage", lastMsg.length() > 50 ? lastMsg.substring(0, 50) + "…" : lastMsg);
             result.add(conv);
         }
@@ -117,6 +118,7 @@ public class ChatController {
                 msg.put("content", m.getContent());
                 msg.put("mine", m.getSenderId().equals(uid));
                 msg.put("senderName", sender != null ? sender.getFirstName() + " " + sender.getLastName() : "User");
+                msg.put("senderAvatar", sender != null ? sender.getAvatar() : null);
                 msg.put("createdAt", m.getCreatedAt());
                 result.add(msg);
             }

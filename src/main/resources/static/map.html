@@ -1,64 +1,58 @@
 <!DOCTYPE html>
 <html lang="de">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Visibility – Kartenansicht</title>
-  
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
   <link rel="stylesheet" href="style.css" />
+  <style>
+    .map-content{position:relative;flex:1;display:flex;flex-direction:column;min-height:0;}
+    #map{position:absolute;inset:0;width:100%;height:100%;z-index:1;background:var(--hover-bg);}
+    .map-overlay{position:absolute;top:12px;left:0;right:0;z-index:1000;pointer-events:none;}
+    .filter-scroll{display:flex;gap:8px;overflow-x:auto;padding:4px 14px 12px;pointer-events:auto;scrollbar-width:none;}
+    .filter-scroll::-webkit-scrollbar{display:none;}
+    .map-chip{flex-shrink:0;padding:8px 14px;border-radius:20px;border:none;background:var(--surface);color:var(--text);font-size:0.85rem;font-weight:700;cursor:pointer;white-space:nowrap;box-shadow:0 4px 12px rgba(0,0,0,0.15);}
+    .map-chip.is-selected{background:var(--primary);color:#fff;}
+    .map-controls-bottom{position:absolute;bottom:18px;right:14px;left:14px;z-index:1000;display:flex;flex-direction:column;align-items:flex-end;gap:10px;pointer-events:none;}
+    .center-btn{pointer-events:auto;width:46px;height:46px;border-radius:50%;background:var(--surface);border:1px solid var(--border);color:var(--text);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 6px 16px rgba(0,0,0,0.15);}
+    .radius-card{pointer-events:auto;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:12px 16px;width:100%;box-shadow:0 6px 16px rgba(0,0,0,0.15);}
+    .radius-header{display:flex;justify-content:space-between;font-size:0.85rem;font-weight:700;margin-bottom:8px;}
+    .radius-slider{width:100%;accent-color:var(--primary);}
+    .event-pin{width:34px;height:34px;background:var(--primary);border:2px solid #fff;border-radius:50% 50% 50% 0;transform:rotate(-45deg);display:flex;align-items:center;justify-content:center;box-shadow:0 3px 8px rgba(0,0,0,0.3);}
+    .pin-text{transform:rotate(45deg);font-size:16px;}
+    body.dark-mode .leaflet-tile-pane{filter:invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);}
+  </style>
 </head>
-
 <body>
-  <script>
-    if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');
-  </script>
-
+  <script>if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');</script>
   <main class="phone">
     <header class="header has-back">
       <a class="back-btn" href="home.html">&#8249;</a>
       <h1>Entdecken</h1>
     </header>
-
     <section class="map-content">
+      <div id="map"></div>
       <div class="map-overlay">
         <div class="filter-scroll" id="filterContainer">
-          <div class="tag-chip is-selected" data-category="all">Alle Events</div>
-          <div class="tag-chip" data-category="freizeit">🍹 Freizeit</div>
-          <div class="tag-chip" data-category="sport">🏃 Sport</div>
-          <div class="tag-chip" data-category="spieleabend">🎲 Spieleabend</div>
-          <div class="tag-chip" data-category="kultur">🎭 Kultur</div>
-          <div class="tag-chip" data-category="community">👥 Community</div>
+          <button class="map-chip is-selected" data-category="all">Alle Events</button>
+          <button class="map-chip" data-category="Freizeit">🍹 Freizeit</button>
+          <button class="map-chip" data-category="Sport">🏃 Sport</button>
+          <button class="map-chip" data-category="Spieleabend">🎲 Spieleabend</button>
+          <button class="map-chip" data-category="Kultur">🎭 Kultur</button>
+          <button class="map-chip" data-category="Community">👥 Community</button>
         </div>
       </div>
-
       <div class="map-controls-bottom">
-        <button id="gpsBtn" class="center-btn" style="margin-bottom: 8px;">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polygon points="3 11 22 2 13 21 11 13 3 11"></polygon>
-          </svg>
+        <button id="gpsBtn" class="center-btn">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"></polygon></svg>
         </button>
-
-        <button id="centerMapBtn" class="center-btn">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10"></circle>
-            <circle cx="12" cy="12" r="3"></circle>
-          </svg>
-        </button>
-
         <div class="radius-card">
-          <div class="radius-header">
-            <span>📍 Such-Radius</span>
-            <span id="radiusLabel">450 m</span>
-          </div>
-          <input type="range" id="radiusSlider" class="radius-slider" min="100" max="15000" step="50" value="450">
+          <div class="radius-header"><span>📍 Such-Radius</span><span id="radiusLabel">5 km</span></div>
+          <input type="range" id="radiusSlider" class="radius-slider" min="1" max="50" step="1" value="5">
         </div>
       </div>
-
-      <div id="map"></div>
     </section>
-
     <nav class="bottom-nav">
       <a class="nav-btn" href="home.html"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3l9 8h-3v9h-5v-6H11v6H6v-9H3l9-8z"></path></svg></a>
       <a class="nav-btn" href="chat.html"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 5h16a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H9l-5 4v-4H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"></path></svg></a>
@@ -68,138 +62,93 @@
     </nav>
   </main>
 
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  <script src="app.js"></script>
   <script>
-    let userLoc = [53.521, 8.118]; 
-    const eventMarkers = []; 
-    const activeCategories = new Set();
-    const isDark = document.body.classList.contains('dark-mode');
-    const urlParams = new URLSearchParams(window.location.search);
-    const mapEventId = urlParams.get('id');
+    let userLoc = [53.521, 8.118]; // Wilhelmshaven default
+    let eventMarkers = [];
+    let activeFilter = 'all';
+    let userCircle = null;
+    const categoryEmoji = {'Freizeit':'🎉','Sport':'🏃','Spieleabend':'🎲','Kultur':'🎭','Community':'👥'};
 
-    const map = L.map('map', { zoomControl: false, zoomSnap: 0.1, zoomDelta: 0.1 }).setView(userLoc, 13);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-
-    function addEvent(id, lat, lng, label, title, time, category) {
-      const icon = L.divIcon({
-        className: 'custom-icon',
-        html: `<div class="event-pin"><span class="pin-text">${label}</span></div>`,
-        iconSize: [34, 34], iconAnchor: [17, 34], popupAnchor: [0, -34] 
-      });
-      const marker = L.marker([lat, lng], { icon: icon });
-      marker.bindPopup(`<div class="popup-custom"><strong>${title}</strong><small>${time}</small></div>`);
-      eventMarkers.push({ id, leafletObj: marker, latlng: L.latLng(lat, lng), category: category });
-    }
-
-    // Ganz viele Events einbauen
-    addEvent('ev_1', 53.528, 8.108, '🎲', 'Brettspielabend', 'Samstag, 18.04.2026', 'spieleabend');
-    addEvent('ev_2', 53.526, 8.125, '🏃', 'Morgenjogger', 'Montag, 20.03.2026', 'sport');
-    addEvent('ev_3', 53.520, 8.120, '🐾', 'Hundespaziergang', 'Dienstag, 31.03.2026', 'community');
-    addEvent('ev_4', 53.522, 8.108, '✨', 'Poker Abend', 'Samstag, 18.04.2026', 'freizeit');
-    addEvent('ev_5', 53.518, 8.135, '🎉', 'Filmabend im Hof', 'Freitag, 20:00', 'freizeit');
-    addEvent('ev_6', 53.510, 8.130, '🧘', 'Yoga im Park', 'Sonntag, 27.04.2026', 'sport');
-    addEvent('ev_7', 53.515, 8.128, '🎭', 'Lesekreis', 'Dienstag, 05.05.2026', 'kultur');
-    addEvent('ev_8', 53.513, 8.117, '☕', 'Café-Stammtisch', 'Donnerstag, 14.05.2026', 'community');
-    addEvent('ev_x', 53.555, 8.145, '⛵', 'Segelkurs Rüstersiel', 'Samstag, 10:00', 'sport');
-    addEvent('ev_y', 53.610, 8.130, '🌊', 'Strand-Party Hooksiel', 'Samstag, 21:00', 'freizeit');
-    addEvent('ev_z', 53.430, 8.040, '🚴', 'MTB Tour Süd-Marsch', 'Sonntag, 11:00', 'sport');
-    addEvent('ev_w', 53.450, 8.150, '🚜', 'Bauernhof-Fest', 'Sonntag, 10:00', 'community');
-    addEvent('ev_v', 53.620, 8.050, '🪁', 'Drachenfest im Norden', 'Samstag, 14:00', 'freizeit');
-
-    if (mapEventId) {
-      const targetEvent = eventMarkers.find(e => e.id === mapEventId);
-      if (targetEvent) {
-        map.setView(targetEvent.latlng, 15);
-      }
-    }
-
-    const homeIcon = L.divIcon({
-      className: 'home-icon',
-      html: `<div class="home-pin">📍</div>`,
-      iconSize: [38, 38], iconAnchor: [19, 19]
-    });
-    let homeMarker = L.marker(userLoc, { icon: homeIcon }).addTo(map);
-
-    const radiusCircle = L.circle(userLoc, {
-      stroke: false, color: isDark ? '#0095f6' : '#3b82f6',
-      fillColor: isDark ? '#0095f6' : '#3b82f6', fillOpacity: 0.15, radius: 450
+    const map = L.map('map', { zoomControl: false }).setView(userLoc, 12);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap', maxZoom: 19
     }).addTo(map);
 
-    function updateMapDisplay() {
-      const radiusMeters = parseInt(document.getElementById('radiusSlider').value);
-      eventMarkers.forEach(event => {
-        const matchesCategory = mapEventId || activeCategories.size === 0 || activeCategories.has(event.category);
-        const matchesEventId = !mapEventId || event.id === mapEventId;
-        const distance = map.distance(userLoc, event.latlng);
-        const inRadius = distance <= radiusMeters;
+    // Fix map sizing after render
+    setTimeout(() => map.invalidateSize(), 200);
+    window.addEventListener('resize', () => map.invalidateSize());
 
-        if (!matchesEventId || !matchesCategory) {
-          if (map.hasLayer(event.leafletObj)) map.removeLayer(event.leafletObj);
-          return;
-        }
-
-        if (!map.hasLayer(event.leafletObj)) event.leafletObj.addTo(map);
-        event.leafletObj.setOpacity(mapEventId ? 1.0 : (inRadius ? 1.0 : 0.2));
+    function makeIcon(emoji) {
+      return L.divIcon({
+        className: 'custom-icon',
+        html: `<div class="event-pin"><span class="pin-text">${emoji}</span></div>`,
+        iconSize: [34, 34], iconAnchor: [17, 34], popupAnchor: [0, -34]
       });
     }
 
-    map.on('contextmenu', (e) => {
-      userLoc = [e.latlng.lat, e.latlng.lng];
-      homeMarker.setLatLng(e.latlng);
-      radiusCircle.setLatLng(e.latlng);
-      updateMapDisplay();
-    });
+    async function loadEvents() {
+      try {
+        const r = await fetch('/api/meetings');
+        const events = await r.json();
+        eventMarkers.forEach(m => map.removeLayer(m.leafletObj));
+        eventMarkers = [];
+        events.forEach(e => {
+          if (!e.lat || !e.lng) return;
+          const emoji = categoryEmoji[e.category] || '✨';
+          const marker = L.marker([e.lat, e.lng], { icon: makeIcon(emoji) });
+          const dateStr = e.dateTime ? new Date(e.dateTime).toLocaleDateString('de-DE') : '';
+          marker.bindPopup(`<strong>${e.title}</strong><br><small>${e.locationName||''}<br>${dateStr}</small><br><a href="event-details.html?id=${e.id}">Details ansehen</a>`);
+          eventMarkers.push({ leafletObj: marker, category: e.category, latlng: L.latLng(e.lat, e.lng) });
+        });
+        applyFilter();
+      } catch(err) { console.error(err); }
+    }
 
-    document.getElementById('gpsBtn').addEventListener('click', () => {
-      navigator.geolocation.getCurrentPosition((pos) => {
-        const newPos = [pos.coords.latitude, pos.coords.longitude];
-        userLoc = newPos; homeMarker.setLatLng(newPos); radiusCircle.setLatLng(newPos);
-        map.setView(newPos, 14, { animate: true }); updateMapDisplay();
-      }, () => alert("GPS Zugriff verweigert."));
-    });
-
-    document.querySelectorAll('.tag-chip').forEach(chip => {
-      chip.addEventListener('click', () => {
-        const cat = chip.dataset.category;
-        if (cat === 'all') {
-          document.querySelectorAll('.tag-chip').forEach(c => c.classList.remove('is-selected'));
-          chip.classList.add('is-selected'); activeCategories.clear();
+    function applyFilter() {
+      eventMarkers.forEach(m => {
+        if (activeFilter === 'all' || m.category === activeFilter) {
+          m.leafletObj.addTo(map);
         } else {
-          document.querySelector('[data-category="all"]').classList.remove('is-selected');
-          chip.classList.toggle('is-selected');
-          if (chip.classList.contains('is-selected')) activeCategories.add(cat);
-          else activeCategories.delete(cat);
-          if (activeCategories.size === 0) document.querySelector('[data-category="all"]').classList.add('is-selected');
+          map.removeLayer(m.leafletObj);
         }
-        updateMapDisplay();
       });
+    }
+
+    document.getElementById('filterContainer').addEventListener('click', e => {
+      const chip = e.target.closest('.map-chip');
+      if (!chip) return;
+      document.querySelectorAll('.map-chip').forEach(c => c.classList.remove('is-selected'));
+      chip.classList.add('is-selected');
+      activeFilter = chip.dataset.category;
+      applyFilter();
     });
 
+    // Radius
     const radiusSlider = document.getElementById('radiusSlider');
     const radiusLabel = document.getElementById('radiusLabel');
-    radiusSlider.addEventListener('input', (e) => {
-      const r = parseInt(e.target.value);
-      radiusLabel.textContent = r >= 1000 ? (r / 1000).toFixed(1) + ' km' : r + ' m';
-      radiusCircle.setRadius(r);
-      updateMapDisplay();
-      const zoomLevel = 15 - Math.log2(r / 450);
-      const clampedZoom = Math.max(9.5, Math.min(16, zoomLevel));
-      map.setView(userLoc, clampedZoom, { animate: true, duration: 0.25 });
+    function updateCircle() {
+      const km = Number(radiusSlider.value);
+      radiusLabel.textContent = km + ' km';
+      if (userCircle) map.removeLayer(userCircle);
+      userCircle = L.circle(userLoc, { radius: km*1000, color: '#3b9eff', fillColor: '#3b9eff', fillOpacity: 0.1, weight: 2 }).addTo(map);
+    }
+    radiusSlider.addEventListener('input', updateCircle);
+
+    // GPS
+    document.getElementById('gpsBtn').addEventListener('click', () => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(pos => {
+          userLoc = [pos.coords.latitude, pos.coords.longitude];
+          map.setView(userLoc, 13);
+          updateCircle();
+        }, () => alert('Standort konnte nicht ermittelt werden.'));
+      }
     });
 
-    document.getElementById('centerMapBtn').addEventListener('click', () => {
-      map.flyTo(userLoc, 14, { animate: true, duration: 0.5 });
-    });
-
-    const fContainer = document.getElementById('filterContainer');
-    let isD = false, sX, sL;
-    fContainer.addEventListener('mousedown', (e) => { isD = true; sX = e.pageX - fContainer.offsetLeft; sL = fContainer.scrollLeft; });
-    fContainer.addEventListener('mouseup', () => { isD = false; });
-    fContainer.addEventListener('mousemove', (e) => { if (!isD) return; fContainer.scrollLeft = sL - (e.pageX - fContainer.offsetLeft - sX) * 1.5; });
-
-    radiusSlider.dispatchEvent(new Event('input'));
+    updateCircle();
+    loadEvents();
   </script>
-
-  <script src="app.js"></script>
 </body>
 </html>

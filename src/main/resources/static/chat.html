@@ -82,7 +82,7 @@ function showChat(recipientId,recipientName,groupId,groupName){
   const plink=document.getElementById('chatProfileLink'),avatar=document.getElementById('chatAvatar');
   if(recipientId){plink.href='profile-view.html?id='+recipientId;plink.style.display='inline';avatar.innerHTML='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-4.4 0-8 2.2-8 5v2h16v-2c0-2.8-3.6-5-8-5z"/></svg>';}
   else{plink.style.display='none';avatar.innerHTML='👥';avatar.style.fontSize='1.2rem';}
-  loadMessages();pollTimer=setInterval(loadMessages,3000);
+  lastMsgSignature='';loadMessages();pollTimer=setInterval(loadMessages,3000);
 }
 
 async function loadConversations(){
@@ -94,9 +94,12 @@ async function loadConversations(){
     let html='';
     if(privates.length){
       html+='<div class="conv-section-title">Einzelchats</div>';
-      html+=privates.map(c=>`<div class="conversation-item" onclick="showChat(${c.recipientId},'${(c.recipientName||'').replace(/'/g,"\\'")}',null,null)">
-        <div class="conv-avatar"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-4.4 0-8 2.2-8 5v2h16v-2c0-2.8-3.6-5-8-5z"/></svg></div>
-        <div class="conv-info"><div class="conv-name">${c.recipientName||'User'}</div><div class="conv-last">${c.lastMessage||''}</div></div></div>`).join('');
+      html+=privates.map(c=>{
+        const av=c.recipientAvatar?`<span style="font-size:1.3rem;">${c.recipientAvatar}</span>`:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-4.4 0-8 2.2-8 5v2h16v-2c0-2.8-3.6-5-8-5z"/></svg>';
+        return `<div class="conversation-item" onclick="showChat(${c.recipientId},'${(c.recipientName||'').replace(/'/g,"\\'")}',null,null)">
+        <div class="conv-avatar">${av}</div>
+        <div class="conv-info"><div class="conv-name">${c.recipientName||'User'}</div><div class="conv-last">${c.lastMessage||''}</div></div></div>`;
+      }).join('');
     }
     if(groups.length){
       html+='<div class="conv-section-title">Gruppen-Chats</div>';
@@ -108,15 +111,22 @@ async function loadConversations(){
   }catch(e){document.getElementById('convList').innerHTML='<p style="color:var(--muted);text-align:center;padding:20px;">Fehler.</p>';}
 }
 
+let lastMsgSignature='';
 async function loadMessages(){
   try{let url='/api/chat/messages?';
     if(currentRecipientId)url+='recipientId='+currentRecipientId;
     else if(currentGroupId)url+='groupEventId='+currentGroupId;
-    const r=await fetch(url);const msgs=await r.json();const el=document.getElementById('chatMessages');
+    const r=await fetch(url);const msgs=await r.json();
+    // Only re-render if messages changed (prevents flicker)
+    const sig=msgs.map(m=>m.id).join(',');
+    if(sig===lastMsgSignature)return;
+    const el=document.getElementById('chatMessages');
+    const wasAtBottom=el.scrollHeight-el.scrollTop-el.clientHeight<60;
+    lastMsgSignature=sig;
     el.innerHTML=msgs.map(m=>`<div class="message-bubble ${m.mine?'outgoing':'incoming'}">
       ${m.mine?'':`<div class="sender-label">${m.senderName}</div>`}${m.content}
       <span class="message-time">${new Date(m.createdAt).toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})}</span></div>`).join('');
-    el.scrollTop=el.scrollHeight;
+    if(wasAtBottom)el.scrollTop=el.scrollHeight;
   }catch(e){}
 }
 
