@@ -128,4 +128,48 @@ public class AuthController {
         }
     }
 
+
+
+    @PostMapping("/delete-account")
+    public ResponseEntity<?> deleteAccount(HttpSession session) {
+        Long uid = (Long) session.getAttribute("userId");
+        if (uid == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        try {
+            com.TeamVisibility.App.model.User user = userService.findById(uid);
+            user.setVerified(false);
+            user.setVerificationCode("DELETED_" + System.currentTimeMillis());
+            userService.saveUser(user);
+            session.invalidate();
+            return ResponseEntity.ok(java.util.Map.of("message", "Konto wird in 24 Stunden endgültig gelöscht. Du kannst dich bis dahin wieder anmelden um es zu behalten."));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(java.util.Map.of("error", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/restore-account")
+    public ResponseEntity<?> restoreAccount(@RequestBody java.util.Map<String, String> body) {
+        try {
+            String email = body.get("email");
+            String password = body.get("password");
+            com.TeamVisibility.App.model.User user = userService.findByEmail(email);
+            if (user.getVerificationCode() != null && user.getVerificationCode().startsWith("DELETED_")) {
+                long deletedAt = Long.parseLong(user.getVerificationCode().substring(8));
+                if (System.currentTimeMillis() - deletedAt > 24 * 60 * 60 * 1000) {
+                    userService.deleteUser(user);
+                    return ResponseEntity.badRequest().body(java.util.Map.of("error", "Konto wurde endgültig gelöscht. Bitte neu registrieren."));
+                }
+                if (!new com.TeamVisibility.App.service.PasswordService().matches(password, user.getPasswordHash())) {
+                    return ResponseEntity.badRequest().body(java.util.Map.of("error", "Falsches Passwort."));
+                }
+                user.setVerified(true);
+                user.setVerificationCode(null);
+                userService.saveUser(user);
+                return ResponseEntity.ok(java.util.Map.of("message", "Konto wiederhergestellt!"));
+            }
+            return ResponseEntity.badRequest().body(java.util.Map.of("error", "Konto ist nicht zur Löschung markiert."));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(java.util.Map.of("error", e.getMessage()));
+        }
+    }
+
 }

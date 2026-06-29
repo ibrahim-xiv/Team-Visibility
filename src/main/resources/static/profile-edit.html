@@ -49,7 +49,11 @@
       <div class="form-group"><label>E-Mail</label><input class="input" id="emailDisplay" type="email" disabled style="opacity:.6;cursor:not-allowed;"></div>
       <button class="submit-btn" type="submit">Änderungen speichern</button>
       <hr class="section-divider" style="margin-top:20px;">
-      <div class="danger-zone"><p class="danger-zone-title">⚠️ Gefahrenbereich</p><button class="danger-btn" type="button" onclick="if(confirm('Konto wirklich löschen?')){fetch('/api/auth/logout',{method:'POST'}).catch(()=>{});localStorage.clear();window.location.href='login.html';}">Konto löschen</button></div>
+      <div class="danger-zone">
+          <p class="danger-zone-title">⚠️ Gefahrenbereich</p>
+          <p style="font-size:0.85rem;color:var(--muted);margin:0 0 10px;">Dein Konto wird zur Löschung markiert. Du hast 24 Stunden Zeit, dich wieder anzumelden um es zu behalten.</p>
+          <button class="danger-btn" type="button" id="deleteBtn" onclick="showDeleteOverlay()">Konto löschen</button>
+        </div>
     </form>
   </section>
 </main>
@@ -109,4 +113,27 @@ document.getElementById('editForm').addEventListener('submit',e=>{
   input.addEventListener('blur',()=>setTimeout(hide,150));
 })();
 </script>
+
+  <div class="overlay" id="deleteOverlay" style="display:none;">
+    <div class="overlay-card">
+      <h2>Konto wirklich löschen?</h2>
+      <p>Dein Konto wird zur Löschung markiert. Du hast <strong>24 Stunden</strong> Zeit, dich wieder anzumelden um es zu behalten. Danach werden alle deine Daten permanent gelöscht.</p>
+      <div class="overlay-actions">
+        <button class="overlay-close" onclick="document.getElementById('deleteOverlay').style.display='none'">Abbrechen</button>
+        <button class="overlay-submit" onclick="confirmDelete()">Endgültig löschen</button>
+      </div>
+    </div>
+  </div>
+  <script>
+  function showDeleteOverlay(){document.getElementById('deleteOverlay').style.display='flex';}
+  async function confirmDelete(){
+    try{
+      const r=await fetch('/api/auth/delete-account',{method:'POST'});
+      const d=await r.json();
+      alert(d.message||'Konto wird gelöscht.');
+      localStorage.clear();
+      window.location.href='login.html';
+    }catch(e){alert('Fehler beim Löschen.');}
+  }
+  </script>
 </body></html>

@@ -60,8 +60,20 @@
         localStorage.setItem('tv-user', JSON.stringify(data));
         window.location.href = 'home.html';
       } catch(err) {
-        errEl.textContent = err.message;
-        errEl.style.display = 'block';
+        if (err.message === 'DELETED_ACCOUNT') {
+          if (confirm('Dein Konto ist zur Löschung markiert. Möchtest du es wiederherstellen?')) {
+            const rr = await fetch('/api/auth/restore-account', {
+              method:'POST', headers:{'Content-Type':'application/json'},
+              body:JSON.stringify({email:document.getElementById('email').value.trim(), password:document.getElementById('password').value})
+            });
+            const rd = await rr.json();
+            if (rr.ok) { alert('Konto wiederhergestellt! Bitte erneut anmelden.'); location.reload(); }
+            else { errEl.textContent = rd.error || rd.message || 'Fehler'; errEl.style.display = 'block'; }
+          }
+        } else {
+          errEl.textContent = err.message;
+          errEl.style.display = 'block';
+        }
         btn.disabled = false; btn.textContent = 'Anmelden';
       }
     });
