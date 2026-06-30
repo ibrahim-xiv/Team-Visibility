@@ -75,13 +75,17 @@ let currentRecipientId=null,currentGroupId=null,pollTimer=null;
 
 function showList(){document.getElementById('listView').style.display='flex';document.getElementById('chatView').style.display='none';clearInterval(pollTimer);loadConversations();}
 
-function showChat(recipientId,recipientName,groupId,groupName){
+function showChat(recipientId,recipientName,groupId,groupName,recipientAvatar){
   document.getElementById('listView').style.display='none';document.getElementById('chatView').style.display='flex';
   currentRecipientId=recipientId||null;currentGroupId=groupId||null;
   document.getElementById('chatPartnerName').textContent=recipientName||groupName||'Chat';
   const plink=document.getElementById('chatProfileLink'),avatar=document.getElementById('chatAvatar');
-  if(recipientId){plink.href='profile-view.html?id='+recipientId;plink.style.display='inline';avatar.innerHTML='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-4.4 0-8 2.2-8 5v2h16v-2c0-2.8-3.6-5-8-5z"/></svg>';}
-  else{plink.style.display='none';avatar.innerHTML='👥';avatar.style.fontSize='1.2rem';}
+  if(recipientId){
+    plink.href='profile-view.html?id='+recipientId;plink.style.display='inline';
+    if(recipientAvatar&&recipientAvatar!=='null'&&recipientAvatar!==''){avatar.innerHTML='';avatar.textContent=recipientAvatar;avatar.style.fontSize='1.3rem';}
+    else{avatar.innerHTML='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-4.4 0-8 2.2-8 5v2h16v-2c0-2.8-3.6-5-8-5z"/></svg>';avatar.style.fontSize='';}
+  }
+  else{plink.style.display='none';avatar.innerHTML='';avatar.textContent='👥';avatar.style.fontSize='1.3rem';}
   lastMsgSignature='';loadMessages();pollTimer=setInterval(loadMessages,3000);
 }
 
@@ -96,7 +100,7 @@ async function loadConversations(){
       html+='<div class="conv-section-title">Einzelchats</div>';
       html+=privates.map(c=>{
         const av=c.recipientAvatar?`<span style="font-size:1.3rem;">${c.recipientAvatar}</span>`:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-4.4 0-8 2.2-8 5v2h16v-2c0-2.8-3.6-5-8-5z"/></svg>';
-        return `<div class="conversation-item" onclick="showChat(${c.recipientId},'${(c.recipientName||'').replace(/'/g,"\\'")}',null,null)">
+        return `<div class="conversation-item" onclick="showChat(${c.recipientId},'${(c.recipientName||'').replace(/'/g,"\\'")}',null,null,'${c.recipientAvatar||''}')">
         <div class="conv-avatar">${av}</div>
         <div class="conv-info"><div class="conv-name">${c.recipientName||'User'}</div><div class="conv-last">${c.lastMessage||''}</div></div></div>`;
       }).join('');
@@ -145,7 +149,7 @@ const autoRecipient=localStorage.getItem('chat-open-recipient');
 const autoGroup=localStorage.getItem('chat-open-group');
 if(autoRecipient){
   localStorage.removeItem('chat-open-recipient');
-  fetch('/api/users/'+autoRecipient).then(r=>r.json()).then(u=>showChat(Number(autoRecipient),u.firstName+' '+u.lastName,null,null)).catch(()=>showList());
+  fetch('/api/users/'+autoRecipient).then(r=>r.json()).then(u=>showChat(Number(autoRecipient),u.firstName+' '+u.lastName,null,null,u.avatar||'')).catch(()=>showList());
 } else if(autoGroup){
   localStorage.removeItem('chat-open-group');
   try{const g=JSON.parse(autoGroup);showChat(null,null,g.id,g.name);}catch(e){showList();}
