@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Visibility – Profil</title>
-  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="style.css?v=5"/>
   <style>
     .profile-card{text-align:center;padding:24px 0 16px;}
     .profile-avatar-big{width:80px;height:80px;border-radius:50%;background:var(--hover-bg);border:2px solid var(--border);display:grid;place-items:center;margin:0 auto 12px;font-size:2.8rem;line-height:1;}
@@ -65,7 +65,7 @@
     <a class="nav-btn is-active" href="profile.html"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-4.4 0-8 2.2-8 5v2h16v-2c0-2.8-3.6-5-8-5z"></path></svg></a>
   </nav>
 </main>
-<script src="app.js"></script>
+<script src="app.js?v=5"></script>
 <script>
 async function loadProfile(){
   try{const r=await fetch('/api/auth/me');if(r.status===401){window.location.href='login.html';return;}

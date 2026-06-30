@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Visibility – Chat</title>
-  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="style.css?v=5"/>
   <style>
     .conversation-list{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px;}
     .conv-section-title{font-size:0.82rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;padding:8px 0 4px;}
@@ -68,7 +68,7 @@
     </div>
   </div>
 </main>
-<script src="app.js"></script>
+<script src="app.js?v=5"></script>
 <script>
 const user=JSON.parse(localStorage.getItem('tv-user')||'null');
 let currentRecipientId=null,currentGroupId=null,pollTimer=null;

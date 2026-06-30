@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Visibility – Profil bearbeiten</title>
-  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="style.css?v=5"/>
   <style>
     .autocomplete-wrap{position:relative;}.autocomplete-list{display:none;position:absolute;top:calc(100% + 3px);left:0;right:0;background:var(--surface);border:2px solid var(--border);border-radius:var(--radius-sm);z-index:200;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,0.10);}
     .autocomplete-item{display:flex;align-items:flex-start;gap:10px;padding:11px 13px;cursor:pointer;border-bottom:1px solid var(--border);}.autocomplete-item:last-child{border-bottom:none;}.autocomplete-item:hover,.autocomplete-item.is-focused{background:var(--hover-bg);}
@@ -13,7 +13,13 @@
     .avatar-option:hover{transform:scale(1.1);}.avatar-option.is-selected{border-color:var(--primary);box-shadow:0 0 0 3px rgba(59,130,246,0.3);transform:scale(1.15);}
     .avatar-preview{width:80px;height:80px;border-radius:50%;background:var(--hover-bg);border:2px solid var(--border);display:grid;place-items:center;margin:0 auto 8px;font-size:2.8rem;line-height:1;}
     .avatar-preview svg{width:44px;height:44px;color:var(--muted);}
-  </style>
+  
+    /* Bulletproof interest tags */
+    #tagsWrap{display:flex !important;flex-wrap:wrap !important;gap:8px !important;}
+    #tagsWrap .tag-chip{display:inline-flex !important;align-items:center !important;gap:6px !important;padding:9px 16px !important;border:2px solid var(--border) !important;border-radius:999px !important;background:var(--surface) !important;font-size:0.88rem !important;font-weight:800 !important;cursor:pointer !important;user-select:none !important;color:var(--text) !important;transition:all 0.15s !important;}
+    #tagsWrap .tag-chip:hover{border-color:var(--primary) !important;}
+    #tagsWrap .tag-chip.is-selected{background:#0095f6 !important;border-color:#0095f6 !important;color:#fff !important;}
+</style>
 </head>
 <body>
 <script>if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');</script>
@@ -57,7 +63,7 @@
     </form>
   </section>
 </main>
-<script src="app.js"></script>
+<script src="app.js?v=5"></script>
 <script>
 const user=JSON.parse(localStorage.getItem('tv-user')||'null');
 const extra=JSON.parse(localStorage.getItem('visibility-profile')||'{}');

@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Visibility – Gespeichert</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css?v=5" />
   <style>
     .own-events-scroll { display:flex;gap:8px;overflow-x:auto;padding:0 0 8px;scrollbar-width:none;margin-bottom:4px; }
     .own-events-scroll::-webkit-scrollbar { display:none; }
@@ -50,7 +50,7 @@
       <a class="nav-btn" href="profile.html"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-4.4 0-8 2.2-8 5v2h16v-2c0-2.8-3.6-5-8-5z"></path></svg></a>
     </nav>
   </main>
-  <script src="app.js"></script>
+  <script src="app.js?v=5"></script>
   <script>
     const SAVED_KEY = 'visibility-saved';
     const user = JSON.parse(localStorage.getItem('tv-user') || 'null');
