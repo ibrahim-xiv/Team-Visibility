@@ -19,7 +19,7 @@ public class EmailService {
     public void sendVerificationCode(String toEmail, String code) {
         String body = """
             {
-              "from": "onboarding@resend.dev",
+              "from": "noreply@visibility-app.xyz",
               "to": ["%s"],
               "subject": "Dein Visibility Verifizierungscode",
               "html": "<h2>Dein Code: <strong>%s</strong></h2><p>Dieser Code ist 15 Minuten gültig.</p>"
@@ -36,10 +36,12 @@ public class EmailService {
         try {
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() >= 400) {
-                throw new RuntimeException("Resend Fehler: " + response.body());
+                // Log the error but DON'T crash registration - the user is still created
+                System.err.println("Resend Fehler (" + response.statusCode() + "): " + response.body());
             }
         } catch (Exception e) {
-            throw new RuntimeException("E-Mail Fehler: " + e.getMessage(), e);
+            // Email failure must NOT break registration
+            System.err.println("E-Mail Fehler: " + e.getMessage());
         }
     }
 }
